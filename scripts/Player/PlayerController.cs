@@ -34,6 +34,9 @@ public enum Trick
     WallKick,
     JumpRollout,
     DashRollout,
+    GroundRoll,
+    RollJump,
+    PowerDash,
     SlopeSlide,
 }
 
@@ -44,6 +47,7 @@ public partial class PlayerController : CharacterBody2D
         None,
         Jump,
         Dash,
+        Ground,
     }
 
     private const float SkidCooldownTime = 0.25f;
@@ -55,6 +59,8 @@ public partial class PlayerController : CharacterBody2D
     private float _coyoteTimer;
     private float _jumpBufferTimer;
     private float _rollBufferTimer;
+    private bool _dashRequested;
+    private bool _rollRequested;
     private float _postLandingRollTimer;
     private float _timeSinceLanding;
     private RolloutKind _pendingRolloutKind;
@@ -65,6 +71,10 @@ public partial class PlayerController : CharacterBody2D
     private bool _performedAirAction;
 
     private int _dashDirection = 1;
+    private float _dashSpeed;
+    private float _dashExitSpeed;
+    private bool _isRollJumpChain;
+    private bool _isGroundRollLocked;
     private float _slideJumpGraceTimer;
     private float _skidCooldownTimer;
 
@@ -168,6 +178,8 @@ public partial class PlayerController : CharacterBody2D
         _postLandingRollTimer = 0f;
         _canDoubleJump = true;
         _canDash = true;
+        _isRollJumpChain = false;
+        _isGroundRollLocked = false;
         CurrentAirMove = AirMove.Fall;
         ChangeState(PlayerState.Airborne);
         ResetPhysicsInterpolation();
@@ -176,7 +188,22 @@ public partial class PlayerController : CharacterBody2D
     private void TrackInputBuffers(PlayerInput input, float dt)
     {
         _jumpBufferTimer = input.JumpPressed ? Tuning.JumpBufferTime : _jumpBufferTimer - dt;
-        _rollBufferTimer = input.RollPressed ? Tuning.RollEarlyWindow : _rollBufferTimer - dt;
+        ResolveActionPress(input.ActionPressed);
+        _rollBufferTimer = _rollRequested ? Tuning.RollEarlyWindow : _rollBufferTimer - dt;
+    }
+
+    private void ResolveActionPress(bool pressed)
+    {
+        _rollRequested = pressed && (IsOnGround || IsLandingImminent());
+        _dashRequested = pressed && !_rollRequested;
+    }
+
+    private bool IsLandingImminent()
+    {
+        var t = Tuning.RollEarlyWindow;
+        var motion = new Vector2(Velocity.X * t, (Velocity.Y * t) + (0.5f * Tuning.Gravity * t * t));
+        var hit = MoveAndCollide(motion, testOnly: true);
+        return hit is not null && hit.GetNormal().Dot(UpDirection) >= Mathf.Cos(FloorMaxAngle);
     }
 
     private void TickTimers(float dt)
@@ -207,9 +234,21 @@ public partial class PlayerController : CharacterBody2D
             return;
         }
 
-        if (input.RollPressed && _postLandingRollTimer > 0f)
+        if (_rollRequested && _postLandingRollTimer > 0f)
         {
             StartRollout(_pendingRolloutKind, _timeSinceLanding <= Tuning.PerfectRollWindow, input);
+            return;
+        }
+
+        if (_isGroundRollLocked && !IsBoosted && Mathf.Abs(_groundSpeed) <= Tuning.RunSpeed)
+        {
+            _isGroundRollLocked = false;
+        }
+
+        if (_rollRequested && IsRunning(input) && !_isGroundRollLocked)
+        {
+            _isGroundRollLocked = true;
+            StartRollout(RolloutKind.Ground, perfect: false, input);
             return;
         }
 
@@ -234,6 +273,9 @@ public partial class PlayerController : CharacterBody2D
         }
     }
 
+    private bool IsRunning(PlayerInput input) =>
+        !Mathf.IsZeroApprox(input.MoveX) && Mathf.Abs(_groundSpeed) >= Tuning.GroundRollMinSpeed;
+
     private bool ShouldSkid(PlayerInput input) =>
         _skidCooldownTimer <= 0f
         && Mathf.Abs(_groundSpeed) >= Tuning.SkidMinSpeed
@@ -250,14 +292,9 @@ public partial class PlayerController : CharacterBody2D
 
         _groundSpeed = Mathf.MoveToward(_groundSpeed, 0f, Tuning.SkidDeceleration * dt);
 
-        var stillReversing = !Mathf.IsZeroApprox(input.MoveX) && Mathf.Sign(input.MoveX) != Mathf.Sign(_groundSpeed);
         if (Mathf.IsZeroApprox(_groundSpeed) || StateTime >= Tuning.SkidMaxTime)
         {
             _slideJumpGraceTimer = Tuning.SlideJumpGraceTime;
-            ExitSkid(input);
-        }
-        else if (!stillReversing)
-        {
             ExitSkid(input);
         }
     }
@@ -280,7 +317,7 @@ public partial class PlayerController : CharacterBody2D
             return;
         }
 
-        if (input.DashPressed && _canDash)
+        if (_dashRequested && _canDash)
         {
             StartDash(input);
             return;
@@ -328,7 +365,7 @@ public partial class PlayerController : CharacterBody2D
         if (_canDoubleJump)
         {
             var fromDash = State == PlayerState.Dashing || CurrentAirMove == AirMove.Dash;
-            var horizontal = fromDash ? _dashDirection * Tuning.DashExitSpeed : Velocity.X;
+            var horizontal = fromDash ? _dashDirection * _dashExitSpeed : Velocity.X;
             _canDoubleJump = false;
             StartJump(AirMove.DoubleJump, Tuning.DoubleJumpSpeed, horizontal, fromDash ? Trick.DashJump : Trick.DoubleJump);
             return true;
@@ -372,9 +409,11 @@ public partial class PlayerController : CharacterBody2D
         _usedDashThisAirtime = true;
         _performedAirAction = true;
         IsWallSliding = false;
-        Velocity = new Vector2(_dashDirection * Tuning.DashSpeed, 0f);
+        _dashSpeed = _isRollJumpChain ? Tuning.ChainDashSpeed : Tuning.DashSpeed;
+        _dashExitSpeed = _isRollJumpChain ? Tuning.ChainDashExitSpeed : Tuning.DashExitSpeed;
+        Velocity = new Vector2(_dashDirection * _dashSpeed, 0f);
         ChangeState(PlayerState.Dashing);
-        TrickPerformed?.Invoke(Trick.Dash, false);
+        TrickPerformed?.Invoke(_isRollJumpChain ? Trick.PowerDash : Trick.Dash, false);
     }
 
     private void UpdateDashing(PlayerInput input)
@@ -390,21 +429,25 @@ public partial class PlayerController : CharacterBody2D
             return;
         }
 
-        Velocity = new Vector2(_dashDirection * Tuning.DashSpeed, 0f);
+        Velocity = new Vector2(_dashDirection * _dashSpeed, 0f);
     }
 
     private void EndDash()
     {
-        Velocity = new Vector2(_dashDirection * Tuning.DashExitSpeed, 0f);
+        Velocity = new Vector2(_dashDirection * _dashExitSpeed, 0f);
         CurrentAirMove = AirMove.Dash;
         ChangeState(PlayerState.Airborne);
     }
 
     private void StartRollout(RolloutKind kind, bool perfect, PlayerInput input)
     {
-        var isDashRollout = kind == RolloutKind.Dash;
-        var boost = (isDashRollout ? Tuning.DashRolloutBoost : Tuning.JumpRolloutBoost) + (perfect ? Tuning.PerfectRollBonus : 0f);
-        var boostTime = isDashRollout ? Tuning.DashRolloutBoostTime : Tuning.JumpRolloutBoostTime;
+        var (boost, boostTime, trick) = kind switch
+        {
+            RolloutKind.Dash => (Tuning.DashRolloutBoost, Tuning.DashRolloutBoostTime, Trick.DashRollout),
+            RolloutKind.Ground => (Tuning.GroundRollBoost, Tuning.GroundRollBoostTime, Trick.GroundRoll),
+            _ => (Tuning.JumpRolloutBoost, Tuning.JumpRolloutBoostTime, Trick.JumpRollout),
+        };
+        boost += perfect ? Tuning.PerfectRollBonus : 0f;
 
         var direction = !Mathf.IsZeroApprox(input.MoveX) ? Mathf.Sign(input.MoveX)
             : !Mathf.IsZeroApprox(_groundSpeed) ? Mathf.Sign(_groundSpeed)
@@ -416,14 +459,17 @@ public partial class PlayerController : CharacterBody2D
         _postLandingRollTimer = 0f;
         _rollBufferTimer = 0f;
         ChangeState(PlayerState.RollingOut);
-        TrickPerformed?.Invoke(isDashRollout ? Trick.DashRollout : Trick.JumpRollout, perfect);
+        TrickPerformed?.Invoke(trick, perfect);
     }
 
     private void UpdateRollingOut()
     {
         if (ConsumeJumpBuffer())
         {
-            StartJump(AirMove.Jump, Tuning.JumpSpeed, _groundSpeed, Trick.Jump);
+            var speed = Mathf.Abs(_groundSpeed);
+            var horizontal = Mathf.Max(speed, Mathf.Min(speed * Tuning.RollJumpHorizontalFactor, Tuning.RollJumpMaxSpeed));
+            _isRollJumpChain = true;
+            StartJump(AirMove.Jump, Tuning.JumpSpeed, Facing * horizontal, Trick.RollJump);
             return;
         }
 
@@ -515,6 +561,7 @@ public partial class PlayerController : CharacterBody2D
         _canDash = true;
         _usedDashThisAirtime = false;
         _performedAirAction = false;
+        _isRollJumpChain = false;
         IsWallSliding = false;
         _timeSinceLanding = 0f;
         ChangeState(PlayerState.Grounded);

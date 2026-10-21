@@ -8,8 +8,7 @@ public partial class Hud : CanvasLayer
     private const string ControlsText =
         "A/D oder Pfeile: Laufen\n" +
         "Leertaste/W: Springen (in der Luft: Doppelsprung, an Wand: Wall Kick)\n" +
-        "Shift/J in der Luft: Dash\n" +
-        "S/Ctrl/K bei der Landung: Rollout\n" +
+        "Shift/J/S/Ctrl/K: Dash in der Luft, Rollout bei der Landung, Rolle im Laufen\n" +
         "Rennen, Richtung wechseln + Springen: Slide Jump\n" +
         "R: Neustart   F1: Hilfe ein/aus";
 
@@ -119,6 +118,9 @@ public partial class Hud : CanvasLayer
         Trick.WallKick => "Wall Kick",
         Trick.JumpRollout => "Rollout!",
         Trick.DashRollout => "Dash-Rollout!",
+        Trick.GroundRoll => "Rolle",
+        Trick.RollJump => "Roll Jump",
+        Trick.PowerDash => "Power-Dash!",
         Trick.SlopeSlide => "Rutsch-Boost",
         _ => null,
     };

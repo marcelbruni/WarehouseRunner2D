@@ -36,14 +36,13 @@ dotnet build
 |---|---|---|
 | Laufen | A/D, ←/→ | Linker Stick, D-Pad |
 | Springen / Doppelsprung / Wall Kick | Leertaste, W, ↑ | A |
-| Dash (in der Luft) | Shift, J | X |
-| Rollout (bei der Landung) | S, ↓, Ctrl, K | B |
+| Dash (Luft) / Rollout (Landung) / Rolle (im Laufen) | Shift, J, S, ↓, Ctrl, K | X, B |
 | Neustart | R | Start |
 | Hilfe ein/aus | F1 | Back |
 
 ## Tests
 
-Bewegungstests (16 Szenarien, headless):
+Bewegungstests (headless):
 
 ```powershell
 $godot = "C:\Tools\Godot\Godot_v4.7.2-stable_mono_win64\Godot_v4.7.2-stable_mono_win64_console.exe"

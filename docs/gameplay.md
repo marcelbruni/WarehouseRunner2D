@@ -22,14 +22,30 @@ einen Hinweis und muss zurück.
 | Laufen | A/D, Pfeile, Stick | Beschleunigt auf Laufgeschwindigkeit |
 | Jump | Leertaste/W/↑, Pad A | Normaler Sprung |
 | Double Jump | Jump in der Luft | Zweiter Sprung, einmal pro Luftphase |
-| Jump → Dash | Shift/J, Pad X in der Luft | Horizontaler Schub ohne Schwerkraft, einmal pro Luftphase |
+| Jump → Dash | Aktionstaste (Shift/J/S/↓/Ctrl/K, Pad X/B) in der Luft | Horizontaler Schub ohne Schwerkraft, einmal pro Luftphase |
 | Jump → Dash → Jump | Jump während/nach dem Dash | Doppelsprung, der den Dash-Schwung mitnimmt |
-| Rollout nach Jump-Landung | S/↓/Ctrl/K, Pad B kurz vor/bei der Landung | Rolle + Boost (×1.3 für 0.8 s) |
+| Rollout nach Jump-Landung | Aktionstaste kurz vor/bei/nach der Landung | Rolle + Boost (×1.3 für 0.8 s) |
 | Rollout nach Dash-Landung | wie oben, nach einem Dash | Stärkerer Boost (×1.45 für 1.0 s) |
-| Slide Jump | Rennen, abrupt Gegenrichtung (Rutsch-Pose), Jump | Etwas höher als normaler Sprung (+22 %), Richtungswechsel |
+| Rolle | Aktionstaste am Boden, nur im Laufen | Etwas langsamer als der Rollout (×1.2 für 0.6 s); erneut erst, wenn das Tempo wieder normal ist |
+| Roll Jump | Jump direkt aus Rolle oder Rollout | Fliegt weiter: horizontal ×1.2 (max. 650 px/s) |
+| Power-Dash | Dash nach einem Roll Jump | Stärkerer Dash (860 statt 720, danach 620 statt 520 px/s) |
+| Slide Jump | Rennen, abrupt Gegenrichtung (Rutsch-Pose), Jump; die Rutsch-Pose bleibt auch beim Zurück-und-wieder-vor | Etwas höher als normaler Sprung (+31 %), springt in die aktuell gedrückte Richtung |
 | Slide Jump → Double Jump / Dash / Dash → Jump | wie oben kombinieren | Alle Ketten möglich |
 | Schräge Kiste | einfach draufstehen | Rutschen bergab, Boost (×1.35) während und 0.9 s danach |
 | Förderband | draufstehen/laufen | Bandgeschwindigkeit wird addiert (schneller oder langsamer); beim Absprung bleibt der Schwung |
+
+**Aktionstaste (Dash und Rollout auf derselben Taste):**
+
+- Kurz nach der Landung: Rollout. Am Boden im Laufen: Rolle. Im Stand: nichts.
+- In der Luft, Boden noch weit weg: Dash.
+- In der Luft, Landung in weniger als 0.15 s: Rollout (vorgemerkt). Ein Dash
+  knapp über dem Boden ist deshalb nicht möglich.
+
+**Tempo halten:** Beide Loops halten konstant ~590 px/s (≈1.7× Laufen),
+ohne sich aufzuschaukeln:
+
+- Rolle → Jump → Dash → (Landung) Rollout → Jump → Dash → …
+- Jump → Dash → Rollout → Jump → Dash → …
 
 Alle Werte stehen in `scripts/Player/MovementTuning.cs` und lassen sich im
 Godot-Inspector am Player (Property `Tuning`) live ändern.

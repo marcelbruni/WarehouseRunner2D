@@ -29,10 +29,18 @@ public partial class MovementTests : Node2D
             ("DoubleJump_InAir_GoesHigherThanSingleJump", DoubleJumpInAirGoesHigherThanSingleJump),
             ("SlideJump_AfterTurnaround_IsHigherThanJump", SlideJumpAfterTurnaroundIsHigherThanJump),
             ("SlideJump_ThenDoubleJumpThenDashThenJump_AllChain", SlideJumpChainWorks),
+            ("SlideJump_BackThenForwardAgain_StaysSkiddingAndTriggers", SlideJumpBackThenForwardTriggers),
             ("JumpDashJump_InAir_KeepsDashMomentum", JumpDashJumpKeepsDashMomentum),
             ("Rollout_AfterJumpLanding_BoostsSpeed", RolloutAfterJumpLandingBoostsSpeed),
             ("Rollout_AfterDashLanding_IsStrongerThanJumpRollout", DashRolloutIsStrongerThanJumpRollout),
             ("Rollout_PressedJustBeforeLanding_IsBufferedAndPerfect", RolloutBufferedBeforeLanding),
+            ("GroundRoll_WhileRunning_IsSlightlySlowerThanRollout", GroundRollWhileRunningIsSlowerThanRollout),
+            ("GroundRoll_WhenStanding_DoesNothing", GroundRollWhenStandingDoesNothing),
+            ("GroundRoll_AgainWhileStillFast_IsBlockedUntilSpeedIsNormal", GroundRollBlockedUntilSpeedNormal),
+            ("RollJump_OutOfRoll_FliesFartherThanRunningJump", RollJumpFliesFarther),
+            ("PowerDash_AfterRollJump_IsFasterThanDash", PowerDashAfterRollJumpIsFaster),
+            ("SpeedLoop_RollJumpDash_SustainsHighSpeed", () => SpeedLoopSustainsHighSpeed(startWithRoll: true)),
+            ("SpeedLoop_JumpDashRoll_SustainsHighSpeed", () => SpeedLoopSustainsHighSpeed(startWithRoll: false)),
             ("Conveyor_StandingStill_CarriesPlayer", ConveyorCarriesStandingPlayer),
             ("Conveyor_RunningAgainstBelt_IsSlower", ConveyorAgainstBeltIsSlower),
             ("Conveyor_JumpingOff_KeepsBeltMomentum", ConveyorJumpKeepsMomentum),
@@ -117,6 +125,22 @@ public partial class MovementTests : Node2D
         Expect("SlideJump", startY - peak > single * 1.15f, $"height {startY - peak:0} single {single:0}");
     }
 
+    private async Task SlideJumpBackThenForwardTriggers()
+    {
+        await RunTo(direction: 1, ticks: 70);
+        _input.MoveX = -1f;
+        await Ticks(3);
+        _input.MoveX = 0f;
+        await Ticks(1);
+        _input.MoveX = 1f;
+        await Ticks(3);
+        Expect("SlideJumpBackForward", _player.State == PlayerState.Skidding, $"state after back and forward {_player.State}");
+        _input.PressJump();
+        await Ticks(1);
+        Expect("SlideJumpBackForward", _player.CurrentAirMove == AirMove.SlideJump, $"air move {_player.CurrentAirMove}");
+        Expect("SlideJumpBackForward", _player.Velocity.X > 0f, $"vx {_player.Velocity.X:0} should follow the forward input");
+    }
+
     private async Task SlideJumpChainWorks()
     {
         await RunTo(direction: 1, ticks: 70);
@@ -128,7 +152,7 @@ public partial class MovementTests : Node2D
         await Ticks(1);
         Expect("SlideJumpChain", _player.CurrentAirMove == AirMove.DoubleJump, $"after second press {_player.CurrentAirMove}");
         await Ticks(10);
-        _input.PressDash();
+        _input.PressDashOrRoll();
         await Ticks(1);
         Expect("SlideJumpChain", _player.State == PlayerState.Dashing, $"after dash press {_player.State}");
         await Ticks(30);
@@ -140,7 +164,7 @@ public partial class MovementTests : Node2D
         _input.PressJump();
         await Ticks(15);
         _input.MoveX = 1f;
-        _input.PressDash();
+        _input.PressDashOrRoll();
         await Ticks(1);
         Expect("JumpDashJump", _player.State == PlayerState.Dashing, $"state {_player.State}");
         Expect("JumpDashJump", Mathf.IsEqualApprox(_player.Velocity.X, _player.Tuning.DashSpeed), $"dash vx {_player.Velocity.X:0}");
@@ -177,9 +201,121 @@ public partial class MovementTests : Node2D
             }
         };
 
+        var dashed = false;
+        _player.TrickPerformed += (trick, _) => dashed |= trick == Trick.Dash;
         await PerformRollout(useDash: false, pressEarly: true);
+        Expect("BufferedRollout", !dashed, "press just before landing must not dash");
         Expect("BufferedRollout", _player.State == PlayerState.RollingOut, $"state {_player.State}");
         Expect("BufferedRollout", perfect, "press 2 ticks before landing should count as perfect");
+    }
+
+    private async Task GroundRollWhileRunningIsSlowerThanRollout()
+    {
+        var rollout = await PerformRollout(useDash: false, pressEarly: false);
+        await SetUpWorld();
+        await RunTo(direction: 1, ticks: 60);
+        _input.PressDashOrRoll();
+        await Ticks(1);
+        var roll = Mathf.Abs(_player.GroundSpeed);
+        Expect("GroundRoll", _player.State == PlayerState.RollingOut, $"state {_player.State}");
+        Expect("GroundRoll", roll > _player.Tuning.RunSpeed * 1.1f && roll < rollout, $"roll {roll:0} rollout {rollout:0}");
+    }
+
+    private async Task GroundRollBlockedUntilSpeedNormal()
+    {
+        await RunTo(direction: 1, ticks: 60);
+        _input.PressDashOrRoll();
+        await Ticks(45);
+        _input.PressDashOrRoll();
+        await Ticks(1);
+        Expect("GroundRollRepeat", _player.State != PlayerState.RollingOut, $"second roll while fast: state {_player.State}, speed {_player.GroundSpeed:0}");
+        await Until(() => !_player.IsBoosted && Mathf.Abs(_player.GroundSpeed) <= _player.Tuning.RunSpeed, 240);
+        await Ticks(1);
+        _input.PressDashOrRoll();
+        await Ticks(1);
+        Expect("GroundRollRepeat", _player.State == PlayerState.RollingOut, $"roll after speed normal: state {_player.State}");
+    }
+
+    private async Task GroundRollWhenStandingDoesNothing()
+    {
+        _input.PressDashOrRoll();
+        await Ticks(2);
+        Expect("GroundRollStanding", _player.State == PlayerState.Grounded, $"state {_player.State}");
+    }
+
+    private async Task RollJumpFliesFarther()
+    {
+        var normal = await MeasureJumpDistance(fromRoll: false);
+        await SetUpWorld();
+        var fromRoll = await MeasureJumpDistance(fromRoll: true);
+        Expect("RollJump", fromRoll > normal * 1.3f, $"roll jump {fromRoll:0} running jump {normal:0}");
+    }
+
+    private async Task PowerDashAfterRollJumpIsFaster()
+    {
+        await RunTo(direction: 1, ticks: 60);
+        _input.PressDashOrRoll();
+        await Ticks(3);
+        _input.PressJump();
+        await Ticks(15);
+        _input.PressDashOrRoll();
+        await Ticks(1);
+        Expect("PowerDash", _player.State == PlayerState.Dashing, $"state {_player.State}");
+        Expect("PowerDash", _player.Velocity.X > _player.Tuning.DashSpeed + 50f, $"dash vx {_player.Velocity.X:0}");
+    }
+
+    private async Task SpeedLoopSustainsHighSpeed(bool startWithRoll)
+    {
+        await SetUpWorld(new Rect2(-3000f, FloorTop, 12000f, 200f), new Vector2(-2800f, FloorTop - PlayerHalfHeight));
+        await RunTo(direction: 1, ticks: 40);
+        var landingSpeeds = new List<float>();
+        for (var cycle = 0; cycle < 5; cycle++)
+        {
+            if (cycle > 0 || startWithRoll)
+            {
+                _input.PressDashOrRoll();
+                await Ticks(3);
+                Expect("SpeedLoop", _player.State == PlayerState.RollingOut, $"cycle {cycle}: state {_player.State} instead of roll");
+            }
+
+            _input.PressJump();
+            await Ticks(15);
+            _input.PressDashOrRoll();
+            await Ticks(1);
+            Expect("SpeedLoop", _player.State == PlayerState.Dashing, $"cycle {cycle}: state {_player.State} instead of dash");
+            await Until(() => _player.IsOnGround, 240);
+            landingSpeeds.Add(Mathf.Abs(_player.GroundSpeed));
+        }
+
+        var steady = landingSpeeds.GetRange(1, landingSpeeds.Count - 1);
+        var min = Mathf.Inf;
+        var max = 0f;
+        foreach (var speed in steady)
+        {
+            min = Mathf.Min(min, speed);
+            max = Mathf.Max(max, speed);
+        }
+
+        var summary = string.Join(", ", landingSpeeds.ConvertAll(v => v.ToString("0")));
+        GD.Print($"  landing speeds: {summary}");
+        Expect("SpeedLoop", min > _player.Tuning.RunSpeed * 1.5f, $"landing speeds {summary}");
+        Expect("SpeedLoop", max - min < 60f, $"speed not constant: {summary}");
+    }
+
+    private async Task<float> MeasureJumpDistance(bool fromRoll)
+    {
+        await RunTo(direction: 1, ticks: 60);
+        if (fromRoll)
+        {
+            _input.PressDashOrRoll();
+            await Ticks(3);
+        }
+
+        var startX = _player.GlobalPosition.X;
+        _input.PressJump();
+        await Ticks(2);
+        await Until(() => _player.IsOnGround, 240);
+        return _player.GlobalPosition.X - startX;
     }
 
     private async Task ConveyorCarriesStandingPlayer()
@@ -283,19 +419,19 @@ public partial class MovementTests : Node2D
         await Ticks(12);
         if (useDash)
         {
-            _input.PressDash();
+            _input.PressDashOrRoll();
         }
 
         if (pressEarly)
         {
             await Until(() => _player.Velocity.Y > 0f && TicksToFloor() <= 2, 240);
-            _input.PressRoll();
+            _input.PressDashOrRoll();
         }
 
         await Until(() => _player.IsOnGround, 240);
         if (!pressEarly)
         {
-            _input.PressRoll();
+            _input.PressDashOrRoll();
         }
 
         await Ticks(1);
@@ -408,8 +544,7 @@ public partial class MovementTests : Node2D
     private sealed class ScriptedInput : IPlayerInputSource
     {
         private bool _jumpPressed;
-        private bool _dashPressed;
-        private bool _rollPressed;
+        private bool _actionPressed;
 
         public float MoveX { get; set; }
 
@@ -421,16 +556,13 @@ public partial class MovementTests : Node2D
             JumpHeld = true;
         }
 
-        public void PressDash() => _dashPressed = true;
-
-        public void PressRoll() => _rollPressed = true;
+        public void PressDashOrRoll() => _actionPressed = true;
 
         public PlayerInput Sample()
         {
-            var sample = new PlayerInput(MoveX, _jumpPressed, JumpHeld, _dashPressed, _rollPressed);
+            var sample = new PlayerInput(MoveX, _jumpPressed, JumpHeld, _actionPressed);
             _jumpPressed = false;
-            _dashPressed = false;
-            _rollPressed = false;
+            _actionPressed = false;
             return sample;
         }
     }

@@ -26,7 +26,7 @@ public partial class MovementTuning : Resource
     [ExportGroup("Jumps")]
     [Export] public float JumpSpeed { get; set; } = 760f;
     [Export] public float DoubleJumpSpeed { get; set; } = 680f;
-    [Export] public float SlideJumpSpeed { get; set; } = 840f;
+    [Export] public float SlideJumpSpeed { get; set; } = 870f;
     [Export] public float SlideJumpHorizontalSpeed { get; set; } = 170f;
     [Export] public float CoyoteTime { get; set; } = 0.1f;
     [Export] public float JumpBufferTime { get; set; } = 0.12f;
@@ -52,6 +52,17 @@ public partial class MovementTuning : Resource
     [Export] public float DashRolloutBoost { get; set; } = 1.45f;
     [Export] public float DashRolloutBoostTime { get; set; } = 1.0f;
     [Export] public float PerfectRollBonus { get; set; } = 0.1f;
+
+    [ExportGroup("Ground Roll")]
+    [Export] public float GroundRollMinSpeed { get; set; } = 120f;
+    [Export] public float GroundRollBoost { get; set; } = 1.2f;
+    [Export] public float GroundRollBoostTime { get; set; } = 0.6f;
+
+    [ExportGroup("Roll Chain")]
+    [Export] public float RollJumpHorizontalFactor { get; set; } = 1.2f;
+    [Export] public float RollJumpMaxSpeed { get; set; } = 650f;
+    [Export] public float ChainDashSpeed { get; set; } = 860f;
+    [Export] public float ChainDashExitSpeed { get; set; } = 620f;
 
     [ExportGroup("Slippery Slope")]
     [Export] public float SlopeSlideGravityFactor { get; set; } = 1.1f;
