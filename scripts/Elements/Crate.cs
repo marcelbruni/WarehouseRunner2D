@@ -1,0 +1,73 @@
+using Godot;
+
+namespace WarehouseRunner.Elements;
+
+[Tool]
+[GlobalClass]
+public partial class Crate : BoxBody
+{
+    private const float SlipperyMinTiltDegrees = 3f;
+    private const float PreferredCellSize = 80f;
+
+    private static readonly Color Wood = new(0.69f, 0.48f, 0.24f);
+    private static readonly Color WoodDark = new(0.43f, 0.29f, 0.13f);
+    private static readonly Color Film = new(0.75f, 0.9f, 1f, 0.35f);
+    private static readonly Color FilmShine = new(1f, 1f, 1f, 0.55f);
+
+    public bool IsSlippery => Mathf.Abs(Mathf.PosMod(RotationDegrees + 45f, 90f) - 45f) > SlipperyMinTiltDegrees;
+
+    public override void _Notification(int what)
+    {
+        if (what == NotificationTransformChanged)
+        {
+            QueueRedraw();
+        }
+    }
+
+    public override void _EnterTree()
+    {
+        SetNotifyTransform(true);
+    }
+
+    public override void _Draw()
+    {
+        var rect = LocalRect;
+        var columns = Mathf.Max(1, Mathf.RoundToInt(rect.Size.X / PreferredCellSize));
+        var rows = Mathf.Max(1, Mathf.RoundToInt(rect.Size.Y / PreferredCellSize));
+        var cell = new Vector2(rect.Size.X / columns, rect.Size.Y / rows);
+
+        for (var column = 0; column < columns; column++)
+        {
+            for (var row = 0; row < rows; row++)
+            {
+                DrawCrateCell(new Rect2(rect.Position + (cell * new Vector2(column, row)), cell));
+            }
+        }
+
+        if (IsSlippery)
+        {
+            DrawStretchFilm(rect);
+        }
+    }
+
+    private void DrawCrateCell(Rect2 cell)
+    {
+        var border = Mathf.Clamp(Mathf.Min(cell.Size.X, cell.Size.Y) * 0.12f, 3f, 8f);
+        DrawRect(cell, Wood);
+        DrawRect(cell, WoodDark, false, border);
+        var inner = cell.Grow(-border);
+        DrawLine(inner.Position, inner.End, WoodDark, border * 0.8f);
+        DrawLine(new Vector2(inner.Position.X, inner.End.Y), new Vector2(inner.End.X, inner.Position.Y), WoodDark, border * 0.8f);
+    }
+
+    private void DrawStretchFilm(Rect2 rect)
+    {
+        DrawRect(rect, Film);
+        for (var x = rect.Position.X + 10f; x < rect.End.X - 14f; x += 34f)
+        {
+            DrawLine(new Vector2(x, rect.Position.Y + 3f), new Vector2(x + 14f, rect.Position.Y + 3f), FilmShine, 3f);
+        }
+
+        DrawRect(rect, FilmShine, false, 2f);
+    }
+}

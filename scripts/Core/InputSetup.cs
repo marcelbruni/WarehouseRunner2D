@@ -1,0 +1,55 @@
+using Godot;
+
+namespace WarehouseRunner.Core;
+
+public partial class InputSetup : Node
+{
+    public const string MoveLeft = "move_left";
+    public const string MoveRight = "move_right";
+    public const string Jump = "jump";
+    public const string Dash = "dash";
+    public const string Roll = "roll";
+    public const string Restart = "restart";
+    public const string ToggleHelp = "toggle_help";
+
+    public override void _EnterTree()
+    {
+        Register(MoveLeft, Keys(Key.A, Key.Left), Buttons(JoyButton.DpadLeft), new Axis(JoyAxis.LeftX, -1f));
+        Register(MoveRight, Keys(Key.D, Key.Right), Buttons(JoyButton.DpadRight), new Axis(JoyAxis.LeftX, 1f));
+        Register(Jump, Keys(Key.Space, Key.W, Key.Up), Buttons(JoyButton.A));
+        Register(Dash, Keys(Key.Shift, Key.J), Buttons(JoyButton.X));
+        Register(Roll, Keys(Key.S, Key.Down, Key.Ctrl, Key.K), Buttons(JoyButton.B), new Axis(JoyAxis.LeftY, 1f));
+        Register(Restart, Keys(Key.R), Buttons(JoyButton.Start));
+        Register(ToggleHelp, Keys(Key.F1), Buttons(JoyButton.Back));
+    }
+
+    private readonly record struct Axis(JoyAxis Id, float Direction);
+
+    private static Key[] Keys(params Key[] keys) => keys;
+
+    private static JoyButton[] Buttons(params JoyButton[] buttons) => buttons;
+
+    private static void Register(string action, Key[] keys, JoyButton[] buttons, Axis? axis = null)
+    {
+        if (InputMap.HasAction(action))
+        {
+            return;
+        }
+
+        InputMap.AddAction(action, 0.4f);
+        foreach (var key in keys)
+        {
+            InputMap.ActionAddEvent(action, new InputEventKey { PhysicalKeycode = key });
+        }
+
+        foreach (var button in buttons)
+        {
+            InputMap.ActionAddEvent(action, new InputEventJoypadButton { ButtonIndex = button });
+        }
+
+        if (axis is { } a)
+        {
+            InputMap.ActionAddEvent(action, new InputEventJoypadMotion { Axis = a.Id, AxisValue = a.Direction });
+        }
+    }
+}

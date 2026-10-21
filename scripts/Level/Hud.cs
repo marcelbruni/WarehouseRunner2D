@@ -1,0 +1,148 @@
+using Godot;
+using WarehouseRunner.Player;
+
+namespace WarehouseRunner.Level;
+
+public partial class Hud : CanvasLayer
+{
+    private const string ControlsText =
+        "A/D oder Pfeile: Laufen\n" +
+        "Leertaste/W: Springen (in der Luft: Doppelsprung, an Wand: Wall Kick)\n" +
+        "Shift/J in der Luft: Dash\n" +
+        "S/Ctrl/K bei der Landung: Rollout\n" +
+        "Rennen, Richtung wechseln + Springen: Slide Jump\n" +
+        "R: Neustart   F1: Hilfe ein/aus";
+
+    private Label _timer = null!;
+    private Label _objective = null!;
+    private Label _best = null!;
+    private Label _trick = null!;
+    private Label _hint = null!;
+    private Label _help = null!;
+    private Label _result = null!;
+    private ColorRect _resultDim = null!;
+    private SpeedMeter _speedMeter = null!;
+    private Tween? _trickTween;
+    private Tween? _hintTween;
+
+    public override void _Ready()
+    {
+        var root = new Control();
+        root.SetAnchorsPreset(Control.LayoutPreset.FullRect);
+        root.MouseFilter = Control.MouseFilterEnum.Ignore;
+        AddChild(root);
+
+        _timer = AddLabel(root, Control.LayoutPreset.TopLeft, 44, new Vector2(24f, 16f));
+        _best = AddLabel(root, Control.LayoutPreset.TopRight, 22, new Vector2(-24f, 20f), HorizontalAlignment.Right);
+        _objective = AddLabel(root, Control.LayoutPreset.CenterTop, 26, new Vector2(0f, 24f), HorizontalAlignment.Center);
+        _trick = AddLabel(root, Control.LayoutPreset.CenterTop, 34, new Vector2(0f, 130f), HorizontalAlignment.Center);
+        _hint = AddLabel(root, Control.LayoutPreset.CenterTop, 24, new Vector2(0f, 70f), HorizontalAlignment.Center);
+        _help = AddLabel(root, Control.LayoutPreset.BottomRight, 16, new Vector2(-24f, -20f), HorizontalAlignment.Right);
+
+        _resultDim = new ColorRect { Color = new Color(0f, 0f, 0f, 0.55f), Visible = false, MouseFilter = Control.MouseFilterEnum.Ignore };
+        root.AddChild(_resultDim);
+        _resultDim.SetAnchorsAndOffsetsPreset(Control.LayoutPreset.FullRect);
+        _result = AddLabel(root, Control.LayoutPreset.Center, 40, Vector2.Zero, HorizontalAlignment.Center);
+
+        _help.Text = ControlsText;
+        _trick.Modulate = Colors.Transparent;
+        _hint.Modulate = Colors.Transparent;
+        _result.Visible = false;
+
+        _speedMeter = new SpeedMeter();
+        _speedMeter.SetAnchorsPreset(Control.LayoutPreset.BottomLeft);
+        _speedMeter.OffsetLeft = 24f;
+        _speedMeter.OffsetRight = 284f;
+        _speedMeter.OffsetTop = -56f;
+        _speedMeter.OffsetBottom = -26f;
+        root.AddChild(_speedMeter);
+    }
+
+    public void ToggleHelp() => _help.Visible = !_help.Visible;
+
+    public void SetTime(double seconds) => _timer.Text = FormatTime(seconds);
+
+    public void SetObjective(string text) => _objective.Text = text;
+
+    public void SetBest(double? seconds) => _best.Text = seconds is { } best ? $"Bestzeit {FormatTime(best)}" : "Bestzeit --:--.--";
+
+    public void SetSpeed(float speed, float runSpeed, bool boosted) => _speedMeter.Update(speed, runSpeed, boosted);
+
+    public void ShowTrick(Trick trick, bool perfect)
+    {
+        var name = TrickName(trick);
+        if (name is null)
+        {
+            return;
+        }
+
+        _trick.Text = perfect ? $"{name}  PERFEKT!" : name;
+        _trick.AddThemeColorOverride("font_color", perfect ? new Color(1f, 0.85f, 0.2f) : Colors.White);
+        _trickTween?.Kill();
+        _trick.Modulate = Colors.White;
+        _trickTween = CreateTween();
+        _trickTween.TweenInterval(0.5f);
+        _trickTween.TweenProperty(_trick, "modulate", Colors.Transparent, 0.4f);
+    }
+
+    public void ShowHint(string text)
+    {
+        _hint.Text = text;
+        _hintTween?.Kill();
+        _hint.Modulate = Colors.White;
+        _hintTween = CreateTween();
+        _hintTween.TweenInterval(2f);
+        _hintTween.TweenProperty(_hint, "modulate", Colors.Transparent, 0.5f);
+    }
+
+    public void ShowResult(double time, double? previousBest)
+    {
+        var isRecord = previousBest is null || time < previousBest;
+        var recordLine = isRecord ? "NEUER REKORD!" : $"Bestzeit: {FormatTime(previousBest!.Value)}";
+        _result.Text = $"Feierabend!\n{FormatTime(time)}\n{recordLine}\n\nR für einen neuen Lauf";
+        _result.Visible = true;
+        _resultDim.Visible = true;
+    }
+
+    public static string FormatTime(double seconds)
+    {
+        var minutes = (int)(seconds / 60);
+        return $"{minutes:00}:{seconds - (minutes * 60):00.00}";
+    }
+
+    private static string? TrickName(Trick trick) => trick switch
+    {
+        Trick.DoubleJump => "Doppelsprung",
+        Trick.SlideJump => "Slide Jump",
+        Trick.Dash => "Dash",
+        Trick.DashJump => "Dash Jump",
+        Trick.WallKick => "Wall Kick",
+        Trick.JumpRollout => "Rollout!",
+        Trick.DashRollout => "Dash-Rollout!",
+        Trick.SlopeSlide => "Rutsch-Boost",
+        _ => null,
+    };
+
+    private static Label AddLabel(Control parent, Control.LayoutPreset preset, int fontSize, Vector2 offset, HorizontalAlignment alignment = HorizontalAlignment.Left)
+    {
+        var label = new Label
+        {
+            HorizontalAlignment = alignment,
+            LabelSettings = new LabelSettings { FontSize = fontSize, OutlineSize = 6, OutlineColor = Colors.Black },
+            MouseFilter = Control.MouseFilterEnum.Ignore,
+        };
+        parent.AddChild(label);
+        label.SetAnchorsAndOffsetsPreset(preset, Control.LayoutPresetMode.Minsize);
+        label.GrowHorizontal = alignment switch
+        {
+            HorizontalAlignment.Right => Control.GrowDirection.Begin,
+            HorizontalAlignment.Center => Control.GrowDirection.Both,
+            _ => Control.GrowDirection.End,
+        };
+        label.GrowVertical = preset is Control.LayoutPreset.BottomRight
+            ? Control.GrowDirection.Begin
+            : Control.GrowDirection.Both;
+        label.Position += offset;
+        return label;
+    }
+}
