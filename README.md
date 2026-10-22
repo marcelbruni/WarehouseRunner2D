@@ -2,8 +2,7 @@
 
 Jump-and-Run in einer Lagerhalle: einstempeln, das goldene Express-Paket
 finden, zur Rampe bringen, den LKW losschicken, ausstempeln, und das so schnell
-wie möglich. Der Schwerpunkt liegt auf einer präzisen Steuerung im Stil von
-Super Mario 64.
+wie möglich.
 
 - Engine: Godot 4.7 (.NET) mit C#, siehe [ADR 0001](docs/adr/0001-engine-godot-csharp.md)
 - Bewegungen, Levelablauf und ergänzte Funktionen: [docs/gameplay.md](docs/gameplay.md)
