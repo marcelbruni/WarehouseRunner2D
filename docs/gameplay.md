@@ -29,7 +29,7 @@ einen Hinweis und muss zurück.
 | Rolle | Aktionstaste am Boden, nur im Laufen | Etwas langsamer als der Rollout (×1.2 für 0.6 s); erneut erst, wenn das Tempo wieder normal ist |
 | Roll Jump | Jump direkt aus Rolle oder Rollout | Fliegt weiter: horizontal ×1.2 (max. 650 px/s) |
 | Power-Dash | Dash nach einem Roll Jump | Stärkerer Dash (860 statt 720, danach 620 statt 520 px/s) |
-| Slide Jump | Rennen, abrupt Gegenrichtung (Rutsch-Pose), Jump; die Rutsch-Pose bleibt auch beim Zurück-und-wieder-vor | Etwas höher als normaler Sprung (+31 %), springt in die aktuell gedrückte Richtung |
+| Slide Jump | Rennen, abrupt Gegenrichtung (Rutsch-Pose), Jump; die Rutsch-Pose bleibt auch beim Zurück-und-wieder-vor | So hoch wie Sprung + Doppelsprung (~236 px), springt in die aktuell gedrückte Richtung |
 | Slide Jump → Double Jump / Dash / Dash → Jump | wie oben kombinieren | Alle Ketten möglich |
 | Schräge Kiste | einfach draufstehen | Rutschen bergab, Boost (×1.35) während und 0.9 s danach |
 | Förderband | draufstehen/laufen | Bandgeschwindigkeit wird addiert (schneller oder langsamer); beim Absprung bleibt der Schwung |

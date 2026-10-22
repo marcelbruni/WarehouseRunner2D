@@ -26,16 +26,16 @@ public partial class MovementTuning : Resource
     [ExportGroup("Jumps")]
     [Export] public float JumpSpeed { get; set; } = 760f;
     [Export] public float DoubleJumpSpeed { get; set; } = 680f;
-    [Export] public float SlideJumpSpeed { get; set; } = 870f;
+    [Export] public float SlideJumpSpeed { get; set; } = 1020f;
     [Export] public float SlideJumpHorizontalSpeed { get; set; } = 170f;
     [Export] public float CoyoteTime { get; set; } = 0.1f;
     [Export] public float JumpBufferTime { get; set; } = 0.12f;
 
     [ExportGroup("Skid")]
     [Export] public float SkidMinSpeed { get; set; } = 170f;
-    [Export] public float SkidDeceleration { get; set; } = 2000f;
-    [Export] public float SkidMaxTime { get; set; } = 0.35f;
-    [Export] public float SlideJumpGraceTime { get; set; } = 0.08f;
+    [Export] public float SkidDeceleration { get; set; } = 1400f;
+    [Export] public float SkidMaxTime { get; set; } = 0.5f;
+    [Export] public float SlideJumpGraceTime { get; set; } = 0.15f;
 
     [ExportGroup("Dash")]
     [Export] public float DashSpeed { get; set; } = 720f;
