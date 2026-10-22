@@ -28,6 +28,7 @@ public partial class LevelFlowTest : Node
 
         _race = GD.Load<PackedScene>("res://scenes/levels/Level01.tscn").Instantiate<RaceController>();
         _race.ProcessMode = ProcessModeEnum.Pausable;
+        _race.SaveRecords = false;
         AddChild(_race);
         _player = _race.GetNode<PlayerController>("Player");
         _player.InputSource = new IdleInput();

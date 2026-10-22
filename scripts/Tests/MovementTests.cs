@@ -46,7 +46,9 @@ public partial class MovementTests : Node2D
             ("Conveyor_JumpingOff_KeepsBeltMomentum", ConveyorJumpKeepsMomentum),
             ("TiltedCrate_StandingOnIt_SlidesAndBoosts", TiltedCrateSlidesAndBoosts),
             ("TiltedConveyor_StandingOnIt_IsNotSlippery", TiltedConveyorIsNotSlippery),
-            ("WallKick_AgainstWall_PushesUpAndAway", WallKickPushesUpAndAway),
+            ("WallKick_SteeringAwayFromWall_PushesUpAndAway", WallKickPushesUpAndAway),
+            ("WallJump_SteeringIntoWall_IsDoubleJump", JumpSteeringIntoWallIsDoubleJump),
+            ("WallJump_NoSteering_IsDoubleJump", JumpNeutralAtWallIsDoubleJump),
             ("CoyoteJump_ShortlyAfterLeavingEdge_IsGroundJump", CoyoteJumpAfterLeavingEdge),
         };
 
@@ -376,10 +378,36 @@ public partial class MovementTests : Node2D
         _input.PressJump();
         var touched = await Until(() => _player.IsTouchingWall, 60);
         Expect("WallKick", touched, "never touched the wall");
+        _input.MoveX = -1f;
         _input.PressJump();
         await Ticks(1);
         Expect("WallKick", _player.CurrentAirMove == AirMove.WallKick, $"air move {_player.CurrentAirMove}");
         Expect("WallKick", _player.Velocity.X < 0f && _player.Velocity.Y < 0f, $"velocity {_player.Velocity}");
+    }
+
+    private async Task JumpSteeringIntoWallIsDoubleJump()
+    {
+        AddConcrete(new Vector2(120f, -300f), new Vector2(40f, 600f));
+        await SettleAt(new Vector2(40f, FloorTop - PlayerHalfHeight));
+        _input.MoveX = 1f;
+        _input.PressJump();
+        await Until(() => _player.IsTouchingWall, 60);
+        _input.PressJump();
+        await Ticks(1);
+        Expect("JumpIntoWall", _player.CurrentAirMove == AirMove.DoubleJump, $"air move {_player.CurrentAirMove}");
+    }
+
+    private async Task JumpNeutralAtWallIsDoubleJump()
+    {
+        AddConcrete(new Vector2(120f, -300f), new Vector2(40f, 600f));
+        await SettleAt(new Vector2(40f, FloorTop - PlayerHalfHeight));
+        _input.MoveX = 1f;
+        _input.PressJump();
+        await Until(() => _player.IsTouchingWall, 60);
+        _input.MoveX = 0f;
+        _input.PressJump();
+        await Ticks(1);
+        Expect("JumpNeutralAtWall", _player.CurrentAirMove == AirMove.DoubleJump, $"air move {_player.CurrentAirMove}");
     }
 
     private async Task CoyoteJumpAfterLeavingEdge()

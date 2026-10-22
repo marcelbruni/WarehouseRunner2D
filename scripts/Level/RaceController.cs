@@ -29,6 +29,9 @@ public partial class RaceController : Node2D
     public string LevelId { get; set; } = "level01";
 
     [Export]
+    public bool SaveRecords { get; set; } = true;
+
+    [Export]
     public Rect2I CameraBounds { get; set; } = new(-1000, -1400, 9000, 1600);
 
     public RunPhase Phase { get; private set; } = RunPhase.WaitingForClockIn;
@@ -179,7 +182,7 @@ public partial class RaceController : Node2D
         SetPhase(RunPhase.Finished);
         _hud.SetTime(_elapsed);
         _hud.ShowResult(_elapsed, _bestTime);
-        if (_bestTime is null || _elapsed < _bestTime)
+        if (SaveRecords && (_bestTime is null || _elapsed < _bestTime))
         {
             SaveBestTime(_elapsed);
         }

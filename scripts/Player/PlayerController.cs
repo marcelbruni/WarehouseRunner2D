@@ -52,6 +52,7 @@ public partial class PlayerController : CharacterBody2D
 
     private const float SkidCooldownTime = 0.25f;
     private const float FloorProbeDistance = 4f;
+    private const float WallProbeDistance = 6f;
 
     private float _groundSpeed;
     private Vector2 _preMoveVelocity;
@@ -312,7 +313,7 @@ public partial class PlayerController : CharacterBody2D
 
     private void UpdateAirborne(PlayerInput input, float dt)
     {
-        if (_jumpBufferTimer > 0f && TryAirJump())
+        if (_jumpBufferTimer > 0f && TryAirJump(input))
         {
             return;
         }
@@ -348,9 +349,9 @@ public partial class PlayerController : CharacterBody2D
         Velocity = new Vector2(vx, vy);
     }
 
-    private bool TryAirJump()
+    private bool TryAirJump(PlayerInput input)
     {
-        if (_wallCoyoteTimer > 0f)
+        if (IsSteeringAwayFromWall(input))
         {
             StartWallKick();
             return true;
@@ -372,6 +373,29 @@ public partial class PlayerController : CharacterBody2D
         }
 
         return false;
+    }
+
+    private bool IsSteeringAwayFromWall(PlayerInput input)
+    {
+        if (Mathf.IsZeroApprox(input.MoveX))
+        {
+            return false;
+        }
+
+        var away = Mathf.Sign(input.MoveX);
+        if (_wallCoyoteTimer > 0f && Mathf.Sign(_wallNormalX) == away)
+        {
+            return true;
+        }
+
+        var wall = MoveAndCollide(new Vector2(-away * WallProbeDistance, 0f), testOnly: true);
+        if (wall is null || Mathf.Abs(wall.GetNormal().X) < 0.7f || Mathf.Sign(wall.GetNormal().X) != away)
+        {
+            return false;
+        }
+
+        _wallNormalX = wall.GetNormal().X;
+        return true;
     }
 
     private void StartJump(AirMove move, float speed, float horizontal, Trick trick)
@@ -418,7 +442,7 @@ public partial class PlayerController : CharacterBody2D
 
     private void UpdateDashing(PlayerInput input)
     {
-        if (_jumpBufferTimer > 0f && TryAirJump())
+        if (_jumpBufferTimer > 0f && TryAirJump(input))
         {
             return;
         }
