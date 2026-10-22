@@ -10,7 +10,7 @@ public partial class Hud : CanvasLayer
         "Leertaste/W: Springen (in der Luft: Doppelsprung, an Wand: Wall Kick)\n" +
         "Shift/J/S/Ctrl/K: Dash in der Luft, Rollout bei der Landung, Rolle im Laufen\n" +
         "Rennen, Richtung wechseln + Springen: Slide Jump\n" +
-        "R: Neustart   F1: Hilfe ein/aus";
+        "R: Neustart   Esc: Levelauswahl   F1: Hilfe ein/aus";
 
     private Label _timer = null!;
     private Label _objective = null!;
@@ -98,7 +98,7 @@ public partial class Hud : CanvasLayer
     {
         var isRecord = previousBest is null || time < previousBest;
         var recordLine = isRecord ? "NEUER REKORD!" : $"Bestzeit: {FormatTime(previousBest!.Value)}";
-        _result.Text = $"Feierabend!\n{FormatTime(time)}\n{recordLine}\n\nR für einen neuen Lauf";
+        _result.Text = $"Feierabend!\n{FormatTime(time)}\n{recordLine}\n\nR: neuer Lauf   Esc: Levelauswahl";
         _result.Visible = true;
         _resultDim.Visible = true;
     }

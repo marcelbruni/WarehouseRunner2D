@@ -48,9 +48,10 @@ public partial class PlayerVisual : Node2D
         _runPhase += Mathf.Abs(_player.GroundSpeed) * dt * 0.045f;
         if (_player.State == PlayerState.RollingOut)
         {
-            _rollAngle += _player.GroundSpeed * dt / 16f;
+            _rollAngle += _player.GroundSpeed * dt / 14f;
         }
 
+        Position = _player.IsCurledUp ? new Vector2(0f, 12f) : Vector2.Zero;
         Rotation = BodyRotation();
         Scale = _squash;
 
@@ -186,10 +187,10 @@ public partial class PlayerVisual : Node2D
 
     private void DrawBall()
     {
-        DrawCircle(Vector2.Zero, 17f, Vest);
-        DrawLine(new Vector2(-17f, 0f), new Vector2(17f, 0f), Reflector, 3f);
-        DrawCircle(new Vector2(0f, -10f), 7f, Helmet);
-        DrawCircle(new Vector2(0f, 12f), 5f, Pants);
+        DrawCircle(Vector2.Zero, 14f, Vest);
+        DrawLine(new Vector2(-14f, 0f), new Vector2(14f, 0f), Reflector, 3f);
+        DrawCircle(new Vector2(0f, -8f), 6f, Helmet);
+        DrawCircle(new Vector2(0f, 9f), 4f, Pants);
     }
 
     private void OnLanded(float impactSpeed)

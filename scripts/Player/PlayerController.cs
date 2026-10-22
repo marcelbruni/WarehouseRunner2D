@@ -53,6 +53,14 @@ public partial class PlayerController : CharacterBody2D
     private const float SkidCooldownTime = 0.25f;
     private const float FloorProbeDistance = 4f;
     private const float WallProbeDistance = 6f;
+    private static readonly Vector2 CurledShapeOffset = new(0f, 12f);
+    private static readonly Vector2 HeadroomProbeOffset = new(0f, -2f);
+
+    private readonly CircleShape2D _curledShape = new() { Radius = 14f };
+    private readonly CapsuleShape2D _headroomProbe = new() { Radius = 12f, Height = 46f };
+    private CollisionShape2D _collision = null!;
+    private Shape2D _standingShape = null!;
+    private Vector2 _standingShapeOffset;
 
     private float _groundSpeed;
     private Vector2 _preMoveVelocity;
@@ -117,6 +125,8 @@ public partial class PlayerController : CharacterBody2D
 
     public float GroundSpeed => _groundSpeed;
 
+    public bool IsCurledUp { get; private set; }
+
     public bool IsOnGround => State is PlayerState.Grounded or PlayerState.Skidding or PlayerState.RollingOut or PlayerState.SlopeSliding;
 
     public override void _Ready()
@@ -125,6 +135,9 @@ public partial class PlayerController : CharacterBody2D
         FloorConstantSpeed = true;
         FloorMaxAngle = Mathf.DegToRad(46f);
         PlatformOnLeave = PlatformOnLeaveEnum.AddVelocity;
+        _collision = GetNode<CollisionShape2D>("Collision");
+        _standingShape = _collision.Shape;
+        _standingShapeOffset = _collision.Position;
     }
 
     public override void _PhysicsProcess(double delta)
@@ -135,6 +148,10 @@ public partial class PlayerController : CharacterBody2D
         TrackInputBuffers(input, dt);
         TickTimers(dt);
         StateTime += dt;
+        if (IsCurledUp && State != PlayerState.RollingOut)
+        {
+            TryStandUp();
+        }
 
         switch (State)
         {
@@ -183,7 +200,38 @@ public partial class PlayerController : CharacterBody2D
         _isGroundRollLocked = false;
         CurrentAirMove = AirMove.Fall;
         ChangeState(PlayerState.Airborne);
+        SetCurled(false);
         ResetPhysicsInterpolation();
+    }
+
+    private void SetCurled(bool curled)
+    {
+        IsCurledUp = curled;
+        _collision.Shape = curled ? _curledShape : _standingShape;
+        _collision.Position = curled ? CurledShapeOffset : _standingShapeOffset;
+    }
+
+    private bool TryStandUp()
+    {
+        if (IsCurledUp && !HasHeadroom())
+        {
+            return false;
+        }
+
+        SetCurled(false);
+        return true;
+    }
+
+    private bool HasHeadroom()
+    {
+        var query = new PhysicsShapeQueryParameters2D
+        {
+            Shape = _headroomProbe,
+            Transform = new Transform2D(0f, GlobalPosition + HeadroomProbeOffset),
+            CollisionMask = CollisionMask,
+            Exclude = new Godot.Collections.Array<Rid> { GetRid() },
+        };
+        return GetWorld2D().DirectSpaceState.IntersectShape(query, 1).Count == 0;
     }
 
     private void TrackInputBuffers(PlayerInput input, float dt)
@@ -195,7 +243,7 @@ public partial class PlayerController : CharacterBody2D
 
     private void ResolveActionPress(bool pressed)
     {
-        _rollRequested = pressed && (IsOnGround || IsLandingImminent());
+        _rollRequested = pressed && (IsOnGround || (_performedAirAction && IsLandingImminent()));
         _dashRequested = pressed && !_rollRequested;
     }
 
@@ -483,12 +531,13 @@ public partial class PlayerController : CharacterBody2D
         _postLandingRollTimer = 0f;
         _rollBufferTimer = 0f;
         ChangeState(PlayerState.RollingOut);
+        SetCurled(true);
         TrickPerformed?.Invoke(trick, perfect);
     }
 
     private void UpdateRollingOut()
     {
-        if (ConsumeJumpBuffer())
+        if (ConsumeJumpBuffer() && TryStandUp())
         {
             var speed = Mathf.Abs(_groundSpeed);
             var horizontal = Mathf.Max(speed, Mathf.Min(speed * Tuning.RollJumpHorizontalFactor, Tuning.RollJumpMaxSpeed));
@@ -497,10 +546,18 @@ public partial class PlayerController : CharacterBody2D
             return;
         }
 
-        if (StateTime >= Tuning.RolloutDuration)
+        if (StateTime < Tuning.RolloutDuration)
+        {
+            return;
+        }
+
+        if (TryStandUp())
         {
             ChangeState(PlayerState.Grounded);
+            return;
         }
+
+        _groundSpeed = Facing * Mathf.Max(Mathf.Abs(_groundSpeed), Tuning.RunSpeed);
     }
 
     private void UpdateSlopeSliding(PlayerInput input, float dt)

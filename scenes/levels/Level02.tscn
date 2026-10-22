@@ -1,0 +1,115 @@
+[gd_scene load_steps=12 format=3]
+
+[ext_resource type="Script" path="res://scripts/Level/RaceController.cs" id="race"]
+[ext_resource type="Script" path="res://scripts/Level/WarehouseBackground.cs" id="background"]
+[ext_resource type="Script" path="res://scripts/Elements/Crate.cs" id="crate"]
+[ext_resource type="Script" path="res://scripts/Elements/ConcreteBlock.cs" id="concrete"]
+[ext_resource type="Script" path="res://scripts/Elements/TimeClock.cs" id="clock"]
+[ext_resource type="Script" path="res://scripts/Elements/ExpressPackage.cs" id="package"]
+[ext_resource type="Script" path="res://scripts/Elements/LoadingDock.cs" id="dock"]
+[ext_resource type="Script" path="res://scripts/Elements/Checkpoint.cs" id="checkpoint"]
+[ext_resource type="Script" path="res://scripts/Elements/KillZone.cs" id="killzone"]
+[ext_resource type="Script" path="res://scripts/Elements/HintSign.cs" id="sign"]
+[ext_resource type="PackedScene" path="res://scenes/player/Player.tscn" id="player"]
+
+[node name="Level02" type="Node2D"]
+script = ExtResource("race")
+LevelId = "level02"
+CameraBounds = Rect2i(-760, -1100, 4220, 1320)
+
+[node name="Background" type="Parallax2D" parent="."]
+z_index = -10
+scroll_scale = Vector2(0.6, 0.85)
+
+[node name="Warehouse" type="Node2D" parent="Background"]
+script = ExtResource("background")
+
+[node name="Course" type="Node2D" parent="."]
+
+[node name="ClockIn1" type="Area2D" parent="."]
+position = Vector2(-300, 0)
+script = ExtResource("clock")
+
+[node name="Sign1" type="Node2D" parent="."]
+position = Vector2(-90, 0)
+script = ExtResource("sign")
+Text = "Dash\nin der Luft Shift / J\nunter der Decke: Sprung + Dash"
+
+[node name="Sign2" type="Node2D" parent="."]
+position = Vector2(870, 0)
+script = ExtResource("sign")
+Text = "Grosse Lücke\nSprung + Doppelsprung + Dash"
+
+[node name="Sign3" type="Node2D" parent="."]
+position = Vector2(2020, 0)
+script = ExtResource("sign")
+Text = "Slide Jump + Doppelsprung"
+
+[node name="LoadingDock1" type="Area2D" parent="."]
+position = Vector2(3050, 0)
+script = ExtResource("dock")
+
+[node name="ClockOut1" type="Area2D" parent="."]
+position = Vector2(3250, 0)
+script = ExtResource("clock")
+Mode = 1
+
+[node name="Crate1" type="StaticBody2D" parent="Course"]
+position = Vector2(2600, -150)
+script = ExtResource("crate")
+Size = Vector2(400, 300)
+
+[node name="Concrete1" type="StaticBody2D" parent="Course"]
+position = Vector2(-200, 100)
+script = ExtResource("concrete")
+Size = Vector2(1000, 200)
+
+[node name="Concrete2" type="StaticBody2D" parent="Course"]
+position = Vector2(815, 100)
+script = ExtResource("concrete")
+Size = Vector2(570, 200)
+
+[node name="Concrete3" type="StaticBody2D" parent="Course"]
+position = Vector2(2550, 100)
+script = ExtResource("concrete")
+Size = Vector2(1700, 200)
+
+[node name="Concrete4" type="StaticBody2D" parent="Course"]
+position = Vector2(-730, -450)
+script = ExtResource("concrete")
+Size = Vector2(60, 1300)
+
+[node name="Concrete5" type="StaticBody2D" parent="Course"]
+position = Vector2(3430, -450)
+script = ExtResource("concrete")
+Size = Vector2(60, 1300)
+
+[node name="Concrete6" type="StaticBody2D" parent="Course"]
+position = Vector2(430, -245)
+script = ExtResource("concrete")
+Size = Vector2(700, 310)
+
+[node name="KillZone1" type="Area2D" parent="."]
+position = Vector2(415, 90)
+script = ExtResource("killzone")
+TriggerSize = Vector2(230, 100)
+
+[node name="Checkpoint1" type="Area2D" parent="."]
+position = Vector2(640, 0)
+script = ExtResource("checkpoint")
+
+[node name="Checkpoint2" type="Area2D" parent="."]
+position = Vector2(1800, 0)
+script = ExtResource("checkpoint")
+
+[node name="ExpressPackage1" type="Area2D" parent="."]
+position = Vector2(2700, -340)
+script = ExtResource("package")
+
+[node name="KillZone2" type="Area2D" parent="."]
+position = Vector2(1350, 450)
+script = ExtResource("killzone")
+TriggerSize = Vector2(4500, 100)
+
+[node name="Player" parent="." instance=ExtResource("player")]
+position = Vector2(-500, -26)

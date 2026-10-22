@@ -1,0 +1,185 @@
+[gd_scene load_steps=13 format=3]
+
+[ext_resource type="Script" path="res://scripts/Level/RaceController.cs" id="1_race"]
+[ext_resource type="Script" path="res://scripts/Level/WarehouseBackground.cs" id="2_background"]
+[ext_resource type="Script" path="res://scripts/Elements/Crate.cs" id="3_crate"]
+[ext_resource type="Script" path="res://scripts/Elements/ConcreteBlock.cs" id="4_concrete"]
+[ext_resource type="Script" path="res://scripts/Elements/ConveyorBelt.cs" id="5_belt"]
+[ext_resource type="Script" path="res://scripts/Elements/TimeClock.cs" id="6_clock"]
+[ext_resource type="Script" path="res://scripts/Elements/ExpressPackage.cs" id="7_package"]
+[ext_resource type="Script" path="res://scripts/Elements/LoadingDock.cs" id="8_dock"]
+[ext_resource type="Script" path="res://scripts/Elements/Checkpoint.cs" id="9_checkpoint"]
+[ext_resource type="Script" path="res://scripts/Elements/KillZone.cs" id="10_killzone"]
+[ext_resource type="PackedScene" path="res://scenes/player/Player.tscn" id="11_player"]
+
+[node name="Level05" type="Node2D"]
+script = ExtResource("1_race")
+LevelId = "level05"
+CameraBounds = Rect2i(-860, -1300, 7920, 1520)
+
+[node name="Background" type="Parallax2D" parent="."]
+z_index = -10
+scroll_scale = Vector2(0.6, 0.85)
+
+[node name="Warehouse" type="Node2D" parent="Background"]
+script = ExtResource("2_background")
+
+[node name="LoadingDock" type="Area2D" parent="."]
+position = Vector2(6480, 0)
+script = ExtResource("8_dock")
+
+[node name="ClockIn" type="Area2D" parent="."]
+position = Vector2(-400, 0)
+script = ExtResource("6_clock")
+
+[node name="ClockOut" type="Area2D" parent="."]
+position = Vector2(6800, 0)
+script = ExtResource("6_clock")
+Mode = 1
+
+[node name="Course" type="Node2D" parent="."]
+
+[node name="WarmupLow" type="StaticBody2D" parent="Course"]
+position = Vector2(248, -32)
+script = ExtResource("3_crate")
+Size = Vector2(96, 64)
+
+[node name="WarmupHigh" type="StaticBody2D" parent="Course"]
+position = Vector2(484, -64)
+script = ExtResource("3_crate")
+Size = Vector2(128, 128)
+
+[node name="FirstSlope" type="StaticBody2D" parent="Course"]
+position = Vector2(696, -41)
+rotation = 0.383972
+script = ExtResource("3_crate")
+Size = Vector2(340, 50)
+
+[node name="StepCrate" type="StaticBody2D" parent="Course"]
+position = Vector2(2130, -30)
+script = ExtResource("3_crate")
+Size = Vector2(60, 60)
+
+[node name="CrateWall" type="StaticBody2D" parent="Course"]
+position = Vector2(2280, -122.5)
+script = ExtResource("3_crate")
+Size = Vector2(160, 245)
+
+[node name="WallSlope" type="StaticBody2D" parent="Course"]
+position = Vector2(2546.7, -108.35)
+rotation = 0.523599
+script = ExtResource("3_crate")
+Size = Vector2(460, 50)
+
+[node name="RampTop" type="StaticBody2D" parent="Course"]
+position = Vector2(4520, -86)
+script = ExtResource("3_crate")
+Size = Vector2(300, 172)
+
+[node name="RackLeft" type="StaticBody2D" parent="Course"]
+position = Vector2(4940, -455)
+script = ExtResource("3_crate")
+Size = Vector2(80, 610)
+
+[node name="RackRight" type="StaticBody2D" parent="Course"]
+position = Vector2(5180, -425)
+script = ExtResource("3_crate")
+Size = Vector2(80, 550)
+
+[node name="StairsLow" type="StaticBody2D" parent="Course"]
+position = Vector2(5450, -90)
+script = ExtResource("3_crate")
+Size = Vector2(100, 180)
+
+[node name="StairsMid" type="StaticBody2D" parent="Course"]
+position = Vector2(5600, -360)
+script = ExtResource("3_crate")
+Size = Vector2(100, 40)
+
+[node name="StairsHigh" type="StaticBody2D" parent="Course"]
+position = Vector2(5450, -540)
+script = ExtResource("3_crate")
+Size = Vector2(100, 40)
+
+[node name="FinalCrate" type="StaticBody2D" parent="Course"]
+position = Vector2(5910, -70)
+script = ExtResource("3_crate")
+Size = Vector2(120, 140)
+
+[node name="FinalSlope" type="StaticBody2D" parent="Course"]
+position = Vector2(6141.7, -56.2)
+rotation = 0.349066
+script = ExtResource("3_crate")
+Size = Vector2(380, 40)
+
+[node name="FloorStart" type="StaticBody2D" parent="Course"]
+position = Vector2(100, 100)
+script = ExtResource("4_concrete")
+Size = Vector2(1800, 200)
+
+[node name="FloorMiddle" type="StaticBody2D" parent="Course"]
+position = Vector2(2330, 100)
+script = ExtResource("4_concrete")
+Size = Vector2(2140, 200)
+
+[node name="FloorEnd" type="StaticBody2D" parent="Course"]
+position = Vector2(5400, 100)
+script = ExtResource("4_concrete")
+Size = Vector2(3200, 200)
+
+[node name="WallLeft" type="StaticBody2D" parent="Course"]
+position = Vector2(-830, -400)
+script = ExtResource("4_concrete")
+Size = Vector2(60, 1200)
+
+[node name="WallRight" type="StaticBody2D" parent="Course"]
+position = Vector2(7030, -400)
+script = ExtResource("4_concrete")
+Size = Vector2(60, 1200)
+
+[node name="SlowBelt" type="StaticBody2D" parent="Course"]
+position = Vector2(1700, 8)
+script = ExtResource("5_belt")
+Size = Vector2(600, 24)
+BeltSpeed = -180.0
+
+[node name="FastBelt" type="StaticBody2D" parent="Course"]
+position = Vector2(3150, 8)
+script = ExtResource("5_belt")
+Size = Vector2(500, 24)
+BeltSpeed = 260.0
+
+[node name="Escalator" type="StaticBody2D" parent="Course"]
+position = Vector2(4139, -77.2)
+rotation = -0.349066
+script = ExtResource("5_belt")
+Size = Vector2(500, 24)
+BeltSpeed = 200.0
+
+[node name="ExpressPackage" type="Area2D" parent="."]
+position = Vector2(5180, -730)
+script = ExtResource("7_package")
+
+[node name="CheckpointPit" type="Area2D" parent="."]
+position = Vector2(900, 0)
+script = ExtResource("9_checkpoint")
+
+[node name="CheckpointBelt" type="Area2D" parent="."]
+position = Vector2(2820, 0)
+script = ExtResource("9_checkpoint")
+
+[node name="CheckpointRamp" type="Area2D" parent="."]
+position = Vector2(3900, 0)
+script = ExtResource("9_checkpoint")
+
+[node name="CheckpointRacks" type="Area2D" parent="."]
+position = Vector2(5750, 0)
+script = ExtResource("9_checkpoint")
+
+[node name="KillZone" type="Area2D" parent="."]
+position = Vector2(3100, 450)
+script = ExtResource("10_killzone")
+TriggerSize = Vector2(8400, 100)
+
+[node name="Player" parent="." instance=ExtResource("11_player")]
+position = Vector2(-650, -26)

@@ -10,6 +10,7 @@ public partial class InputSetup : Node
     public const string DashOrRoll = "dash_or_roll";
     public const string Restart = "restart";
     public const string ToggleHelp = "toggle_help";
+    public const string BackToMenu = "back_to_menu";
 
     public override void _EnterTree()
     {
@@ -18,7 +19,8 @@ public partial class InputSetup : Node
         Register(Jump, Keys(Key.Space, Key.W, Key.Up), Buttons(JoyButton.A));
         Register(DashOrRoll, Keys(Key.Shift, Key.J, Key.S, Key.Down, Key.Ctrl, Key.K), Buttons(JoyButton.X, JoyButton.B));
         Register(Restart, Keys(Key.R), Buttons(JoyButton.Start));
-        Register(ToggleHelp, Keys(Key.F1), Buttons(JoyButton.Back));
+        Register(ToggleHelp, Keys(Key.F1), Buttons());
+        Register(BackToMenu, Keys(Key.Escape), Buttons(JoyButton.Back));
     }
 
     private readonly record struct Axis(JoyAxis Id, float Direction);

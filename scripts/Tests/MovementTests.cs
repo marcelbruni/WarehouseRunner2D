@@ -41,6 +41,9 @@ public partial class MovementTests : Node2D
             ("PowerDash_AfterRollJump_IsFasterThanDash", PowerDashAfterRollJumpIsFaster),
             ("SpeedLoop_RollJumpDash_SustainsHighSpeed", () => SpeedLoopSustainsHighSpeed(startWithRoll: true)),
             ("SpeedLoop_JumpDashRoll_SustainsHighSpeed", () => SpeedLoopSustainsHighSpeed(startWithRoll: false)),
+            ("LowShelf_Rolling_PassesUnderneath", () => LowShelfPassage(roll: true)),
+            ("LowShelf_Running_IsBlocked", () => LowShelfPassage(roll: false)),
+            ("LowShelf_JumpWhileUnderneath_KeepsRolling", LowShelfJumpKeepsRolling),
             ("Conveyor_StandingStill_CarriesPlayer", ConveyorCarriesStandingPlayer),
             ("Conveyor_RunningAgainstBelt_IsSlower", ConveyorAgainstBeltIsSlower),
             ("Conveyor_JumpingOff_KeepsBeltMomentum", ConveyorJumpKeepsMomentum),
@@ -50,6 +53,9 @@ public partial class MovementTests : Node2D
             ("WallJump_SteeringIntoWall_IsDoubleJump", JumpSteeringIntoWallIsDoubleJump),
             ("WallJump_NoSteering_IsDoubleJump", JumpNeutralAtWallIsDoubleJump),
             ("CoyoteJump_ShortlyAfterLeavingEdge_IsGroundJump", CoyoteJumpAfterLeavingEdge),
+            ("Dash_FallingAfterWalkingOffEdge_Works", () => DashWhileFallingOffEdge(dropHeight: 200f, ticksBeforeDash: 10)),
+            ("Dash_FallingOffLowCrate_Works", () => DashWhileFallingOffEdge(dropHeight: 70f, ticksBeforeDash: 8)),
+            ("Dash_FallingOffLowCrateShortlyBeforeLanding_Works", () => DashWhileFallingOffEdge(dropHeight: 70f, ticksBeforeDash: 15)),
         };
 
         var failedScenarios = 0;
@@ -320,6 +326,39 @@ public partial class MovementTests : Node2D
         return _player.GlobalPosition.X - startX;
     }
 
+    private async Task LowShelfPassage(bool roll)
+    {
+        AddCrate(new Vector2(0f, -220f), new Vector2(400f, 360f));
+        await SettleAt(new Vector2(-500f, FloorTop - PlayerHalfHeight));
+        _input.MoveX = 1f;
+        await Until(() => _player.GlobalPosition.X > -260f, 120);
+        if (roll)
+        {
+            _input.PressDashOrRoll();
+        }
+
+        await Ticks(240);
+        var passed = _player.GlobalPosition.X > 230f;
+        Expect("LowShelf", passed == roll, $"x {_player.GlobalPosition.X:0}, state {_player.State}, curled {_player.IsCurledUp}");
+        if (roll)
+        {
+            Expect("LowShelf", !_player.IsCurledUp && _player.State == PlayerState.Grounded, $"after shelf: state {_player.State}, curled {_player.IsCurledUp}");
+        }
+    }
+
+    private async Task LowShelfJumpKeepsRolling()
+    {
+        AddCrate(new Vector2(0f, -220f), new Vector2(400f, 360f));
+        await SettleAt(new Vector2(-500f, FloorTop - PlayerHalfHeight));
+        _input.MoveX = 1f;
+        await Until(() => _player.GlobalPosition.X > -260f, 120);
+        _input.PressDashOrRoll();
+        await Until(() => _player.GlobalPosition.X > 0f, 120);
+        _input.PressJump();
+        await Ticks(2);
+        Expect("LowShelfJump", _player.State == PlayerState.RollingOut && _player.IsCurledUp, $"state {_player.State}, curled {_player.IsCurledUp}");
+    }
+
     private async Task ConveyorCarriesStandingPlayer()
     {
         AddBelt(new Vector2(0f, FloorTop + 8f), 800f, 200f, 0f);
@@ -408,6 +447,18 @@ public partial class MovementTests : Node2D
         _input.PressJump();
         await Ticks(1);
         Expect("JumpNeutralAtWall", _player.CurrentAirMove == AirMove.DoubleJump, $"air move {_player.CurrentAirMove}");
+    }
+
+    private async Task DashWhileFallingOffEdge(float dropHeight, int ticksBeforeDash)
+    {
+        await SetUpWorld(new Rect2(-1000f, FloorTop, 1000f, 200f), new Vector2(-60f, FloorTop - PlayerHalfHeight));
+        AddConcrete(new Vector2(1500f, FloorTop + dropHeight + 100f), new Vector2(3000f, 200f));
+        _input.MoveX = 1f;
+        await Until(() => _player.State == PlayerState.Airborne, 120);
+        await Ticks(ticksBeforeDash);
+        _input.PressDashOrRoll();
+        await Ticks(1);
+        Expect("DashFalling", _player.State == PlayerState.Dashing, $"state {_player.State}, air move {_player.CurrentAirMove}, vy {_player.Velocity.Y:0}");
     }
 
     private async Task CoyoteJumpAfterLeavingEdge()
@@ -531,7 +582,7 @@ public partial class MovementTests : Node2D
     private void AddConcrete(Vector2 center, Vector2 size) =>
         World.AddChild(new ConcreteBlock { Position = center, Size = size });
 
-    private void AddCrate(Vector2 center, Vector2 size, float rotation) =>
+    private void AddCrate(Vector2 center, Vector2 size, float rotation = 0f) =>
         World.AddChild(new Crate { Position = center, Size = size, Rotation = rotation });
 
     private void AddBelt(Vector2 center, float length, float speed, float rotation) =>

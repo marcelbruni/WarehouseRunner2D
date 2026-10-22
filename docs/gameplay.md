@@ -15,6 +15,28 @@
 Wer ohne Paket an der Rampe oder zu früh an der Ausstempel-Uhr ankommt, bekommt
 einen Hinweis und muss zurück.
 
+## Levels
+
+Start ist das Menü mit Levelauswahl und Bestzeit pro Level. Esc führt aus jedem
+Level zurück zur Auswahl.
+
+| Nr. | Name | Erzwingt |
+|---|---|---|
+| 1 | Erster Arbeitstag | Sprung (Kiste 100), Doppelsprung (Kiste 200), Slide Jump + Doppelsprung (Kante 290), Wall Kick (Kamin 560) |
+| 2 | Dash-Schulung | Sprung + Dash (Lücke 230 unter niedriger Decke, flache Grube: wer 40 px tiefer fällt, startet neu), Doppelsprung + Dash (Lücke 600), Slide Jump + Doppelsprung (Kante 300) |
+| 3 | Rollen lernen | Rolle unter niedrigen Regalen (3×), beim zweiten Regal nach einem Sprung über eine Kiste als Rollout |
+| 4 | Profi-Tricks | Roll Jump → Power-Dash → Sprung über zwei Lücken à 840, dazwischen Dash-Rollout |
+| 5 | Hauptlager | die erste grosse Karte: Rutschkisten, Förderbänder, Paketsuche |
+
+Jedes Level hat denselben Ablauf (einstempeln, Paket, Rampe, ausstempeln).
+Hinweisschilder erklären die jeweilige Technik. `LevelSkillProofs` belegt
+automatisch, dass die Hindernisse die Technik wirklich brauchen.
+
+**Durchrollen:** Beim Rollen ist die Figur ein Ball (halbe Höhe) und passt unter
+niedrige Regale (40 px Lücke). Solange über ihr kein Platz zum Aufstehen ist,
+rollt sie mit mindestens Laufgeschwindigkeit weiter, Springen ist dort nicht
+möglich.
+
 ## Bewegungen
 
 | Bewegung | Eingabe | Wirkung |
@@ -76,6 +98,8 @@ Diese Punkte waren nicht in der Vorgabe und sind von Claude hinzugefügt:
   Hinweise, Hilfe (F1).
 - **Feedback:** Squash & Stretch, Salto-Animationen, Staub beim Rutschen,
   Funken und Nachbilder bei Boost/Dash.
+- **Durchrollen unter niedrigen Regalen** (siehe oben), damit Level 3 das Rollen wirklich erzwingt.
+- **Hinweisschilder** in den Lern-Levels.
 - **Zwei Stempeluhren statt einer:** Der Kurs ist linear (Start links, Ende
   rechts). Das vermeidet im späteren Multiplayer Gegenverkehr.
 

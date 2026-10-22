@@ -21,7 +21,7 @@ Im Editor:
 & "C:\Tools\Godot\Godot_v4.7.2-stable_mono_win64\Godot_v4.7.2-stable_mono_win64.exe" --path C:\Projects\WarehouseRunner2D -e
 ```
 
-Danach im Editor **F5** (Hauptszene `scenes/levels/Level01.tscn`).
+Danach im Editor **F5**. Das Spiel startet im Menü mit der Levelauswahl (`scenes/menu/MainMenu.tscn`).
 
 Direkt spielen, ohne Editor:
 
@@ -38,7 +38,9 @@ dotnet build
 | Springen / Doppelsprung / Wall Kick | Leertaste, W, ↑ | A |
 | Dash (Luft) / Rollout (Landung) / Rolle (im Laufen) | Shift, J, S, ↓, Ctrl, K | X, B |
 | Neustart | R | Start |
-| Hilfe ein/aus | F1 | Back |
+| Zurück zur Levelauswahl | Esc | Back |
+| Hilfe ein/aus | F1 | – |
+| Menü: auswählen / starten | ↑/↓, Enter/Leertaste | Stick/D-Pad, A |
 
 ## Tests
 
@@ -50,10 +52,24 @@ dotnet build
 & $godot --headless --path . --fixed-fps 120 res://scenes/tests/MovementTests.tscn
 ```
 
-Level-Ablauf (Einstempeln → Paket → Rampe → Ausstempeln):
+Level-Ablauf in allen Levels (Einstempeln → Paket → Rampe → Ausstempeln):
 
 ```powershell
 & $godot --headless --path . --fixed-fps 120 res://scenes/tests/LevelFlowTest.tscn
+```
+
+Fähigkeits-Beweise der Lern-Levels (dauert mehrere Minuten): pro Hindernis wird
+geprüft, dass die geforderte Technik durchkommt und schwächere Techniken mit
+keinem Timing:
+
+```powershell
+& $godot --headless --path . --fixed-fps 120 res://scenes/tests/LevelSkillProofs.tscn
+```
+
+Reichweiten-Tabelle aller Techniken (Hilfe für Leveldesign):
+
+```powershell
+& $godot --headless --path . --fixed-fps 120 res://scenes/tests/MovementEnvelope.tscn
 ```
 
 Mit Fenster und Screenshots jeder Station:
@@ -67,10 +83,12 @@ Exit-Code 0 = alles grün.
 ## Struktur
 
 ```
-scenes/levels/     Level (Level01.tscn)
+scenes/levels/     Level 1–4 (Lern-Levels), Level 5 (Hauptlager)
+scenes/menu/       Startmenü mit Levelauswahl
 scenes/player/     Spieler-Szene
 scenes/tests/      Test-Szenen
-scripts/Core/      Eingabe-Belegung (Autoload)
+scripts/Core/      Eingabe-Belegung (Autoload), Levelkatalog, Bestzeiten
+scripts/Menu/      Startmenü
 scripts/Player/    Steuerung, Tuning, Darstellung, Kamera
 scripts/Elements/  Kisten, Boden, Förderband, Stempeluhr, Paket, Rampe, Checkpoints
 scripts/Level/     Rennablauf, HUD, Hintergrund

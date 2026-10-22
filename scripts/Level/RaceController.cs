@@ -16,9 +16,6 @@ public enum RunPhase
 
 public partial class RaceController : Node2D
 {
-    private const string RecordsPath = "user://records.cfg";
-    private const string RecordsSection = "best_times";
-
     private PlayerController _player = null!;
     private Hud _hud = null!;
     private Vector2 _respawnPosition;
@@ -50,7 +47,7 @@ public partial class RaceController : Node2D
 
         ConnectTriggers(this);
 
-        _bestTime = LoadBestTime();
+        _bestTime = RecordStore.LoadBestTime(LevelId);
         _hud.SetBest(_bestTime);
         _hud.SetTime(0);
         UpdateObjective();
@@ -69,6 +66,12 @@ public partial class RaceController : Node2D
         if (Input.IsActionJustPressed(InputSetup.Restart))
         {
             GetTree().ReloadCurrentScene();
+            return;
+        }
+
+        if (Input.IsActionJustPressed(InputSetup.BackToMenu))
+        {
+            GetTree().ChangeSceneToFile(LevelCatalog.MenuScenePath);
             return;
         }
 
@@ -184,7 +187,7 @@ public partial class RaceController : Node2D
         _hud.ShowResult(_elapsed, _bestTime);
         if (SaveRecords && (_bestTime is null || _elapsed < _bestTime))
         {
-            SaveBestTime(_elapsed);
+            RecordStore.SaveBestTime(LevelId, _elapsed);
         }
     }
 
@@ -204,24 +207,5 @@ public partial class RaceController : Node2D
             RunPhase.PackageDelivered => "LKW ist weg, jetzt ausstempeln!",
             _ => "Feierabend!",
         });
-    }
-
-    private double? LoadBestTime()
-    {
-        var records = new ConfigFile();
-        if (records.Load(RecordsPath) != Error.Ok || !records.HasSectionKey(RecordsSection, LevelId))
-        {
-            return null;
-        }
-
-        return records.GetValue(RecordsSection, LevelId).AsDouble();
-    }
-
-    private void SaveBestTime(double seconds)
-    {
-        var records = new ConfigFile();
-        records.Load(RecordsPath);
-        records.SetValue(RecordsSection, LevelId, seconds);
-        records.Save(RecordsPath);
     }
 }
