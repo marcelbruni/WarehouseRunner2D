@@ -94,11 +94,11 @@ public partial class Hud : CanvasLayer
         _hintTween.TweenProperty(_hint, "modulate", Colors.Transparent, 0.5f);
     }
 
-    public void ShowResult(double time, double? previousBest)
+    public void ShowResult(double time, double? previousBest, bool hasNextLevel)
     {
         var isRecord = previousBest is null || time < previousBest;
         var recordLine = isRecord ? "NEUER REKORD!" : $"Bestzeit: {FormatTime(previousBest!.Value)}";
-        _result.Text = $"Feierabend!\n{FormatTime(time)}\n{recordLine}\n\nR: neuer Lauf   Esc: Levelauswahl";
+        _result.Text = $"Feierabend!\n{FormatTime(time)}\n{recordLine}\n\n{(hasNextLevel ? "Enter: nächstes Level" : "Enter: zum Startbildschirm")}\nR: neuer Lauf   Esc: Levelauswahl";
         _result.Visible = true;
         _resultDim.Visible = true;
     }

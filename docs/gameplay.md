@@ -18,13 +18,14 @@ einen Hinweis und muss zurück.
 ## Levels
 
 Start ist das Menü mit Levelauswahl und Bestzeit pro Level. Esc führt aus jedem
-Level zurück zur Auswahl.
+Level zurück zur Auswahl. Nach dem Ausstempeln geht es mit Enter ins nächste
+Level, nach dem letzten Level zurück zum Startbildschirm.
 
 | Nr. | Name | Erzwingt |
 |---|---|---|
 | 1 | Erster Arbeitstag | Sprung (Kiste 100), Doppelsprung (Kiste 200), Slide Jump + Doppelsprung (Kante 290), Wall Kick (Kamin 560) |
-| 2 | Dash-Schulung | Sprung + Dash (Lücke 230 unter niedriger Decke, flache Grube: wer 40 px tiefer fällt, startet neu), Doppelsprung + Dash (Lücke 600), Slide Jump + Doppelsprung (Kante 300) |
-| 3 | Rollen lernen | Rolle unter niedrigen Regalen (3×), beim zweiten Regal nach einem Sprung über eine Kiste als Rollout |
+| 2 | Rollen lernen | Rolle unter niedrigen Regalen (3×), beim zweiten Regal nach einem Sprung über eine Kiste als Rollout |
+| 3 | Dash-Schulung | Doppelsprung + Dash (Lücke 600), Slide Jump + Doppelsprung (Kante 300), Sprung + Dash (Lücke 230 unter niedriger Decke, flache Grube: wer 40 px tiefer fällt, startet neu) |
 | 4 | Profi-Tricks | Roll Jump → Power-Dash → Sprung über zwei Lücken à 840, dazwischen Dash-Rollout |
 | 5 | Hauptlager | die erste grosse Karte: Rutschkisten, Förderbänder, Paketsuche |
 

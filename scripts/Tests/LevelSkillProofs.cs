@@ -47,8 +47,8 @@ public partial class LevelSkillProofs : Node
         }
 
         await ProveLevel01();
-        await ProveLevel02();
-        await ProveLevel03();
+        await ProveRollLevel();
+        await ProveDashLevel();
         await ProveLevel04();
 
         foreach (var failure in _failures)
@@ -81,31 +81,38 @@ public partial class LevelSkillProofs : Node
         await ProveWallClimb(chimney);
     }
 
-    private async Task ProveLevel02()
-    {
-        const string scene = "res://scenes/levels/Level02.tscn";
-
-        var tunnelGap = new Section("L2 Lücke unter Decke (Sprung + Dash)", scene, p => p.GlobalPosition.X > 550f && p.IsOnGround && p.GlobalPosition.Y < 0f, 300, DiesBelowY: 40f);
-        await Prove(tunnelGap, required: Jumps(Opener.RunningJump, 0f, 200f, 300f, withDoubleJump: false, withDash: true),
-            insufficient: Jumps(Opener.RunningJump, 0f, 200f, 300f, withDoubleJump: true, withDash: false)
-                .Append(new Plan(Opener.WalkOff, 0f, StandY, 0f, 0, null, null)));
-
-        var wideGap = new Section("L2 Lücke 600 (Doppelsprung + Dash)", scene, p => p.GlobalPosition.X > 1720f && p.IsOnGround && p.GlobalPosition.Y < 0f, 360);
-        await Prove(wideGap, required: Jumps(Opener.RunningJump, 750f, 1000f, 1100f, withDoubleJump: true, withDash: true),
-            insufficient: Jumps(Opener.RunningJump, 750f, 1000f, 1100f, withDoubleJump: true, withDash: false)
-                .Concat(Jumps(Opener.RunningJump, 750f, 1000f, 1100f, withDoubleJump: false, withDash: true))
-                .Concat(SlideJumps(1050f, withDoubleJump: true, withDash: false))
-                .Concat(SlideJumps(1050f, withDoubleJump: false, withDash: true)));
-
-        var ledge = new Section("L2 Kante 300 (Slide Jump + Doppelsprung)", scene, p => p.GlobalPosition.Y < -310f && p.IsOnGround, 360);
-        await Prove(ledge, required: SlideJumps(2330f, withDoubleJump: true, withDash: false),
-            insufficient: Jumps(Opener.RunningJump, 1900f, 2150f, 2370f, withDoubleJump: true, withDash: false));
-    }
-
-    private async Task ProveLevel03()
+    private async Task ProveDashLevel()
     {
         const string scene = "res://scenes/levels/Level03.tscn";
-        foreach (var (name, startX, shelfStart, shelfEnd) in new[] { ("L3 Regal 1 (Rolle)", -100f, 200f, 500f), ("L3 Regal 3 (Rolle)", 1750f, 1950f, 2550f) })
+
+        var tunnelGap = new Section("L3 Lücke unter Decke (Sprung + Dash)", scene, p => p.GlobalPosition.X > 2670f && p.IsOnGround && p.GlobalPosition.Y < 0f, 300, DiesBelowY: 40f);
+        await Prove(tunnelGap, required: Jumps(Opener.RunningJump, 2120f, 2320f, 2420f, withDoubleJump: false, withDash: true),
+            insufficient: Jumps(Opener.RunningJump, 2120f, 2320f, 2420f, withDoubleJump: true, withDash: false)
+                .Append(new Plan(Opener.WalkOff, 2120f, StandY, 0f, 0, null, null)));
+
+        var wideGap = new Section("L3 Lücke 600 (Doppelsprung + Dash)", scene, p => p.GlobalPosition.X > 1020f && p.IsOnGround && p.GlobalPosition.Y < 0f, 360);
+        await Prove(wideGap, required: Jumps(Opener.RunningJump, 50f, 300f, 400f, withDoubleJump: true, withDash: true),
+            insufficient: Jumps(Opener.RunningJump, 50f, 300f, 400f, withDoubleJump: true, withDash: false)
+                .Concat(Jumps(Opener.RunningJump, 50f, 300f, 400f, withDoubleJump: false, withDash: true))
+                .Concat(SlideJumps(350f, withDoubleJump: true, withDash: false))
+                .Concat(SlideJumps(350f, withDoubleJump: false, withDash: true)));
+
+        var ceilingTop = new Section("L3 Decke nicht überspringbar", scene, p => p.IsOnGround && p.GlobalPosition.Y < -900f, 360);
+        await ProveImpossible(ceilingTop,
+            Jumps(Opener.RunningJump, 1550f, 1700f, 1890f, withDoubleJump: true, withDash: true)
+                .Concat(Jumps(Opener.RollJump, 1550f, 1700f, 1890f, withDoubleJump: true, withDash: true))
+                .Concat(SlideJumps(1850f, withDoubleJump: true, withDash: true))
+                .Select(plan => plan with { StartY = -326f }));
+
+        var ledge = new Section("L3 Kante 300 (Slide Jump + Doppelsprung)", scene, p => p.GlobalPosition.Y < -310f && p.IsOnGround, 360);
+        await Prove(ledge, required: SlideJumps(1430f, withDoubleJump: true, withDash: false),
+            insufficient: Jumps(Opener.RunningJump, 1000f, 1250f, 1470f, withDoubleJump: true, withDash: false));
+    }
+
+    private async Task ProveRollLevel()
+    {
+        const string scene = "res://scenes/levels/Level02.tscn";
+        foreach (var (name, startX, shelfStart, shelfEnd) in new[] { ("L2 Regal 1 (Rolle)", -100f, 200f, 500f), ("L2 Regal 3 (Rolle)", 1750f, 1950f, 2550f) })
         {
             var shelf = new Section(name, scene, p => p.GlobalPosition.X > shelfEnd + 20f, 400);
             await Prove(shelf, required: [new Plan(Opener.Roll, startX, StandY, shelfStart - 60f, 0, null, null)],
@@ -113,7 +120,7 @@ public partial class LevelSkillProofs : Node
                     .Append(new Plan(Opener.WalkOff, startX, StandY, 0f, 0, null, null)));
         }
 
-        var shelfAfterCrate = new Section("L3 Regal 2 nach Kiste (Rollout)", scene, p => p.GlobalPosition.X > 1670f, 400);
+        var shelfAfterCrate = new Section("L2 Regal 2 nach Kiste (Rollout)", scene, p => p.GlobalPosition.X > 1670f, 400);
         await Prove(shelfAfterCrate, required: Jumps(Opener.JumpThenRoll, 700f, 800f, 880f, withDoubleJump: false, withDash: false),
             insufficient: Jumps(Opener.RunningJump, 700f, 800f, 880f, withDoubleJump: true, withDash: false));
     }
@@ -214,6 +221,22 @@ public partial class LevelSkillProofs : Node
         foreach (var cheat in cheats.Take(3))
         {
             _failures.Add($"{section.Name}: schwächere Technik schafft es: {cheat.Plan.Describe()}");
+        }
+    }
+
+    private async Task ProveImpossible(Section section, IEnumerable<Plan> plans)
+    {
+        if (!IsSelected(section))
+        {
+            return;
+        }
+
+        var results = await Run(section, plans.ToList());
+        var cheats = results.Where(r => r.Success).ToList();
+        GD.Print($"{section.Name}: {cheats.Count}/{results.Count} Varianten schaffen es");
+        foreach (var cheat in cheats.Take(3))
+        {
+            _failures.Add($"{section.Name}: möglich mit {cheat.Plan.Describe()}");
         }
     }
 

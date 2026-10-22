@@ -15,7 +15,7 @@
 [node name="Level03" type="Node2D"]
 script = ExtResource("race")
 LevelId = "level03"
-CameraBounds = Rect2i(-760, -1200, 4020, 1420)
+CameraBounds = Rect2i(-760, -1100, 4420, 1320)
 
 [node name="Background" type="Parallax2D" parent="."]
 z_index = -10
@@ -31,67 +31,89 @@ position = Vector2(-300, 0)
 script = ExtResource("clock")
 
 [node name="Sign1" type="Node2D" parent="."]
-position = Vector2(-60, 0)
+position = Vector2(-90, 0)
 script = ExtResource("sign")
-Text = "Rolle\nim Laufen Aktionstaste\nrollt unter niedrige Regale"
+Text = "Dash\nin der Luft Shift / J\ngrosse Lücke: Sprung + Doppelsprung + Dash"
 
 [node name="Sign2" type="Node2D" parent="."]
-position = Vector2(680, 0)
+position = Vector2(1230, 0)
 script = ExtResource("sign")
-Text = "Rollout\nüber die Kiste springen,\nkurz vor der Landung Aktionstaste"
+Text = "Slide Jump + Doppelsprung"
 
 [node name="Sign3" type="Node2D" parent="."]
-position = Vector2(1800, 0)
+position = Vector2(2060, 0)
 script = ExtResource("sign")
-Text = "Langes Regal\nim Tunnel rollst du weiter"
+Text = "Niedrige Decke\nSprung + Dash"
 
 [node name="LoadingDock1" type="Area2D" parent="."]
-position = Vector2(2850, 0)
+position = Vector2(3250, 0)
 script = ExtResource("dock")
 
 [node name="ClockOut1" type="Area2D" parent="."]
-position = Vector2(3050, 0)
+position = Vector2(3450, 0)
 script = ExtResource("clock")
 Mode = 1
 
 [node name="Crate1" type="StaticBody2D" parent="Course"]
-position = Vector2(350, -470)
+position = Vector2(1700, -150)
 script = ExtResource("crate")
-Size = Vector2(300, 860)
-
-[node name="Crate2" type="StaticBody2D" parent="Course"]
-position = Vector2(930, -30)
-script = ExtResource("crate")
-Size = Vector2(60, 60)
-
-[node name="Crate3" type="StaticBody2D" parent="Course"]
-position = Vector2(1450, -470)
-script = ExtResource("crate")
-Size = Vector2(400, 860)
-
-[node name="Crate4" type="StaticBody2D" parent="Course"]
-position = Vector2(2250, -470)
-script = ExtResource("crate")
-Size = Vector2(600, 860)
+Size = Vector2(400, 300)
 
 [node name="Concrete1" type="StaticBody2D" parent="Course"]
-position = Vector2(1250, 100)
+position = Vector2(-150, 100)
 script = ExtResource("concrete")
-Size = Vector2(3900, 200)
+Size = Vector2(1100, 200)
 
 [node name="Concrete2" type="StaticBody2D" parent="Course"]
-position = Vector2(-730, -500)
+position = Vector2(1710, 100)
 script = ExtResource("concrete")
-Size = Vector2(60, 1400)
+Size = Vector2(1420, 200)
 
 [node name="Concrete3" type="StaticBody2D" parent="Course"]
-position = Vector2(3230, -500)
+position = Vector2(3125, 100)
 script = ExtResource("concrete")
-Size = Vector2(60, 1400)
+Size = Vector2(950, 200)
+
+[node name="Concrete4" type="StaticBody2D" parent="Course"]
+position = Vector2(-730, -450)
+script = ExtResource("concrete")
+Size = Vector2(60, 1300)
+
+[node name="Concrete5" type="StaticBody2D" parent="Course"]
+position = Vector2(3630, -450)
+script = ExtResource("concrete")
+Size = Vector2(60, 1300)
+
+[node name="Concrete6" type="StaticBody2D" parent="Course"]
+position = Vector2(2550, -545)
+script = ExtResource("concrete")
+Size = Vector2(700, 910)
+
+[node name="Checkpoint1" type="Area2D" parent="."]
+position = Vector2(1050, 0)
+script = ExtResource("checkpoint")
+
+[node name="Checkpoint2" type="Area2D" parent="."]
+position = Vector2(2010, 0)
+script = ExtResource("checkpoint")
+
+[node name="KillZone1" type="Area2D" parent="."]
+position = Vector2(2535, 90)
+script = ExtResource("killzone")
+TriggerSize = Vector2(230, 100)
+
+[node name="Checkpoint3" type="Area2D" parent="."]
+position = Vector2(2720, 0)
+script = ExtResource("checkpoint")
 
 [node name="ExpressPackage1" type="Area2D" parent="."]
-position = Vector2(2670, -40)
+position = Vector2(3000, -40)
 script = ExtResource("package")
+
+[node name="KillZone2" type="Area2D" parent="."]
+position = Vector2(1450, 450)
+script = ExtResource("killzone")
+TriggerSize = Vector2(4700, 100)
 
 [node name="Player" parent="." instance=ExtResource("player")]
 position = Vector2(-500, -26)

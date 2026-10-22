@@ -75,6 +75,12 @@ public partial class RaceController : Node2D
             return;
         }
 
+        if (Phase == RunPhase.Finished && Input.IsActionJustPressed(InputSetup.Continue))
+        {
+            GetTree().ChangeSceneToFile(LevelCatalog.NextAfter(LevelId)?.ScenePath ?? LevelCatalog.MenuScenePath);
+            return;
+        }
+
         if (Input.IsActionJustPressed(InputSetup.ToggleHelp))
         {
             _hud.ToggleHelp();
@@ -184,7 +190,7 @@ public partial class RaceController : Node2D
     {
         SetPhase(RunPhase.Finished);
         _hud.SetTime(_elapsed);
-        _hud.ShowResult(_elapsed, _bestTime);
+        _hud.ShowResult(_elapsed, _bestTime, hasNextLevel: LevelCatalog.NextAfter(LevelId) is not null);
         if (SaveRecords && (_bestTime is null || _elapsed < _bestTime))
         {
             RecordStore.SaveBestTime(LevelId, _elapsed);

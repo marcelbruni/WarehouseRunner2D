@@ -11,6 +11,7 @@ public partial class InputSetup : Node
     public const string Restart = "restart";
     public const string ToggleHelp = "toggle_help";
     public const string BackToMenu = "back_to_menu";
+    public const string Continue = "continue";
 
     public override void _EnterTree()
     {
@@ -21,6 +22,7 @@ public partial class InputSetup : Node
         Register(Restart, Keys(Key.R), Buttons(JoyButton.Start));
         Register(ToggleHelp, Keys(Key.F1), Buttons());
         Register(BackToMenu, Keys(Key.Escape), Buttons(JoyButton.Back));
+        Register(Continue, Keys(Key.Enter, Key.KpEnter), Buttons(JoyButton.Y));
     }
 
     private readonly record struct Axis(JoyAxis Id, float Direction);

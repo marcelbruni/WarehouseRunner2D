@@ -39,6 +39,7 @@ dotnet build
 | Dash (Luft) / Rollout (Landung) / Rolle (im Laufen) | Shift, J, S, ↓, Ctrl, K | X, B |
 | Neustart | R | Start |
 | Zurück zur Levelauswahl | Esc | Back |
+| Nach dem Ziel: nächstes Level | Enter | Y |
 | Hilfe ein/aus | F1 | – |
 | Menü: auswählen / starten | ↑/↓, Enter/Leertaste | Stick/D-Pad, A |
 
