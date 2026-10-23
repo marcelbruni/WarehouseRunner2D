@@ -63,12 +63,12 @@ Mode = 1
 [node name="Crate1" type="StaticBody2D" parent="Course"]
 position = Vector2(505, -40)
 script = ExtResource("crate")
-Size = Vector2(70, 40)
+Size = Vector2(110, 40)
 
 [node name="Crate2" type="StaticBody2D" parent="Course"]
 position = Vector2(795, -100)
 script = ExtResource("crate")
-Size = Vector2(70, 40)
+Size = Vector2(110, 40)
 
 [node name="Crate3" type="StaticBody2D" parent="Course"]
 position = Vector2(4825, 130)

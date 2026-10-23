@@ -30,5 +30,6 @@ public static class LevelCatalog
         new("level05", "Hauptlager", "Alles zusammen: Rutschkisten, Förderbänder, Paketsuche", "res://scenes/levels/Level05.tscn"),
         new("level06", "AI Level", "Lagerroboter · Barcode-Scanner · Lieferdrohnen · ein Paket mit eigenem Willen", "res://scenes/levels/Level06.tscn"),
         new("level07", "Friends Ideas", "Präzisionskisten · Speed-Jump-Bänder · Abschussrampe · Luftpolsterfolie", "res://scenes/levels/Level07.tscn"),
+        new("level08", "Rutschpartie", "Lange Rutschkisten · Förderbänder · Rückwärtsband · Gabelung oben/unten", "res://scenes/levels/Level08.tscn"),
     ];
 }

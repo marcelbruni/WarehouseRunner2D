@@ -37,7 +37,7 @@ public partial class LevelSkillProofs : Node
         public string Describe() => $"{Opener} start {StartX:0} trigger {TriggerX:0} back {RunBackTicks} dj {DoubleJumpTick?.ToString() ?? "-"} dash {DashTick?.ToString() ?? "-"} delay {DelayTicks}";
     }
 
-    private sealed record Section(string Name, string ScenePath, Func<PlayerController, bool> Reached, int Ticks, float DiesBelowY = float.MaxValue);
+    private sealed record Section(string Name, string ScenePath, Func<PlayerController, bool> Reached, int Ticks, float DiesBelowY = float.MaxValue, bool ScannersAlwaysOn = false);
 
     public override async void _Ready()
     {
@@ -55,6 +55,7 @@ public partial class LevelSkillProofs : Node
         await ProveLevel04();
         await ProveAiLevel();
         await ProveFriendsLevel();
+        await ProveSlideLevel();
 
         foreach (var failure in _failures)
         {
@@ -148,6 +149,10 @@ public partial class LevelSkillProofs : Node
         await ProvePossible(new Section("L6 Lagerroboter", scene, p => p.GlobalPosition.X > 1450f && p.IsOnGround, 900), Hops(-100f, StandY, 360));
         await ProvePossible(new Section("L6 Scanner", scene, p => p.GlobalPosition.X > 2300f && p.IsOnGround, 600),
             Delayed([new Plan(Opener.WalkOff, 1460f, StandY, 0f, 0, null, null)], 240, 6));
+        await ProvePossible(new Section("L6 Schwebekiste erreichen", scene, p => p.IsOnGround && p.GlobalPosition.Y < -230f, 400),
+            Jumps(Opener.RunningJump, 1420f, 1450f, 1600f, withDoubleJump: true, withDash: false));
+        await ProvePossible(new Section("L6 Scanner überspringen", scene, p => p.IsOnGround && p.GlobalPosition.X > 2170f, 400, ScannersAlwaysOn: true),
+            Jumps(Opener.RunningJump, 1620f, 1640f, 1705f, withDoubleJump: true, withDash: true).Select(plan => plan with { StartY = -246f }));
         await ProvePossible(new Section("L6 Drohnen", scene, p => p.GlobalPosition.X > 3720f && p.IsOnGround && p.GlobalPosition.Y < 0f, 900), Hops(2420f, StandY, 480));
         await ProvePossible(new Section("L6 Kiste 1 Paketjagd", scene, p => p.GlobalPosition.Y < -230f && p.IsOnGround, 400),
             Jumps(Opener.RunningJump, 3900f, 4050f, 4240f, withDoubleJump: true, withDash: false));
@@ -158,7 +163,7 @@ public partial class LevelSkillProofs : Node
     private async Task ProveFriendsLevel()
     {
         const string scene = "res://scenes/levels/Level07.tscn";
-        await ProvePossible(new Section("L7 Präzisionskiste 1", scene, p => p.IsOnGround && p.GlobalPosition.Y < -80f && p.GlobalPosition.X < 600f, 300),
+        await ProvePossible(new Section("L7 Präzisionskiste 1", scene, p => p.IsOnGround && p.GlobalPosition.Y < -80f && p.GlobalPosition.X < 620f, 300),
             Jumps(Opener.RunningJump, 0f, 180f, 300f, withDoubleJump: false, withDash: false).Concat(Jumps(Opener.RunningJump, 0f, 180f, 300f, withDoubleJump: true, withDash: false)));
         await ProvePossible(new Section("L7 Präzisionskiste 2", scene, p => p.IsOnGround && p.GlobalPosition.Y < -140f, 300),
             Jumps(Opener.RunningJump, 480f, 490f, 535f, withDoubleJump: true, withDash: false).Select(plan => plan with { StartY = -86f }));
@@ -187,6 +192,23 @@ public partial class LevelSkillProofs : Node
             [new Plan(Opener.WalkOff, 6300f, StandY, 0f, 0, null, null)]);
         await ProvePossible(new Section("L7 Luftpolster → Ziel", scene, p => p.IsOnGround && p.GlobalPosition.X > 8370f && p.GlobalPosition.Y < 0f, 700),
             Hops(7200f, -446f, 0).Append(new Plan(Opener.WalkOff, 7200f, -446f, 0f, 0, null, null)));
+    }
+
+    private async Task ProveSlideLevel()
+    {
+        const string scene = "res://scenes/levels/Level08.tscn";
+        await ProvePossible(new Section("L8 Drop, Rutsche, Lücke, Bänder", scene, p => p.IsOnGround && p.GlobalPosition.X > 2346f && p.GlobalPosition.Y < 310f, 600),
+            Jumps(Opener.RunningJump, 0f, 1200f, 1345f, withDoubleJump: true, withDash: true).Append(new Plan(Opener.WalkOff, 0f, StandY, 0f, 0, null, null)));
+        await ProvePossible(new Section("L8 Rückwärtsband überspringen", scene, p => p.IsOnGround && p.GlobalPosition.X > 2960f && p.GlobalPosition.Y < 310f, 400),
+            Jumps(Opener.RunningJump, 2360f, 2380f, 2500f, withDoubleJump: true, withDash: true).Select(plan => plan with { StartY = 275f }));
+        await ProvePossible(new Section("L8 Rückwärtsband zu Fuss", scene, p => p.IsOnGround && p.GlobalPosition.X > 2960f && p.GlobalPosition.Y < 310f, 600),
+            [new Plan(Opener.WalkOff, 2360f, 275f, 0f, 0, null, null)], expectImpossible: true);
+        await ProvePossible(new Section("L8 Lange Rutsche, Abschussband", scene, p => p.IsOnGround && p.GlobalPosition.X > 4900f && p.GlobalPosition.Y > 780f, 700),
+            [new Plan(Opener.WalkOff, 3000f, 275f, 0f, 0, null, null)]);
+        await ProvePossible(new Section("L8 Gabelung oben", scene, p => p.IsOnGround && p.GlobalPosition.X > 7600f && p.GlobalPosition.Y > 1400f, 900),
+            Jumps(Opener.RunningJump, 5620f, 5700f, 5800f, withDoubleJump: true, withDash: false).Select(plan => plan with { StartY = 1048f }));
+        await ProvePossible(new Section("L8 Gabelung unten", scene, p => p.IsOnGround && p.GlobalPosition.X > 7600f && p.GlobalPosition.Y > 1400f, 900),
+            [new Plan(Opener.WalkOff, 5620f, 1048f, 0f, 0, null, null)]);
     }
 
     private static IEnumerable<Plan> Jumps(Opener opener, float startX, float firstTrigger, float lastTrigger, bool withDoubleJump, bool withDash)
@@ -332,11 +354,19 @@ public partial class LevelSkillProofs : Node
         UnloadLevel(level);
     }
 
-    private sealed record Result(Plan Plan, bool Success);
+    private sealed record Result(Plan Plan, bool Success, int SuccessTick);
 
     private async Task<List<Result>> Run(Section section, List<Plan> plans)
     {
         var level = LoadLevel(section.ScenePath);
+        if (section.ScannersAlwaysOn)
+        {
+            foreach (var beam in level.FindChildren("*", nameof(Area2D), true, false).OfType<ScanBeam>())
+            {
+                beam.OffTime = 0.001f;
+            }
+        }
+
         var probes = plans.Select(plan => (Plan: plan, Player: SpawnProbe(level, new Vector2(plan.StartX, plan.StartY)), State: new ProbeState())).ToList();
         for (var tick = 0; tick < section.Ticks; tick++)
         {
@@ -350,17 +380,22 @@ public partial class LevelSkillProofs : Node
             {
                 probe.State.Dead = probe.Player.GlobalPosition.Y - StandY > section.DiesBelowY || _scanned.Contains(probe.Player);
                 probe.State.Success = !probe.State.Dead && section.Reached(probe.Player);
+                if (probe.State.Success)
+                {
+                    probe.State.SuccessTick = tick;
+                }
             }
         }
 
         UnloadLevel(level);
-        return probes.Select(p => new Result(p.Plan, p.State.Success)).ToList();
+        return probes.Select(p => new Result(p.Plan, p.State.Success, p.State.SuccessTick)).ToList();
     }
 
     private sealed class ProbeState
     {
         public bool Success { get; set; }
         public bool Dead { get; set; }
+        public int SuccessTick { get; set; } = -1;
         public int TakeoffTick { get; set; } = -1;
         public int TriggerTick { get; set; } = -1;
     }
@@ -495,7 +530,7 @@ public partial class LevelSkillProofs : Node
     private static IEnumerable<Plan> Delayed(IEnumerable<Plan> plans, int maxDelay, int step) =>
         plans.SelectMany(plan => Enumerable.Range(0, (maxDelay / step) + 1).Select(i => plan with { DelayTicks = i * step }));
 
-    private async Task ProvePossible(Section section, IEnumerable<Plan> plans)
+    private async Task ProvePossible(Section section, IEnumerable<Plan> plans, bool expectImpossible = false)
     {
         if (!IsSelected(section))
         {
@@ -504,10 +539,17 @@ public partial class LevelSkillProofs : Node
 
         var results = await Run(section, plans.ToList());
         var successes = results.Count(r => r.Success);
-        GD.Print($"{section.Name}: {successes}/{results.Count} Varianten schaffen es");
-        if (successes == 0)
+        var fastest = results.Where(r => r.Success).Select(r => r.SuccessTick).DefaultIfEmpty(-1).Min();
+        var fastestText = fastest < 0 ? string.Empty : $", schnellste {fastest / (double)Engine.PhysicsTicksPerSecond:0.00}s";
+        GD.Print($"{section.Name}: {successes}/{results.Count} Varianten schaffen es{fastestText}");
+        if (successes == 0 && !expectImpossible)
         {
             _failures.Add($"{section.Name}: keine Variante schafft es");
+        }
+
+        if (successes > 0 && expectImpossible)
+        {
+            _failures.Add($"{section.Name}: sollte unmöglich sein");
         }
     }
 

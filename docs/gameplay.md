@@ -30,6 +30,7 @@ Level, nach dem letzten Level zurück zum Startbildschirm.
 | 5 | Hauptlager | die erste grosse Karte: Rutschkisten, Förderbänder, Paketsuche |
 | 6 | AI Level | Lagerroboter (rempeln dich weg, Draufspringen erlaubt), Barcode-Scanner (rot = zurück zum Checkpoint, grüne Welle), Lieferdrohnen als fliegende Plattformen, ein Express-Paket, das vor dir flieht |
 | 7 | Friends Ideas | zwei Präzisionskisten, bewegte Kiste, drei Speed-Jump-Bänder (runter, gerade, hoch) mit Kiste dazwischen, Abschussrampe zur Paketplattform, Luftpolster-Trampoline über der letzten Grube |
+| 8 | Rutschpartie | bergab: Drop direkt auf eine 700er-Rutschkiste (33°), Vorwärtsband geht in Aufwärtsband über, Rückwärtsband zum Überspringen, 900er-Rutsche (36°), Abschussband auf die nächste Rutsche, am Ende Gabelung oben/unten (3,8 s gegen 3,6 s) |
 
 Jedes Level hat denselben Ablauf (einstempeln, Paket, Rampe, ausstempeln).
 Hinweisschilder erklären die jeweilige Technik. `LevelSkillProofs` belegt

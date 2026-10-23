@@ -84,7 +84,7 @@ Exit-Code 0 = alles grün.
 ## Struktur
 
 ```
-scenes/levels/     Level 1–4 (Lern-Levels), 5 Hauptlager, 6 AI Level, 7 Friends Ideas
+scenes/levels/     Level 1–4 (Lern-Levels), 5 Hauptlager, 6 AI Level, 7 Friends Ideas, 8 Rutschpartie
 scenes/menu/       Startmenü mit Levelauswahl
 scenes/player/     Spieler-Szene
 scenes/tests/      Test-Szenen

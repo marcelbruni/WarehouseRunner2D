@@ -24,10 +24,13 @@ public partial class WarehouseBackground : Node2D
     [Export]
     public float Height { get; set; } = 1400f;
 
+    [Export]
+    public float Depth { get; set; } = 400f;
+
     public override void _Draw()
     {
-        DrawRect(new Rect2(-1000f, -Height, Width + 2000f, Height + 400f), Wall);
-        for (var y = -Height; y < 0f; y += 160f)
+        DrawRect(new Rect2(-1000f, -Height, Width + 2000f, Height + Depth), Wall);
+        for (var y = -Height; y < Depth; y += 160f)
         {
             DrawRect(new Rect2(-1000f, y, Width + 2000f, 6f), WallStripe);
         }

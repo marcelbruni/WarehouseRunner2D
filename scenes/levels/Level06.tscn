@@ -42,7 +42,7 @@ script = ExtResource("sign")
 Text = "KI-Lagerroboter\nnicht anrempeln,\ndraufspringen ist erlaubt"
 
 [node name="Sign2" type="Node2D" parent="."]
-position = Vector2(1530, 0)
+position = Vector2(1470, 0)
 script = ExtResource("sign")
 Text = "Barcode-Scanner\nrot = gescannt = zurück\nTipp: grüne Welle"
 
@@ -66,16 +66,21 @@ script = ExtResource("clock")
 Mode = 1
 
 [node name="Crate1" type="StaticBody2D" parent="Course"]
+position = Vector2(1660, -200)
+script = ExtResource("crate")
+Size = Vector2(100, 40)
+
+[node name="Crate2" type="StaticBody2D" parent="Course"]
 position = Vector2(4300, -110)
 script = ExtResource("crate")
 Size = Vector2(100, 220)
 
-[node name="Crate2" type="StaticBody2D" parent="Course"]
+[node name="Crate3" type="StaticBody2D" parent="Course"]
 position = Vector2(4650, -220)
 script = ExtResource("crate")
 Size = Vector2(100, 440)
 
-[node name="Crate3" type="StaticBody2D" parent="Course"]
+[node name="Crate4" type="StaticBody2D" parent="Course"]
 position = Vector2(4950, -80)
 script = ExtResource("crate")
 Size = Vector2(100, 160)
@@ -117,7 +122,7 @@ Period = 2.4
 Phase = 0.5
 
 [node name="Checkpoint1" type="Area2D" parent="."]
-position = Vector2(1450, 0)
+position = Vector2(1400, 0)
 script = ExtResource("checkpoint")
 
 [node name="Scanner1" type="Area2D" parent="."]
