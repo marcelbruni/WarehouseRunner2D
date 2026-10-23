@@ -21,7 +21,7 @@
 [node name="Level07" type="Node2D"]
 script = ExtResource("race")
 LevelId = "level07"
-CameraBounds = Rect2i(-760, -1200, 9720, 1420)
+CameraBounds = Rect2i(-760, -1200, 9920, 1420)
 
 [node name="Background" type="Parallax2D" parent="."]
 z_index = -10
@@ -52,11 +52,11 @@ script = ExtResource("sign")
 Text = "Luftpolsterfolie\nPLOPP!"
 
 [node name="LoadingDock1" type="Area2D" parent="."]
-position = Vector2(8450, 0)
+position = Vector2(8600, 0)
 script = ExtResource("dock")
 
 [node name="ClockOut1" type="Area2D" parent="."]
-position = Vector2(8650, 0)
+position = Vector2(8850, 0)
 script = ExtResource("clock")
 Mode = 1
 
@@ -96,9 +96,9 @@ script = ExtResource("concrete")
 Size = Vector2(1150, 200)
 
 [node name="Concrete4" type="StaticBody2D" parent="Course"]
-position = Vector2(8550, 100)
+position = Vector2(8725, 100)
 script = ExtResource("concrete")
-Size = Vector2(700, 200)
+Size = Vector2(750, 200)
 
 [node name="Concrete5" type="StaticBody2D" parent="Course"]
 position = Vector2(-730, -500)
@@ -106,7 +106,7 @@ script = ExtResource("concrete")
 Size = Vector2(60, 1400)
 
 [node name="Concrete6" type="StaticBody2D" parent="Course"]
-position = Vector2(8930, -500)
+position = Vector2(9130, -500)
 script = ExtResource("concrete")
 Size = Vector2(60, 1400)
 
@@ -174,17 +174,17 @@ Size = Vector2(328.2, 20)
 BeltSpeed = 450
 
 [node name="Concrete7" type="StaticBody2D" parent="Course"]
-position = Vector2(7520, 215)
+position = Vector2(7480, 215)
 script = ExtResource("concrete")
 Size = Vector2(80, 370)
 
 [node name="Concrete8" type="StaticBody2D" parent="Course"]
-position = Vector2(7780, 215)
+position = Vector2(7850, 215)
 script = ExtResource("concrete")
 Size = Vector2(80, 370)
 
 [node name="Concrete9" type="StaticBody2D" parent="Course"]
-position = Vector2(8040, 215)
+position = Vector2(8220, 215)
 script = ExtResource("concrete")
 Size = Vector2(80, 370)
 
@@ -215,24 +215,24 @@ position = Vector2(7100, -460)
 script = ExtResource("package")
 
 [node name="BubbleWrap1" type="StaticBody2D" parent="."]
-position = Vector2(7520, 15)
+position = Vector2(7480, 15)
 script = ExtResource("bubble")
 Size = Vector2(120, 30)
 
 [node name="BubbleWrap2" type="StaticBody2D" parent="."]
-position = Vector2(7780, 15)
+position = Vector2(7850, 15)
 script = ExtResource("bubble")
 Size = Vector2(120, 30)
 
 [node name="BubbleWrap3" type="StaticBody2D" parent="."]
-position = Vector2(8040, 15)
+position = Vector2(8220, 15)
 script = ExtResource("bubble")
 Size = Vector2(120, 30)
 
 [node name="KillZone1" type="Area2D" parent="."]
-position = Vector2(4100, 450)
+position = Vector2(4200, 450)
 script = ExtResource("killzone")
-TriggerSize = Vector2(10000, 100)
+TriggerSize = Vector2(10200, 100)
 
 [node name="Player" parent="." instance=ExtResource("player")]
 position = Vector2(-500, -26)

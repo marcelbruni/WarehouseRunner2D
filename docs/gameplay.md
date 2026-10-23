@@ -28,6 +28,8 @@ Level, nach dem letzten Level zurück zum Startbildschirm.
 | 3 | Dash-Schulung | Doppelsprung + Dash (Lücke 600), Slide Jump + Doppelsprung (Kante 300), Sprung + Dash (Lücke 230 unter niedriger Decke, flache Grube: wer 40 px tiefer fällt, startet neu) |
 | 4 | Profi-Tricks | Roll Jump → Power-Dash → Sprung über zwei Lücken à 840, dazwischen Dash-Rollout |
 | 5 | Hauptlager | die erste grosse Karte: Rutschkisten, Förderbänder, Paketsuche |
+| 6 | AI Level | Lagerroboter (rempeln dich weg, Draufspringen erlaubt), Barcode-Scanner (rot = zurück zum Checkpoint, grüne Welle), Lieferdrohnen als fliegende Plattformen, ein Express-Paket, das vor dir flieht |
+| 7 | Friends Ideas | zwei Präzisionskisten, bewegte Kiste, drei Speed-Jump-Bänder (runter, gerade, hoch) mit Kiste dazwischen, Abschussrampe zur Paketplattform, Luftpolster-Trampoline über der letzten Grube |
 
 Jedes Level hat denselben Ablauf (einstempeln, Paket, Rampe, ausstempeln).
 Hinweisschilder erklären die jeweilige Technik. `LevelSkillProofs` belegt
@@ -37,6 +39,20 @@ automatisch, dass die Hindernisse die Technik wirklich brauchen.
 niedrige Regale (40 px Lücke). Solange über ihr kein Platz zum Aufstehen ist,
 rollt sie mit mindestens Laufgeschwindigkeit weiter, Springen ist dort nicht
 möglich.
+
+## Level-Elemente
+
+| Element | Verhalten |
+|---|---|
+| `MovingPlatform` | fährt zwischen Start und `Travel` hin und her (Kiste, Drohne). Man fährt mit |
+| `WarehouseRobot` | fahrender Lagerroboter: seitlich anrempeln stösst dich weg („BEEP!“), oben drauf darf man mitfahren |
+| `ScanBeam` | Barcode-Scanner mit Ein/Aus-Takt. Wer im roten Strahl steht, wird zum Checkpoint zurückgesetzt |
+| `ExpressPackage` mit `FleePath` | Paket mit Augen, das zu den nächsten Wegpunkten flieht, wenn man nah kommt („Nö!“) |
+| `LaunchRamp` | gerundetes Förderband, schiesst am Ende steil nach oben („HUII!“) |
+| `BubbleWrap` | Luftpolsterfolie: Landen darauf federt hoch („PLOPP!“), Doppelsprung und Dash werden aufgefüllt |
+| Speed Jump | im Level aus drei `ConveyorBelt` zusammengesetzt: runter, gerade, hoch. Am Ende schleudert das Band einen weiter |
+
+Alle Auslöser reagieren auf die Kollisionsebenen 1 (Welt/Spieler) und 2 („Geister“-Spieler, die sich gegenseitig nicht blockieren, gedacht für Multiplayer und für die Tests).
 
 ## Bewegungen
 

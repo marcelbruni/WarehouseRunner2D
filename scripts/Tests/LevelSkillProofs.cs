@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Godot;
+using WarehouseRunner.Core;
+using WarehouseRunner.Elements;
 using WarehouseRunner.Player;
 
 namespace WarehouseRunner.Tests;
 
 public partial class LevelSkillProofs : Node
 {
-    private const uint ProbeLayer = 2;
     private const float StandY = -26f;
 
     private static readonly PackedScene PlayerScene = GD.Load<PackedScene>("res://scenes/player/Player.tscn");
@@ -17,6 +18,7 @@ public partial class LevelSkillProofs : Node
     private const string OnlyArgument = "--only=";
 
     private readonly List<string> _failures = new();
+    private readonly HashSet<PlayerController> _scanned = new();
     private string? _only;
 
     private enum Opener
@@ -183,7 +185,7 @@ public partial class LevelSkillProofs : Node
             Jumps(Opener.RunningJump, 4770f, 4800f, 4895f, withDoubleJump: true, withDash: true).Select(plan => plan with { StartY = -146f }));
         await ProvePossible(new Section("L7 Abschussrampe → Paketplattform", scene, p => p.IsOnGround && p.GlobalPosition.Y < -430f, 400),
             [new Plan(Opener.WalkOff, 6300f, StandY, 0f, 0, null, null)]);
-        await ProvePossible(new Section("L7 Luftpolster → Ziel", scene, p => p.IsOnGround && p.GlobalPosition.X > 8220f && p.GlobalPosition.Y < 0f, 700),
+        await ProvePossible(new Section("L7 Luftpolster → Ziel", scene, p => p.IsOnGround && p.GlobalPosition.X > 8370f && p.GlobalPosition.Y < 0f, 700),
             Hops(7200f, -446f, 0).Append(new Plan(Opener.WalkOff, 7200f, -446f, 0f, 0, null, null)));
     }
 
@@ -346,7 +348,7 @@ public partial class LevelSkillProofs : Node
             await NextTick();
             foreach (var probe in probes.Where(p => !p.State.Success && !p.State.Dead))
             {
-                probe.State.Dead = probe.Player.GlobalPosition.Y - StandY > section.DiesBelowY;
+                probe.State.Dead = probe.Player.GlobalPosition.Y - StandY > section.DiesBelowY || _scanned.Contains(probe.Player);
                 probe.State.Success = !probe.State.Dead && section.Reached(probe.Player);
             }
         }
@@ -517,6 +519,11 @@ public partial class LevelSkillProofs : Node
         originalPlayer.ProcessMode = ProcessModeEnum.Disabled;
         originalPlayer.CollisionLayer = 0;
         originalPlayer.GlobalPosition = new Vector2(-100000f, -100000f);
+        foreach (var beam in level.FindChildren("*", nameof(Area2D), true, false).OfType<ScanBeam>())
+        {
+            beam.PlayerScanned += player => _scanned.Add(player);
+        }
+
         return level;
     }
 
@@ -537,8 +544,8 @@ public partial class LevelSkillProofs : Node
         }
 
         player.InputSource = new ScriptedInput();
-        player.CollisionLayer = ProbeLayer;
-        player.CollisionMask = 1;
+        player.CollisionLayer = CollisionLayers.GhostPlayers;
+        player.CollisionMask = CollisionLayers.World;
         player.Position = position;
         level.AddChild(player);
         return player;

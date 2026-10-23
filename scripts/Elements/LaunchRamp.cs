@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Godot;
+using WarehouseRunner.Core;
 using WarehouseRunner.Player;
 
 namespace WarehouseRunner.Elements;
@@ -40,7 +41,7 @@ public partial class LaunchRamp : StaticBody2D
         AddChild(new CollisionPolygon2D { Polygon = polygon.ToArray() });
         ConstantLinearVelocity = new Vector2(250f, 0f);
 
-        _lip = new Area2D { Position = Lip + new Vector2(-10f, -30f) };
+        _lip = new Area2D { Position = Lip + new Vector2(-10f, -30f), CollisionMask = CollisionLayers.AnyPlayer };
         _lip.AddChild(new CollisionShape2D { Shape = new RectangleShape2D { Size = new Vector2(30f, 60f) } });
         AddChild(_lip);
     }

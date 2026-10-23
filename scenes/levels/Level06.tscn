@@ -44,7 +44,7 @@ Text = "KI-Lagerroboter\nnicht anrempeln,\ndraufspringen ist erlaubt"
 [node name="Sign2" type="Node2D" parent="."]
 position = Vector2(1530, 0)
 script = ExtResource("sign")
-Text = "Barcode-Scanner\nrot = gescannt = zurück"
+Text = "Barcode-Scanner\nrot = gescannt = zurück\nTipp: grüne Welle"
 
 [node name="Sign3" type="Node2D" parent="."]
 position = Vector2(2420, 0)
@@ -134,7 +134,7 @@ script = ExtResource("scan")
 TriggerSize = Vector2(16, 320)
 OnTime = 0.9
 OffTime = 1.1
-Phase = 0.35
+Phase = 0.706
 
 [node name="Scanner3" type="Area2D" parent="."]
 position = Vector2(2150, 0)
@@ -142,7 +142,7 @@ script = ExtResource("scan")
 TriggerSize = Vector2(16, 320)
 OnTime = 0.9
 OffTime = 1.1
-Phase = 0.7
+Phase = 0.412
 
 [node name="Checkpoint2" type="Area2D" parent="."]
 position = Vector2(2350, 0)

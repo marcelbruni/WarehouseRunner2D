@@ -1,4 +1,5 @@
 using Godot;
+using WarehouseRunner.Core;
 using WarehouseRunner.Player;
 
 namespace WarehouseRunner.Elements;
@@ -29,7 +30,7 @@ public partial class BubbleWrap : BoxBody
     public override void _Ready()
     {
         base._Ready();
-        _surface = new Area2D { Position = new Vector2(0f, -Size.Y / 2f - 10f) };
+        _surface = new Area2D { Position = new Vector2(0f, -Size.Y / 2f - 10f), CollisionMask = CollisionLayers.AnyPlayer };
         _surface.AddChild(new CollisionShape2D { Shape = new RectangleShape2D { Size = new Vector2(Size.X, 20f) } });
         AddChild(_surface);
     }

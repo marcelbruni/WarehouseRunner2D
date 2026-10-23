@@ -1,5 +1,6 @@
 using System;
 using Godot;
+using WarehouseRunner.Core;
 using WarehouseRunner.Player;
 
 namespace WarehouseRunner.Elements;
@@ -29,6 +30,7 @@ public partial class PlayerTrigger : Area2D
 
     public override void _Ready()
     {
+        CollisionMask = CollisionLayers.AnyPlayer;
         _shape = new RectangleShape2D();
         _collision = new CollisionShape2D { Shape = _shape };
         AddChild(_collision);

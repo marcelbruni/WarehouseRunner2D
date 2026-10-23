@@ -1,4 +1,5 @@
 using Godot;
+using WarehouseRunner.Core;
 using WarehouseRunner.Player;
 
 namespace WarehouseRunner.Elements;
@@ -25,7 +26,7 @@ public partial class WarehouseRobot : MovingPlatform
     public override void _Ready()
     {
         base._Ready();
-        _bumper = new Area2D();
+        _bumper = new Area2D { CollisionMask = CollisionLayers.AnyPlayer };
         _bumper.AddChild(new CollisionShape2D { Shape = new RectangleShape2D { Size = Size + new Vector2(10f, -8f) } });
         AddChild(_bumper);
     }

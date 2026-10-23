@@ -58,9 +58,10 @@ Level-Ablauf in allen Levels (Einstempeln → Paket → Rampe → Ausstempeln):
 & $godot --headless --path . --fixed-fps 120 res://scenes/tests/LevelFlowTest.tscn
 ```
 
-Fähigkeits-Beweise der Lern-Levels (dauert mehrere Minuten): pro Hindernis wird
-geprüft, dass die geforderte Technik durchkommt und schwächere Techniken mit
-keinem Timing:
+Fähigkeits- und Machbarkeits-Beweise (dauert rund 20 Minuten): pro Hindernis der
+Lern-Levels wird geprüft, dass die geforderte Technik durchkommt und schwächere
+Techniken mit keinem Timing. In Level 6 und 7 wird jeder Abschnitt auf
+Schaffbarkeit geprüft. Mit `-- --only=L7` nur einen Teil prüfen:
 
 ```powershell
 & $godot --headless --path . --fixed-fps 120 res://scenes/tests/LevelSkillProofs.tscn
@@ -83,7 +84,7 @@ Exit-Code 0 = alles grün.
 ## Struktur
 
 ```
-scenes/levels/     Level 1–4 (Lern-Levels), Level 5 (Hauptlager)
+scenes/levels/     Level 1–4 (Lern-Levels), 5 Hauptlager, 6 AI Level, 7 Friends Ideas
 scenes/menu/       Startmenü mit Levelauswahl
 scenes/player/     Spieler-Szene
 scenes/tests/      Test-Szenen
