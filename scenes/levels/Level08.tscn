@@ -53,11 +53,11 @@ script = ExtResource("sign")
 Text = "Oben oder unten?\nbeide Wege sind schnell"
 
 [node name="LoadingDock1" type="Area2D" parent="."]
-position = Vector2(8000, 1534)
+position = Vector2(8130, 1534)
 script = ExtResource("dock")
 
 [node name="ClockOut1" type="Area2D" parent="."]
-position = Vector2(8200, 1534)
+position = Vector2(8310, 1534)
 script = ExtResource("clock")
 Mode = 1
 
@@ -205,7 +205,7 @@ position = Vector2(5700, 1174)
 script = ExtResource("checkpoint")
 
 [node name="ExpressPackage1" type="Area2D" parent="."]
-position = Vector2(7700, 1494)
+position = Vector2(7950, 1494)
 script = ExtResource("package")
 
 [node name="KillZone1" type="Area2D" parent="."]
