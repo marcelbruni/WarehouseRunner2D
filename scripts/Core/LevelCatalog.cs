@@ -28,5 +28,7 @@ public static class LevelCatalog
         new("level03", "Dash-Schulung", "Doppelsprung + Dash · Slide Jump + Doppelsprung · Sprung + Dash", "res://scenes/levels/Level03.tscn"),
         new("level04", "Profi-Tricks", "Roll Jump · Power-Dash · Dash Jump · Dash-Rollout", "res://scenes/levels/Level04.tscn"),
         new("level05", "Hauptlager", "Alles zusammen: Rutschkisten, Förderbänder, Paketsuche", "res://scenes/levels/Level05.tscn"),
+        new("level06", "AI Level", "Lagerroboter · Barcode-Scanner · Lieferdrohnen · ein Paket mit eigenem Willen", "res://scenes/levels/Level06.tscn"),
+        new("level07", "Friends Ideas", "Präzisionskisten · Speed-Jump-Bänder · Abschussrampe · Luftpolsterfolie", "res://scenes/levels/Level07.tscn"),
     ];
 }

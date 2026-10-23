@@ -53,6 +53,9 @@ public partial class PlayerController : CharacterBody2D
     private const float SkidCooldownTime = 0.25f;
     private const float FloorProbeDistance = 4f;
     private const float WallProbeDistance = 6f;
+    private const float BumpSteerLockTime = 0.3f;
+
+    public const string PlayerGroup = "player";
     private static readonly Vector2 CurledShapeOffset = new(0f, 12f);
     private static readonly Vector2 HeadroomProbeOffset = new(0f, -2f);
 
@@ -89,7 +92,7 @@ public partial class PlayerController : CharacterBody2D
 
     private float _wallNormalX;
     private float _wallCoyoteTimer;
-    private float _wallKickLockTimer;
+    private float _steerLockTimer;
 
     private float _boostTimer;
     private float _boostFactor = 1f;
@@ -138,6 +141,7 @@ public partial class PlayerController : CharacterBody2D
         _collision = GetNode<CollisionShape2D>("Collision");
         _standingShape = _collision.Shape;
         _standingShapeOffset = _collision.Position;
+        AddToGroup(PlayerGroup);
     }
 
     public override void _PhysicsProcess(double delta)
@@ -183,6 +187,27 @@ public partial class PlayerController : CharacterBody2D
         _preMoveVelocity = Velocity;
         MoveAndSlide();
         ResolveContacts(input);
+    }
+
+    public void Launch(Vector2 velocity)
+    {
+        Velocity = velocity;
+        _jumpBufferTimer = 0f;
+        _coyoteTimer = 0f;
+        _canDoubleJump = true;
+        _canDash = true;
+        _performedAirAction = true;
+        CurrentAirMove = AirMove.Fall;
+        ChangeState(PlayerState.Airborne);
+    }
+
+    public void Bump(Vector2 velocity)
+    {
+        Velocity = velocity;
+        _groundSpeed = 0f;
+        _steerLockTimer = BumpSteerLockTime;
+        CurrentAirMove = AirMove.Fall;
+        ChangeState(PlayerState.Airborne);
     }
 
     public void Respawn(Vector2 position)
@@ -259,7 +284,7 @@ public partial class PlayerController : CharacterBody2D
     {
         _coyoteTimer -= dt;
         _wallCoyoteTimer -= dt;
-        _wallKickLockTimer -= dt;
+        _steerLockTimer -= dt;
         _slideJumpGraceTimer -= dt;
         _skidCooldownTimer -= dt;
         _postLandingRollTimer -= dt;
@@ -372,7 +397,7 @@ public partial class PlayerController : CharacterBody2D
             return;
         }
 
-        var move = _wallKickLockTimer > 0f ? 0f : input.MoveX;
+        var move = _steerLockTimer > 0f ? 0f : input.MoveX;
         var vx = Steer(
             Velocity.X,
             move,
@@ -467,7 +492,7 @@ public partial class PlayerController : CharacterBody2D
     private void StartWallKick()
     {
         _wallCoyoteTimer = 0f;
-        _wallKickLockTimer = Tuning.WallKickInputLockTime;
+        _steerLockTimer = Tuning.WallKickInputLockTime;
         _canDash = true;
         Facing = Mathf.Sign(_wallNormalX);
         StartJump(AirMove.WallKick, Tuning.WallKickSpeed, _wallNormalX * Tuning.WallKickHorizontalSpeed, Trick.WallKick);

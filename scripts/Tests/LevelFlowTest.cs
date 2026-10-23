@@ -65,7 +65,12 @@ public partial class LevelFlowTest : Node
         await Visit(player, dock.GlobalPosition + StandOffset);
         Expect(level, race, "dock without package", RunPhase.SearchingPackage);
 
-        await Visit(player, package.GlobalPosition);
+        for (var attempt = 0; attempt < 6 && race.Phase != RunPhase.CarryingPackage; attempt++)
+        {
+            await Visit(player, package.GlobalPosition);
+            await Ticks(60);
+        }
+
         Expect(level, race, "after package", RunPhase.CarryingPackage);
         await Snapshot($"{level.Id}_02_package");
 

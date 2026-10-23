@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3]
+[gd_scene load_steps=18 format=3]
 
 [ext_resource type="Script" path="res://scripts/Level/RaceController.cs" id="race"]
 [ext_resource type="Script" path="res://scripts/Level/WarehouseBackground.cs" id="background"]
@@ -10,6 +10,12 @@
 [ext_resource type="Script" path="res://scripts/Elements/Checkpoint.cs" id="checkpoint"]
 [ext_resource type="Script" path="res://scripts/Elements/KillZone.cs" id="killzone"]
 [ext_resource type="Script" path="res://scripts/Elements/HintSign.cs" id="sign"]
+[ext_resource type="Script" path="res://scripts/Elements/ConveyorBelt.cs" id="belt"]
+[ext_resource type="Script" path="res://scripts/Elements/MovingPlatform.cs" id="moving"]
+[ext_resource type="Script" path="res://scripts/Elements/WarehouseRobot.cs" id="robot"]
+[ext_resource type="Script" path="res://scripts/Elements/ScanBeam.cs" id="scan"]
+[ext_resource type="Script" path="res://scripts/Elements/BubbleWrap.cs" id="bubble"]
+[ext_resource type="Script" path="res://scripts/Elements/LaunchRamp.cs" id="launch"]
 [ext_resource type="PackedScene" path="res://scenes/player/Player.tscn" id="player"]
 
 [node name="Level03" type="Node2D"]

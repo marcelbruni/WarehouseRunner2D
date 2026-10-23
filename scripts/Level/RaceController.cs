@@ -119,6 +119,9 @@ public partial class RaceController : Node2D
                 case KillZone killZone:
                     killZone.PlayerEntered += _ => _player.Respawn(_respawnPosition);
                     break;
+                case ScanBeam scanBeam:
+                    scanBeam.PlayerScanned += _ => OnScanned();
+                    break;
             }
 
             ConnectTriggers(child);
@@ -178,6 +181,12 @@ public partial class RaceController : Node2D
         _player.CarriesPackage = false;
         dock.DispatchTruck(_player.GlobalPosition + new Vector2(0f, -52f));
         SetPhase(RunPhase.PackageDelivered);
+    }
+
+    private void OnScanned()
+    {
+        _player.Respawn(_respawnPosition);
+        _hud.ShowHint("Gescannt! Artikel unbekannt, zurück zum Checkpoint.");
     }
 
     private void OnCheckpoint(Checkpoint checkpoint)
