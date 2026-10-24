@@ -43,11 +43,19 @@ public partial class BubbleWrap : BoxBody
             return;
         }
 
+        var normal = -GlobalTransform.Y.Normalized();
         foreach (var body in _surface.GetOverlappingBodies())
         {
-            if (body is PlayerController player && player.Velocity.Y > MinFallSpeed)
+            if (body is not PlayerController player)
             {
-                player.Launch(new Vector2(player.Velocity.X, -BounceSpeed));
+                continue;
+            }
+
+            var approachSpeed = -player.Velocity.Dot(normal);
+            if (approachSpeed > MinFallSpeed)
+            {
+                var tangential = player.Velocity + (normal * approachSpeed);
+                player.Launch(tangential + (normal * BounceSpeed));
                 _popTimer = PopDuration;
                 _popX = ToLocal(player.GlobalPosition).X;
             }

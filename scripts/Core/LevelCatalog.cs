@@ -33,5 +33,6 @@ public static class LevelCatalog
         new("level08", "Rutschpartie", "Lange Rutschkisten · Förderbänder · Rückwärtsband · Gabelung oben/unten", "res://scenes/levels/Level08.tscn"),
         new("level09_hochregal", "Hochregallager", "Zickzack über drei Stockwerke · breiter Kamin · Rolltreppe · Riesenrutschen", "res://scenes/levels/Level09.tscn"),
         new("level10", "Kletterhalle", "Kamine mit Förderband-Ausstieg · Speed Jumps · Abschussrampe · lange Rutschen", "res://scenes/levels/Level10.tscn"),
+        new("level11", "Taktstrasse", "Kisten im Takt · Speed Jumps in den Kamin · Polsterfolie · schräge Polsterfolie", "res://scenes/levels/Level11.tscn"),
     ];
 }

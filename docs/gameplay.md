@@ -33,6 +33,7 @@ Level, nach dem letzten Level zurück zum Startbildschirm.
 | 8 | Rutschpartie | bergab: Drop direkt auf eine 700er-Rutschkiste (33°), Vorwärtsband geht in Aufwärtsband über, Rückwärtsband zum Überspringen, 900er-Rutsche (36°), Abschussband auf die nächste Rutsche, am Ende Gabelung oben/unten (3,8 s gegen 3,6 s) |
 | 9 | Hochregallager | Zickzack über drei Stockwerke: Erdgeschoss nach rechts (Kisten, Bänder, Rutschkiste), breiter Kamin (300 px, Wall Kick + Doppelsprung), 1. Stock zurück nach links, Rolltreppe in den 2. Stock mit Paket-Abstecher links, dann nach rechts und über zwei Riesenrutschen hinab zum Ziel. Wer in eine Grube fällt, landet ein Stockwerk tiefer |
 | 10 | Kletterhalle | drei Kamine, die oben direkt auf ein Förderband führen, drei Speed Jumps, Abschussrampe wie in Level 7, zwei lange Rutschen zum Ziel. Rund 1,65-fache Länge des Hauptlagers |
+| 11 | Taktstrasse | sechs Kisten im gleichen Abstand: im Takt durchhüpfen. Lücke in einen Speed Jump, der direkt in einen Kamin schleudert; oben von der Wand in den nächsten Speed Jump, auf eine Polsterfolie, die in den zweiten Kamin federt, oben aufs Förderband, über eine Lücke auf eine 45° geneigte Polsterfolie, die einen flach nach vorne zum Ziel schiesst |
 
 Jedes Level hat denselben Ablauf (einstempeln, Paket, Rampe, ausstempeln).
 Hinweisschilder erklären die jeweilige Technik. `LevelSkillProofs` belegt
@@ -52,7 +53,7 @@ möglich.
 | `ScanBeam` | Barcode-Scanner mit Ein/Aus-Takt. Wer im roten Strahl steht, wird zum Checkpoint zurückgesetzt |
 | `ExpressPackage` mit `FleePath` | Paket mit Augen, das zu den nächsten Wegpunkten flieht, wenn man nah kommt („Nö!“) |
 | `LaunchRamp` | gerundetes Förderband, schiesst am Ende steil nach oben („HUII!“) |
-| `BubbleWrap` | Luftpolsterfolie: Landen darauf federt hoch („PLOPP!“), Doppelsprung und Dash werden aufgefüllt |
+| `BubbleWrap` | Luftpolsterfolie: Landen darauf federt senkrecht zur Oberfläche ab („PLOPP!“), Doppelsprung und Dash werden aufgefüllt. Geneigt (z. B. 45°) wird sie zur Schleuder: der Schwung entlang der Fläche bleibt erhalten |
 | Speed Jump | im Level aus drei `ConveyorBelt` zusammengesetzt: runter, gerade, hoch. Am Ende schleudert das Band einen weiter |
 
 Alle Auslöser reagieren auf die Kollisionsebenen 1 (Welt/Spieler) und 2 („Geister“-Spieler, die sich gegenseitig nicht blockieren, gedacht für Multiplayer und für die Tests).

@@ -61,6 +61,7 @@ public partial class LevelSkillProofs : Node
         await ProveSlideLevel();
         await ProveNightShiftLevel();
         await ProveClimbingHallLevel();
+        await ProveRhythmLevel();
 
         foreach (var failure in _failures)
         {
@@ -281,6 +282,25 @@ public partial class LevelSkillProofs : Node
             Jumps(Opener.RunningJump, 11000f, 11150f, 11340f, withDoubleJump: true, withDash: false).Select(plan => plan with { StartY = -204f }));
     }
 
+    private async Task ProveRhythmLevel()
+    {
+        const string scene = "res://scenes/levels/Level11.tscn";
+        await ProvePossible(new Section("L11 Kisten im Takt", scene, p => p.IsOnGround && p.GlobalPosition.X > 2000f, 900),
+            Hops(380f, StandY, 120));
+        await ProvePossible(new Section("L11 Lücke in den Speed Jump", scene, p => p.IsOnGround && p.GlobalPosition.X > 2950f, 400),
+            Jumps(Opener.RunningJump, 2300f, 2540f, 2700f, withDoubleJump: true, withDash: false));
+        await ProveClimb(new Section("L11 Speed Jump in den Kamin 1", scene, p => p.GlobalPosition.X > 4130f && p.GlobalPosition.Y < -940f, 1500),
+            new Vector2(2990f, -70f), floorY: 0f, useDash: false, exitAboveY: -940f, expectSuccess: true, takeoffX: 3760f);
+        await ProveClimb(new Section("L11 Kamin 1 vom Boden", scene, p => p.GlobalPosition.X > 4130f && p.GlobalPosition.Y < -940f, 1500),
+            new Vector2(3990f, StandY), floorY: 0f, useDash: false, exitAboveY: -940f, expectSuccess: true);
+        await ProvePossible(new Section("L11 Von der Wand in den Speed Jump 2", scene, p => p.IsOnGround && p.GlobalPosition.X > 4270f && p.GlobalPosition.Y > -760f, 300),
+            [new Plan(Opener.WalkOff, 4150f, -926f, 0f, 0, null, null)]);
+        await ProveClimb(new Section("L11 Speed Jump, Polsterfolie, Kamin 2", scene, p => p.IsOnGround && p.GlobalPosition.Y < -1510f, 1500),
+            new Vector2(4300f, -746f), floorY: -600f, useDash: false, exitAboveY: -1540f, expectSuccess: true, takeoffX: 5080f);
+        await ProvePossible(new Section("L11 Band, Lücke, schräge Polsterfolie", scene, p => p.IsOnGround && p.GlobalPosition.X > 7560f && p.GlobalPosition.Y > -40f, 900),
+            [new Plan(Opener.WalkOff, 6420f, -1526f, 0f, 0, null, null)]);
+    }
+
     private static IEnumerable<Plan> Jumps(Opener opener, float startX, float firstTrigger, float lastTrigger, bool withDoubleJump, bool withDash)
     {
         for (var trigger = firstTrigger; trigger <= lastTrigger; trigger += 20f)
@@ -387,7 +407,7 @@ public partial class LevelSkillProofs : Node
     private Task ProveWallClimb(Section section) =>
         ProveClimb(section, new Vector2(2300f, StandY), floorY: 0f, useDash: false, exitAboveY: null, expectSuccess: true);
 
-    private async Task ProveClimb(Section section, Vector2 start, float floorY, bool useDash, float? exitAboveY, bool expectSuccess, float exitDirection = 1f)
+    private async Task ProveClimb(Section section, Vector2 start, float floorY, bool useDash, float? exitAboveY, bool expectSuccess, float exitDirection = 1f, float? takeoffX = null)
     {
         if (!IsSelected(section))
         {
@@ -405,6 +425,13 @@ public partial class LevelSkillProofs : Node
         var doubleJumpEachKick = !useDash;
         await NextTick();
         input.MoveX = direction;
+        var approachTicks = 0;
+        while (takeoffX is { } x && probe.GlobalPosition.X < x && approachTicks++ < section.Ticks)
+        {
+            await NextTick();
+            Trace(section, approachTicks, probe);
+        }
+
         input.PressJump();
         for (var tick = 0; tick < section.Ticks && !success; tick++)
         {
