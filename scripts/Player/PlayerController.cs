@@ -494,6 +494,7 @@ public partial class PlayerController : CharacterBody2D
         _wallCoyoteTimer = 0f;
         _steerLockTimer = Tuning.WallKickInputLockTime;
         _canDash = true;
+        _canDoubleJump = true;
         Facing = Mathf.Sign(_wallNormalX);
         StartJump(AirMove.WallKick, Tuning.WallKickSpeed, _wallNormalX * Tuning.WallKickHorizontalSpeed, Trick.WallKick);
     }

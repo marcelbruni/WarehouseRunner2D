@@ -31,7 +31,7 @@ public static class LevelCatalog
         new("level06", "AI Level", "Lagerroboter · Barcode-Scanner · Lieferdrohnen · ein Paket mit eigenem Willen", "res://scenes/levels/Level06.tscn"),
         new("level07", "Friends Ideas", "Präzisionskisten · Speed-Jump-Bänder · Abschussrampe · Luftpolsterfolie", "res://scenes/levels/Level07.tscn"),
         new("level08", "Rutschpartie", "Lange Rutschkisten · Förderbänder · Rückwärtsband · Gabelung oben/unten", "res://scenes/levels/Level08.tscn"),
-        new("level09", "Nachtschicht", "Wie das Hauptlager, länger · breiter Kamin: Dash zwischen den Wall Kicks", "res://scenes/levels/Level09.tscn"),
+        new("level09_hochregal", "Hochregallager", "Zickzack über drei Stockwerke · breiter Kamin · Rolltreppe · Riesenrutschen", "res://scenes/levels/Level09.tscn"),
         new("level10", "Kletterhalle", "Kamine mit Förderband-Ausstieg · Speed Jumps · Abschussrampe · lange Rutschen", "res://scenes/levels/Level10.tscn"),
     ];
 }

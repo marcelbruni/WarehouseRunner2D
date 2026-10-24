@@ -31,7 +31,7 @@ Level, nach dem letzten Level zurück zum Startbildschirm.
 | 6 | AI Level | Lagerroboter (rempeln dich weg, Draufspringen erlaubt), Barcode-Scanner (rot = zurück zum Checkpoint, grüne Welle), Lieferdrohnen als fliegende Plattformen, ein Express-Paket, das vor dir flieht |
 | 7 | Friends Ideas | zwei Präzisionskisten, bewegte Kiste, drei Speed-Jump-Bänder (runter, gerade, hoch) mit Kiste dazwischen, Abschussrampe zur Paketplattform, Luftpolster-Trampoline über der letzten Grube |
 | 8 | Rutschpartie | bergab: Drop direkt auf eine 700er-Rutschkiste (33°), Vorwärtsband geht in Aufwärtsband über, Rückwärtsband zum Überspringen, 900er-Rutsche (36°), Abschussband auf die nächste Rutsche, am Ende Gabelung oben/unten (3,8 s gegen 3,6 s) |
-| 9 | Nachtschicht | Hauptlager-Elemente auf 1,5-facher Länge: Kisten, Rutschkisten, Vorwärts-/Rückwärtsbänder, Rolltreppe, vier Gruben. Breiter Kamin (300 px): zwischen den Wall Kicks muss man dashen, ohne Dash unmöglich (belegt). Paket oben auf dem Kamin |
+| 9 | Hochregallager | Zickzack über drei Stockwerke: Erdgeschoss nach rechts (Kisten, Bänder, Rutschkiste), breiter Kamin (300 px, Wall Kick + Doppelsprung), 1. Stock zurück nach links, Rolltreppe in den 2. Stock mit Paket-Abstecher links, dann nach rechts und über zwei Riesenrutschen hinab zum Ziel. Wer in eine Grube fällt, landet ein Stockwerk tiefer |
 | 10 | Kletterhalle | drei Kamine, die oben direkt auf ein Förderband führen, drei Speed Jumps, Abschussrampe wie in Level 7, zwei lange Rutschen zum Ziel. Rund 1,65-fache Länge des Hauptlagers |
 
 Jedes Level hat denselben Ablauf (einstempeln, Paket, Rampe, ausstempeln).
@@ -64,11 +64,12 @@ Alle Auslöser reagieren auf die Kollisionsebenen 1 (Welt/Spieler) und 2 („Gei
 | Laufen | A/D, Pfeile, Stick | Beschleunigt auf Laufgeschwindigkeit |
 | Jump | Leertaste/W/↑, Pad A | Normaler Sprung |
 | Double Jump | Jump in der Luft | Zweiter Sprung, einmal pro Luftphase |
+| Wall Kick | an der Wand von ihr weg lenken + Jump | stösst schräg nach oben ab, Dash **und Doppelsprung** sind danach wieder verfügbar |
 | Jump → Dash | Aktionstaste (Shift/J/S/↓/Ctrl/K, Pad X/B) in der Luft | Horizontaler Schub ohne Schwerkraft, einmal pro Luftphase |
 | Jump → Dash → Jump | Jump während/nach dem Dash | Doppelsprung, der den Dash-Schwung mitnimmt |
 | Rollout nach Jump-Landung | Aktionstaste kurz vor/bei/nach der Landung | Rolle + Boost (×1.3 für 0.8 s) |
 | Rollout nach Dash-Landung | wie oben, nach einem Dash | Stärkerer Boost (×1.45 für 1.0 s) |
-| Rolle | Aktionstaste am Boden, nur im Laufen | Etwas langsamer als der Rollout (×1.2 für 0.6 s); erneut erst, wenn das Tempo wieder normal ist |
+| Rolle | Aktionstaste am Boden, nur im Laufen | Etwas langsamer als der Rollout (×1.2 für 0.5 s); erneut erst, wenn das Tempo wieder normal ist |
 | Roll Jump | Jump direkt aus Rolle oder Rollout | Fliegt weiter: horizontal ×1.2 (max. 650 px/s) |
 | Power-Dash | Dash nach einem Roll Jump | Stärkerer Dash (860 statt 720, danach 620 statt 520 px/s) |
 | Slide Jump | Rennen, abrupt Gegenrichtung (Rutsch-Pose), Jump; die Rutsch-Pose bleibt auch beim Zurück-und-wieder-vor | So hoch wie Sprung + Doppelsprung (~236 px), springt in die aktuell gedrückte Richtung |
@@ -97,8 +98,8 @@ Godot-Inspector am Player (Property `Tuning`) live ändern.
 Diese Punkte waren nicht in der Vorgabe und sind von Claude hinzugefügt:
 
 - **Wall Slide + Wall Kick:** In der Luft gegen eine Wand drücken bremst den
-  Fall. Jump an der Wand stösst schräg nach oben ab und lädt den Dash wieder
-  auf. Ermöglicht den „Kamin“ zwischen den beiden Hochregalen in Level 1.
+  Fall. Jump an der Wand (von ihr weg lenken) stösst schräg nach oben ab und lädt
+  Dash und Doppelsprung wieder auf. Ermöglicht den „Kamin“ zwischen den beiden Hochregalen in Level 1.
 - **Perfekter Rollout:** Rollout innerhalb von 0.05 s um die Landung herum gibt
   +0.1 auf den Boost-Faktor („PERFEKT!“).
 - **Coyote Time (0.1 s):** Kurz nach dem Verlassen einer Kante ist noch ein

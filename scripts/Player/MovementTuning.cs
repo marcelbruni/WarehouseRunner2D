@@ -56,7 +56,7 @@ public partial class MovementTuning : Resource
     [ExportGroup("Ground Roll")]
     [Export] public float GroundRollMinSpeed { get; set; } = 120f;
     [Export] public float GroundRollBoost { get; set; } = 1.2f;
-    [Export] public float GroundRollBoostTime { get; set; } = 0.6f;
+    [Export] public float GroundRollBoostTime { get; set; } = 0.5f;
 
     [ExportGroup("Roll Chain")]
     [Export] public float RollJumpHorizontalFactor { get; set; } = 1.2f;

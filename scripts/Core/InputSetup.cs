@@ -23,6 +23,21 @@ public partial class InputSetup : Node
         Register(ToggleHelp, Keys(Key.F1), Buttons());
         Register(BackToMenu, Keys(Key.Escape), Buttons(JoyButton.Back));
         Register(Continue, Keys(Key.Enter, Key.KpEnter), Buttons(JoyButton.Y));
+
+        EnsureJoypadButton("ui_accept", JoyButton.A);
+        EnsureJoypadButton("ui_up", JoyButton.DpadUp);
+        EnsureJoypadButton("ui_down", JoyButton.DpadDown);
+        EnsureJoypadButton("ui_left", JoyButton.DpadLeft);
+        EnsureJoypadButton("ui_right", JoyButton.DpadRight);
+    }
+
+    private static void EnsureJoypadButton(string action, JoyButton button)
+    {
+        var inputEvent = new InputEventJoypadButton { ButtonIndex = button };
+        if (!InputMap.ActionHasEvent(action, inputEvent))
+        {
+            InputMap.ActionAddEvent(action, inputEvent);
+        }
     }
 
     private readonly record struct Axis(JoyAxis Id, float Direction);

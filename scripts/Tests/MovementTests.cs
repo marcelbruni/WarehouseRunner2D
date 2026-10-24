@@ -52,6 +52,7 @@ public partial class MovementTests : Node2D
             ("WallKick_SteeringAwayFromWall_PushesUpAndAway", WallKickPushesUpAndAway),
             ("WallJump_SteeringIntoWall_IsDoubleJump", JumpSteeringIntoWallIsDoubleJump),
             ("WallJump_NoSteering_IsDoubleJump", JumpNeutralAtWallIsDoubleJump),
+            ("WallKick_AfterDoubleJump_RefreshesDoubleJump", WallKickRefreshesDoubleJump),
             ("CoyoteJump_ShortlyAfterLeavingEdge_IsGroundJump", CoyoteJumpAfterLeavingEdge),
             ("Dash_FallingAfterWalkingOffEdge_Works", () => DashWhileFallingOffEdge(dropHeight: 200f, ticksBeforeDash: 10)),
             ("Dash_FallingOffLowCrate_Works", () => DashWhileFallingOffEdge(dropHeight: 70f, ticksBeforeDash: 8)),
@@ -434,6 +435,23 @@ public partial class MovementTests : Node2D
         _input.PressJump();
         await Ticks(1);
         Expect("JumpIntoWall", _player.CurrentAirMove == AirMove.DoubleJump, $"air move {_player.CurrentAirMove}");
+    }
+
+    private async Task WallKickRefreshesDoubleJump()
+    {
+        AddConcrete(new Vector2(120f, -300f), new Vector2(40f, 600f));
+        await SettleAt(new Vector2(40f, FloorTop - PlayerHalfHeight));
+        _input.MoveX = 1f;
+        _input.PressJump();
+        await Ticks(10);
+        _input.PressJump();
+        await Until(() => _player.IsTouchingWall, 60);
+        _input.MoveX = -1f;
+        _input.PressJump();
+        await Ticks(20);
+        _input.PressJump();
+        await Ticks(1);
+        Expect("WallKickRefresh", _player.CurrentAirMove == AirMove.DoubleJump, $"air move after kick + jump {_player.CurrentAirMove}");
     }
 
     private async Task JumpNeutralAtWallIsDoubleJump()
