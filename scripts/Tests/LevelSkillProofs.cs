@@ -88,7 +88,7 @@ public partial class LevelSkillProofs : Node
             insufficient: Jumps(Opener.RunningJump, 900f, 1100f, 1340f, withDoubleJump: true, withDash: false)
                 .Concat(SlideJumps(1300f, withDoubleJump: false, withDash: false)));
 
-        var chimney = new Section("L1 Kamin 560 (Wall Kick)", scene, p => p.GlobalPosition.Y < -570f && p.IsOnGround, 900);
+        var chimney = new Section("L1 Kamin 560 (Wall Kick)", scene, p => p.GlobalPosition.X > 2460f, 900);
         await ProveWallClimb(chimney);
     }
 
@@ -229,18 +229,18 @@ public partial class LevelSkillProofs : Node
             Jumps(Opener.RunningJump, 2250f, 2280f, 2480f, withDoubleJump: true, withDash: false));
         await ProvePossible(new Section("L9 Erdgeschoss in den Kamin", scene, p => p.GlobalPosition.X > 3600f && p.GlobalPosition.Y > -60f, 400),
             [new Plan(Opener.WalkOff, 3060f, StandY, 0f, 0, null, null)]);
-        var chimney = new Section("L9 Breiter Kamin", scene, p => p.IsOnGround && p.GlobalPosition.Y < -720f, 1200);
-        await ProveClimb(chimney, new Vector2(3730f, StandY), floorY: 0f, useDash: false, exitAboveY: -760f, expectSuccess: true);
-        await ProvePossible(new Section("L9 Über den Kamin in den 1. Stock", scene, p => p.IsOnGround && p.GlobalPosition.X < 3500f && p.GlobalPosition.Y < -700f, 400),
-            Hops(3920f, -726f, 60).Select(plan => plan with { Dir = -1f, TriggerX = 100000f }));
-        await ProvePossible(new Section("L9 1. Stock nach links bis Rolltreppe", scene, p => p.GlobalPosition.Y < -1000f, 1200),
+        var chimney = new Section("L9 Breiter Kamin in den 1. Stock", scene, p => p.IsOnGround && p.GlobalPosition.Y < -700f && p.GlobalPosition.X < 3590f, 1200);
+        await ProveClimb(chimney, new Vector2(3730f, StandY), floorY: 0f, useDash: false, exitAboveY: -820f, expectSuccess: true, exitDirection: -1f);
+        await ProvePossible(new Section("L9 1. Stock nach links, Rolltreppe in den 2. Stock", scene, p => p.IsOnGround && p.GlobalPosition.Y < -1310f && p.GlobalPosition.X < 200f, 1500),
             Hops(3400f, -726f, 120).Select(plan => plan with { Dir = -1f, TriggerX = 100000f }));
         await ProvePossible(new Section("L9 Paket-Abstecher Kiste 1", scene, p => p.IsOnGround && p.GlobalPosition.Y < -1480f && p.GlobalPosition.X < -240f, 600),
             Jumps(Opener.RunningJump, 150f, -200f, -60f, withDoubleJump: true, withDash: false).Select(plan => plan with { Dir = -1f, StartY = -1326f, TriggerX = -plan.TriggerX - 260f }));
         await ProvePossible(new Section("L9 Paket-Abstecher Kiste 2", scene, p => p.IsOnGround && p.GlobalPosition.Y < -1680f, 600),
             Jumps(Opener.RunningJump, -330f, -320f, -260f, withDoubleJump: true, withDash: false).Select(plan => plan with { StartY = -1526f }));
+        await ProvePossible(new Section("L9 2. Stock Lücke über der Rolltreppe", scene, p => p.IsOnGround && p.GlobalPosition.X > 430f && p.GlobalPosition.Y < -1290f, 400),
+            Jumps(Opener.RunningJump, 0f, 60f, 195f, withDoubleJump: false, withDash: false).Select(plan => plan with { StartY = -1326f }));
         await ProvePossible(new Section("L9 2. Stock Band und Grube", scene, p => p.IsOnGround && p.GlobalPosition.X > 1760f && p.GlobalPosition.Y < -1290f, 600),
-            Jumps(Opener.RunningJump, 100f, 1340f, 1495f, withDoubleJump: true, withDash: true).Select(plan => plan with { StartY = -1326f }));
+            Jumps(Opener.RunningJump, 450f, 1340f, 1495f, withDoubleJump: true, withDash: true).Select(plan => plan with { StartY = -1326f }));
         await ProvePossible(new Section("L9 2. Stock Kistenstapel und Rutsche", scene, p => p.IsOnGround && p.GlobalPosition.X > 2480f, 600),
             Jumps(Opener.RunningJump, 1800f, 1830f, 1990f, withDoubleJump: true, withDash: false).Select(plan => plan with { StartY = -1326f }));
         await ProvePossible(new Section("L9 2. Stock Rückwärtsband bis Rutschen", scene, p => p.GlobalPosition.X > 4300f, 900),
@@ -387,7 +387,7 @@ public partial class LevelSkillProofs : Node
     private Task ProveWallClimb(Section section) =>
         ProveClimb(section, new Vector2(2300f, StandY), floorY: 0f, useDash: false, exitAboveY: null, expectSuccess: true);
 
-    private async Task ProveClimb(Section section, Vector2 start, float floorY, bool useDash, float? exitAboveY, bool expectSuccess)
+    private async Task ProveClimb(Section section, Vector2 start, float floorY, bool useDash, float? exitAboveY, bool expectSuccess, float exitDirection = 1f)
     {
         if (!IsSelected(section))
         {
@@ -417,7 +417,7 @@ public partial class LevelSkillProofs : Node
                 input.PressJump();
                 dashedSinceKick = false;
                 usedDoubleJump &= !doubleJumpEachKick;
-                exiting = direction > 0f && exitAboveY is { } exitY && probe.GlobalPosition.Y < exitY + 80f;
+                exiting = direction == exitDirection && exitAboveY is { } exitY && probe.GlobalPosition.Y < exitY + 80f;
             }
             else if (!exiting && airborne && probe.Velocity.Y >= -40f && !dashedSinceKick && useDash)
             {

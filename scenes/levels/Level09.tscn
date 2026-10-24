@@ -88,9 +88,9 @@ script = ExtResource("crate")
 Size = Vector2(80, 620)
 
 [node name="Crate6" type="StaticBody2D" parent="Course"]
-position = Vector2(3920, -350)
+position = Vector2(3920, -630)
 script = ExtResource("crate")
-Size = Vector2(80, 700)
+Size = Vector2(80, 1260)
 
 [node name="Crate7" type="StaticBody2D" parent="Course"]
 position = Vector2(2050, -800)
@@ -197,11 +197,16 @@ Size = Vector2(1008, 20)
 BeltSpeed = -300
 
 [node name="Concrete6" type="StaticBody2D" parent="Course"]
-position = Vector2(550, -1280)
+position = Vector2(-100, -1280)
 script = ExtResource("concrete")
-Size = Vector2(1900, 40)
+Size = Vector2(600, 40)
 
 [node name="Concrete7" type="StaticBody2D" parent="Course"]
+position = Vector2(960, -1280)
+script = ExtResource("concrete")
+Size = Vector2(1080, 40)
+
+[node name="Concrete8" type="StaticBody2D" parent="Course"]
 position = Vector2(3025, -1280)
 script = ExtResource("concrete")
 Size = Vector2(2550, 40)
@@ -233,7 +238,7 @@ position = Vector2(3250, 0)
 script = ExtResource("checkpoint")
 
 [node name="Checkpoint4" type="Area2D" parent="."]
-position = Vector2(3920, -700)
+position = Vector2(3540, -760)
 script = ExtResource("checkpoint")
 
 [node name="Checkpoint5" type="Area2D" parent="."]
