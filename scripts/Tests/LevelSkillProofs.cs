@@ -16,10 +16,12 @@ public partial class LevelSkillProofs : Node
     private static readonly PackedScene PlayerScene = GD.Load<PackedScene>("res://scenes/player/Player.tscn");
 
     private const string OnlyArgument = "--only=";
+    private const string TraceArgument = "--trace";
 
     private readonly List<string> _failures = new();
     private readonly HashSet<PlayerController> _scanned = new();
     private string? _only;
+    private bool _trace;
 
     private enum Opener
     {
@@ -43,6 +45,7 @@ public partial class LevelSkillProofs : Node
     {
         foreach (var argument in OS.GetCmdlineUserArgs())
         {
+            _trace |= argument == TraceArgument;
             if (argument.StartsWith(OnlyArgument))
             {
                 _only = argument[OnlyArgument.Length..];
@@ -56,6 +59,8 @@ public partial class LevelSkillProofs : Node
         await ProveAiLevel();
         await ProveFriendsLevel();
         await ProveSlideLevel();
+        await ProveNightShiftLevel();
+        await ProveClimbingHallLevel();
 
         foreach (var failure in _failures)
         {
@@ -211,6 +216,60 @@ public partial class LevelSkillProofs : Node
             [new Plan(Opener.WalkOff, 5620f, 1048f, 0f, 0, null, null)]);
     }
 
+    private async Task ProveNightShiftLevel()
+    {
+        const string scene = "res://scenes/levels/Level09.tscn";
+        await ProvePossible(new Section("L9 Start bis Grube 1", scene, p => p.IsOnGround && p.GlobalPosition.X > 1360f && p.GlobalPosition.Y < 0f, 900),
+            Hops(0f, StandY, 120));
+        await ProvePossible(new Section("L9 Rückwärtsband und Wand", scene, p => p.IsOnGround && p.GlobalPosition.X > 2900f && p.GlobalPosition.Y < 0f, 900),
+            Hops(1400f, StandY, 120));
+        await ProvePossible(new Section("L9 Grube 2 (400)", scene, p => p.IsOnGround && p.GlobalPosition.X > 4010f && p.GlobalPosition.Y < 0f, 600),
+            Jumps(Opener.RunningJump, 2950f, 3460f, 3595f, withDoubleJump: true, withDash: true));
+        await ProvePossible(new Section("L9 Rolltreppe bis Kamin", scene, p => p.GlobalPosition.X > 5240f, 600),
+            [new Plan(Opener.WalkOff, 4050f, StandY, 0f, 0, null, null)]);
+        var chimney = new Section("L9 Breiter Kamin", scene, p => p.IsOnGround && p.GlobalPosition.Y < -850f, 1200);
+        await ProveClimb(chimney, new Vector2(5380f, StandY), floorY: 0f, useDash: true, exitAboveY: -900f, expectSuccess: true);
+        await ProveClimb(chimney with { Name = "L9 Breiter Kamin ohne Dash" }, new Vector2(5380f, StandY), floorY: 0f, useDash: false, exitAboveY: -900f, expectSuccess: false);
+        await ProvePossible(new Section("L9 Kamin oben bis Grube 3", scene, p => p.IsOnGround && p.GlobalPosition.X > 6510f && p.GlobalPosition.Y < 0f, 600),
+            Hops(5580f, -866f, 60));
+        await ProvePossible(new Section("L9 Kistenstapel bis Grube 4", scene, p => p.IsOnGround && p.GlobalPosition.X > 8460f && p.GlobalPosition.Y < 0f, 900),
+            Hops(6560f, StandY, 120).Concat(Jumps(Opener.RunningJump, 7300f, 7800f, 7990f, withDoubleJump: true, withDash: true)));
+        await ProvePossible(new Section("L9 Rückwärtsband bis Ziel", scene, p => p.IsOnGround && p.GlobalPosition.X > 9700f && p.GlobalPosition.Y < 0f, 900),
+            Hops(8520f, StandY, 120));
+    }
+
+    private async Task ProveClimbingHallLevel()
+    {
+        const string scene = "res://scenes/levels/Level10.tscn";
+        await ProveClimb(new Section("L10 Kamin 1 aufs Band", scene, p => p.IsOnGround && p.GlobalPosition.Y < -530f && p.GlobalPosition.X > 900f, 1200),
+            new Vector2(750f, StandY), floorY: 0f, useDash: false, exitAboveY: -560f, expectSuccess: true);
+        await ProveClimb(new Section("L10 Kamin 2 aufs Band", scene, p => p.IsOnGround && p.GlobalPosition.Y < -1010f && p.GlobalPosition.X > 2200f, 1200),
+            new Vector2(2050f, -546f), floorY: -520f, useDash: false, exitAboveY: -1040f, expectSuccess: true);
+        await ProvePossible(new Section("L10 Band in Speed Jump 1", scene, p => p.IsOnGround && p.GlobalPosition.X > 2950f && p.GlobalPosition.X < 3780f, 500),
+            [new Plan(Opener.WalkOff, 2300f, -1026f, 0f, 0, null, null)]);
+        foreach (var (name, startX, startY, landFrom, landTo, landAbove) in new[]
+        {
+            ("L10 Speed Jump 1 → 2", 2980f, -970f, 4250f, 5080f, -700f),
+            ("L10 Speed Jump 2 → 3", 4280f, -870f, 5450f, 6280f, -600f),
+            ("L10 Speed Jump 3 → Platte", 5480f, -770f, 6550f, 8200f, -505f),
+        })
+        {
+            await ProvePossible(new Section(name, scene, p => p.IsOnGround && p.GlobalPosition.X > landFrom && p.GlobalPosition.X < landTo && p.GlobalPosition.Y < landAbove, 500),
+                Jumps(Opener.RunningJump, startX, startX + 700f, startX + 810f, withDoubleJump: true, withDash: true)
+                    .Append(new Plan(Opener.WalkOff, startX, startY, 0f, 0, null, null))
+                    .Select(plan => plan with { StartY = startY }));
+        }
+
+        await ProvePossible(new Section("L10 Abschussrampe → Platte", scene, p => p.IsOnGround && p.GlobalPosition.Y < -930f, 500),
+            [new Plan(Opener.WalkOff, 6700f, -526f, 0f, 0, null, null)]);
+        await ProveClimb(new Section("L10 Kamin 3 aufs Band", scene, p => p.IsOnGround && p.GlobalPosition.Y < -1380f && p.GlobalPosition.X > 8200f, 1200),
+            new Vector2(8050f, -946f), floorY: -920f, useDash: false, exitAboveY: -1410f, expectSuccess: true);
+        await ProvePossible(new Section("L10 Band, Rutschen bis Ziel", scene, p => p.IsOnGround && p.GlobalPosition.X > 10500f && p.GlobalPosition.Y > -220f, 900),
+            [new Plan(Opener.WalkOff, 8300f, -1396f, 0f, 0, null, null)]);
+        await ProvePossible(new Section("L10 Paketkiste", scene, p => p.IsOnGround && p.GlobalPosition.Y < -330f, 400),
+            Jumps(Opener.RunningJump, 11000f, 11150f, 11340f, withDoubleJump: true, withDash: false).Select(plan => plan with { StartY = -204f }));
+    }
+
     private static IEnumerable<Plan> Jumps(Opener opener, float startX, float firstTrigger, float lastTrigger, bool withDoubleJump, bool withDash)
     {
         for (var trigger = firstTrigger; trigger <= lastTrigger; trigger += 20f)
@@ -314,7 +373,10 @@ public partial class LevelSkillProofs : Node
         }
     }
 
-    private async Task ProveWallClimb(Section section)
+    private Task ProveWallClimb(Section section) =>
+        ProveClimb(section, new Vector2(2300f, StandY), floorY: 0f, useDash: false, exitAboveY: null, expectSuccess: true);
+
+    private async Task ProveClimb(Section section, Vector2 start, float floorY, bool useDash, float? exitAboveY, bool expectSuccess)
     {
         if (!IsSelected(section))
         {
@@ -322,36 +384,64 @@ public partial class LevelSkillProofs : Node
         }
 
         var level = LoadLevel(section.ScenePath);
-        var probe = SpawnProbe(level, new Vector2(2300f, StandY));
+        var probe = SpawnProbe(level, start);
         var input = (ScriptedInput)probe.InputSource;
         var success = false;
         var direction = 1f;
+        var dashedSinceKick = false;
+        var usedDoubleJump = false;
+        var exiting = false;
+        await NextTick();
         input.MoveX = direction;
         input.PressJump();
         for (var tick = 0; tick < section.Ticks && !success; tick++)
         {
             await NextTick();
-            if (probe.IsTouchingWall && probe.State == PlayerState.Airborne)
+            var airborne = probe.State is PlayerState.Airborne or PlayerState.Dashing;
+            if (!exiting && probe.IsTouchingWall && airborne)
             {
                 direction = -direction;
                 input.MoveX = direction;
                 input.PressJump();
+                dashedSinceKick = false;
+                exiting = direction > 0f && exitAboveY is { } exitY && probe.GlobalPosition.Y < exitY + 80f;
             }
-            else if (probe.State == PlayerState.Airborne && probe.Velocity.Y > 0f && probe.GlobalPosition.Y > -200f)
+            else if (!exiting && airborne && probe.Velocity.Y >= -40f && !dashedSinceKick && useDash)
+            {
+                input.PressAction();
+                dashedSinceKick = true;
+            }
+            else if (!exiting && airborne && probe.Velocity.Y >= 0f && !usedDoubleJump && probe.GlobalPosition.Y < floorY - 60f)
             {
                 input.PressJump();
+                usedDoubleJump = true;
+            }
+            else if (probe.State == PlayerState.Airborne && probe.Velocity.Y > 0f && probe.GlobalPosition.Y > floorY - 200f && !usedDoubleJump)
+            {
+                input.PressJump();
+                usedDoubleJump = true;
             }
 
             success = section.Reached(probe);
+            Trace(section, tick, probe);
         }
 
-        GD.Print($"{section.Name}: Wall-Kick-Bot {(success ? "oben angekommen" : "gescheitert")}");
-        if (!success)
+        var outcome = success ? "oben angekommen" : $"nicht hochgekommen (y {probe.GlobalPosition.Y:0})";
+        GD.Print($"{section.Name}: Kletter-Bot {(useDash ? "mit" : "ohne")} Dash {outcome}");
+        if (success != expectSuccess)
         {
-            _failures.Add($"{section.Name}: Wall-Kick-Bot kommt nicht hoch (y {probe.GlobalPosition.Y:0})");
+            _failures.Add($"{section.Name}: Kletter-Bot {(useDash ? "mit" : "ohne")} Dash: erwartet {(expectSuccess ? "Erfolg" : "Scheitern")}, war {outcome}");
         }
 
         UnloadLevel(level);
+    }
+
+    private void Trace(Section section, int tick, PlayerController probe)
+    {
+        if (_trace && tick % 15 == 0)
+        {
+            GD.Print($"  {section.Name} t{tick} pos {probe.GlobalPosition.X:0},{probe.GlobalPosition.Y:0} vel {probe.Velocity.X:0},{probe.Velocity.Y:0} {probe.State} wall {probe.IsTouchingWall}");
+        }
     }
 
     private sealed record Result(Plan Plan, bool Success, int SuccessTick);
@@ -376,6 +466,7 @@ public partial class LevelSkillProofs : Node
             }
 
             await NextTick();
+            Trace(section, tick, probes[0].Player);
             foreach (var probe in probes.Where(p => !p.State.Success && !p.State.Dead))
             {
                 probe.State.Dead = probe.Player.GlobalPosition.Y - StandY > section.DiesBelowY || _scanned.Contains(probe.Player);

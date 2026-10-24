@@ -10,6 +10,8 @@ public partial class MainMenu : Node2D
     private static readonly Color ButtonFocus = new(0.95f, 0.55f, 0.12f, 0.95f);
     private static readonly Color Accent = new(1f, 0.82f, 0.1f);
 
+    private const int ColumnCount = 2;
+
     private static int _lastSelectedIndex;
 
     private Label _skills = null!;
@@ -28,11 +30,23 @@ public partial class MainMenu : Node2D
         root.AddChild(CreateLabel("Levelauswahl", 26, Colors.White));
         root.AddChild(new Control { CustomMinimumSize = new Vector2(0f, 10f) });
 
+        var columns = new HBoxContainer { Alignment = BoxContainer.AlignmentMode.Center };
+        columns.AddThemeConstantOverride("separation", 20);
+        root.AddChild(columns);
+        var rowsPerColumn = Mathf.CeilToInt(LevelCatalog.Levels.Count / (float)ColumnCount);
+        VBoxContainer? column = null;
         var buttons = new Button[LevelCatalog.Levels.Count];
         for (var i = 0; i < LevelCatalog.Levels.Count; i++)
         {
+            if (i % rowsPerColumn == 0)
+            {
+                column = new VBoxContainer();
+                column.AddThemeConstantOverride("separation", 10);
+                columns.AddChild(column);
+            }
+
             buttons[i] = CreateLevelButton(i, LevelCatalog.Levels[i]);
-            root.AddChild(CenterInRow(buttons[i]));
+            column!.AddChild(buttons[i]);
         }
 
         _skills = CreateLabel(string.Empty, 22, new Color(0.85f, 0.88f, 0.92f));
@@ -49,11 +63,11 @@ public partial class MainMenu : Node2D
         var bestText = best is { } seconds ? Hud.FormatTime(seconds) : "--:--.--";
         var button = new Button
         {
-            Text = $"{index + 1}.  {level.Title}        Bestzeit {bestText}",
-            CustomMinimumSize = new Vector2(760f, 56f),
+            Text = $"{index + 1}.  {level.Title}     {bestText}",
+            CustomMinimumSize = new Vector2(540f, 52f),
             Alignment = HorizontalAlignment.Left,
         };
-        button.AddThemeFontSizeOverride("font_size", 26);
+        button.AddThemeFontSizeOverride("font_size", 23);
         button.AddThemeStyleboxOverride("normal", CreateStyle(ButtonIdle));
         button.AddThemeStyleboxOverride("hover", CreateStyle(ButtonIdle.Lightened(0.15f)));
         button.AddThemeStyleboxOverride("pressed", CreateStyle(ButtonFocus));
@@ -71,12 +85,6 @@ public partial class MainMenu : Node2D
 
     private static void RememberSelection(int index) => _lastSelectedIndex = index;
 
-    private static CenterContainer CenterInRow(Control control)
-    {
-        var row = new CenterContainer();
-        row.AddChild(control);
-        return row;
-    }
 
     private static Label CreateLabel(string text, int fontSize, Color color) => new()
     {

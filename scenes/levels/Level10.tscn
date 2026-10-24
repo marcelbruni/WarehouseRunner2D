@@ -1,0 +1,264 @@
+[gd_scene load_steps=18 format=3]
+
+[ext_resource type="Script" path="res://scripts/Level/RaceController.cs" id="race"]
+[ext_resource type="Script" path="res://scripts/Level/WarehouseBackground.cs" id="background"]
+[ext_resource type="Script" path="res://scripts/Elements/Crate.cs" id="crate"]
+[ext_resource type="Script" path="res://scripts/Elements/ConcreteBlock.cs" id="concrete"]
+[ext_resource type="Script" path="res://scripts/Elements/TimeClock.cs" id="clock"]
+[ext_resource type="Script" path="res://scripts/Elements/ExpressPackage.cs" id="package"]
+[ext_resource type="Script" path="res://scripts/Elements/LoadingDock.cs" id="dock"]
+[ext_resource type="Script" path="res://scripts/Elements/Checkpoint.cs" id="checkpoint"]
+[ext_resource type="Script" path="res://scripts/Elements/KillZone.cs" id="killzone"]
+[ext_resource type="Script" path="res://scripts/Elements/HintSign.cs" id="sign"]
+[ext_resource type="Script" path="res://scripts/Elements/ConveyorBelt.cs" id="belt"]
+[ext_resource type="Script" path="res://scripts/Elements/MovingPlatform.cs" id="moving"]
+[ext_resource type="Script" path="res://scripts/Elements/WarehouseRobot.cs" id="robot"]
+[ext_resource type="Script" path="res://scripts/Elements/ScanBeam.cs" id="scan"]
+[ext_resource type="Script" path="res://scripts/Elements/BubbleWrap.cs" id="bubble"]
+[ext_resource type="Script" path="res://scripts/Elements/LaunchRamp.cs" id="launch"]
+[ext_resource type="PackedScene" path="res://scenes/player/Player.tscn" id="player"]
+
+[node name="Level10" type="Node2D"]
+script = ExtResource("race")
+LevelId = "level10"
+CameraBounds = Rect2i(-860, -1700, 13220, 1920)
+
+[node name="Background" type="Parallax2D" parent="."]
+z_index = -10
+scroll_scale = Vector2(0.6, 0.85)
+
+[node name="Warehouse" type="Node2D" parent="Background"]
+script = ExtResource("background")
+Height = 2300
+
+[node name="Course" type="Node2D" parent="."]
+
+[node name="ClockIn1" type="Area2D" parent="."]
+position = Vector2(-400, 0)
+script = ExtResource("clock")
+
+[node name="Sign1" type="Node2D" parent="."]
+position = Vector2(-150, 0)
+script = ExtResource("sign")
+Text = "Kletterhalle\nWall Kick, Wall Kick, Band!"
+
+[node name="Sign2" type="Node2D" parent="."]
+position = Vector2(2500, -1000)
+script = ExtResource("sign")
+Text = "Speed Jumps\nrunter, gerade, hoch"
+
+[node name="LoadingDock1" type="Area2D" parent="."]
+position = Vector2(11800, -178)
+script = ExtResource("dock")
+
+[node name="ClockOut1" type="Area2D" parent="."]
+position = Vector2(12050, -178)
+script = ExtResource("clock")
+Mode = 1
+
+[node name="Crate1" type="StaticBody2D" parent="Course"]
+position = Vector2(640, -360)
+script = ExtResource("crate")
+Size = Vector2(80, 440)
+
+[node name="Crate2" type="StaticBody2D" parent="Course"]
+position = Vector2(860, -260)
+script = ExtResource("crate")
+Size = Vector2(80, 520)
+
+[node name="Crate3" type="StaticBody2D" parent="Course"]
+position = Vector2(1940, -860)
+script = ExtResource("crate")
+Size = Vector2(80, 400)
+
+[node name="Crate4" type="StaticBody2D" parent="Course"]
+position = Vector2(2160, -760)
+script = ExtResource("crate")
+Size = Vector2(80, 480)
+
+[node name="Crate5" type="StaticBody2D" parent="Course"]
+position = Vector2(7940, -1245)
+script = ExtResource("crate")
+Size = Vector2(80, 370)
+
+[node name="Crate6" type="StaticBody2D" parent="Course"]
+position = Vector2(8160, -1145)
+script = ExtResource("crate")
+Size = Vector2(80, 450)
+
+[node name="Crate7" type="StaticBody2D" parent="Course"]
+position = Vector2(9251.41, -1017.32)
+rotation = 0.610865
+script = ExtResource("crate")
+Size = Vector2(900, 60)
+
+[node name="Crate8" type="StaticBody2D" parent="Course"]
+position = Vector2(10101.4, -411.32)
+rotation = 0.610865
+script = ExtResource("crate")
+Size = Vector2(900, 60)
+
+[node name="Crate9" type="StaticBody2D" parent="Course"]
+position = Vector2(11400, -258)
+script = ExtResource("crate")
+Size = Vector2(100, 160)
+
+[node name="Concrete1" type="StaticBody2D" parent="Course"]
+position = Vector2(-830, -750)
+script = ExtResource("concrete")
+Size = Vector2(60, 1900)
+
+[node name="Concrete2" type="StaticBody2D" parent="Course"]
+position = Vector2(12330, -750)
+script = ExtResource("concrete")
+Size = Vector2(60, 1900)
+
+[node name="Concrete3" type="StaticBody2D" parent="Course"]
+position = Vector2(50, 100)
+script = ExtResource("concrete")
+Size = Vector2(1700, 200)
+
+[node name="Belt1" type="StaticBody2D" parent="Course"]
+position = Vector2(1200, -510)
+rotation = 0.000000
+script = ExtResource("belt")
+Size = Vector2(608, 20)
+BeltSpeed = 350
+
+[node name="Concrete4" type="StaticBody2D" parent="Course"]
+position = Vector2(1850, -500)
+script = ExtResource("concrete")
+Size = Vector2(700, 40)
+
+[node name="Belt2" type="StaticBody2D" parent="Course"]
+position = Vector2(2500, -990)
+rotation = 0.000000
+script = ExtResource("belt")
+Size = Vector2(608, 20)
+BeltSpeed = 350
+
+[node name="Belt3" type="StaticBody2D" parent="Course"]
+position = Vector2(3075, -816.34)
+rotation = 0.523278
+script = ExtResource("belt")
+Size = Vector2(308.2, 20)
+BeltSpeed = 450
+
+[node name="Belt4" type="StaticBody2D" parent="Course"]
+position = Vector2(3360, -740)
+rotation = 0.000000
+script = ExtResource("belt")
+Size = Vector2(308, 20)
+BeltSpeed = 450
+
+[node name="Belt5" type="StaticBody2D" parent="Course"]
+position = Vector2(3646.75, -833.82)
+rotation = -0.612261
+script = ExtResource("belt")
+Size = Vector2(328.2, 20)
+BeltSpeed = 450
+
+[node name="Belt6" type="StaticBody2D" parent="Course"]
+position = Vector2(4375, -716.34)
+rotation = 0.523278
+script = ExtResource("belt")
+Size = Vector2(308.2, 20)
+BeltSpeed = 450
+
+[node name="Belt7" type="StaticBody2D" parent="Course"]
+position = Vector2(4660, -640)
+rotation = 0.000000
+script = ExtResource("belt")
+Size = Vector2(308, 20)
+BeltSpeed = 450
+
+[node name="Belt8" type="StaticBody2D" parent="Course"]
+position = Vector2(4946.75, -733.82)
+rotation = -0.612261
+script = ExtResource("belt")
+Size = Vector2(328.2, 20)
+BeltSpeed = 450
+
+[node name="Belt9" type="StaticBody2D" parent="Course"]
+position = Vector2(5575, -616.34)
+rotation = 0.523278
+script = ExtResource("belt")
+Size = Vector2(308.2, 20)
+BeltSpeed = 450
+
+[node name="Belt10" type="StaticBody2D" parent="Course"]
+position = Vector2(5860, -540)
+rotation = 0.000000
+script = ExtResource("belt")
+Size = Vector2(308, 20)
+BeltSpeed = 450
+
+[node name="Belt11" type="StaticBody2D" parent="Course"]
+position = Vector2(6146.75, -633.82)
+rotation = -0.612261
+script = ExtResource("belt")
+Size = Vector2(328.2, 20)
+BeltSpeed = 450
+
+[node name="Concrete5" type="StaticBody2D" parent="Course"]
+position = Vector2(7375, -400)
+script = ExtResource("concrete")
+Size = Vector2(1650, 200)
+
+[node name="Concrete6" type="StaticBody2D" parent="Course"]
+position = Vector2(7825, -900)
+script = ExtResource("concrete")
+Size = Vector2(750, 40)
+
+[node name="Belt12" type="StaticBody2D" parent="Course"]
+position = Vector2(8500, -1360)
+rotation = 0.000000
+script = ExtResource("belt")
+Size = Vector2(608, 20)
+BeltSpeed = 350
+
+[node name="Concrete7" type="StaticBody2D" parent="Course"]
+position = Vector2(11393.5, -78)
+script = ExtResource("concrete")
+Size = Vector2(1813, 200)
+
+[node name="Checkpoint1" type="Area2D" parent="."]
+position = Vector2(1000, -520)
+script = ExtResource("checkpoint")
+
+[node name="Checkpoint2" type="Area2D" parent="."]
+position = Vector2(2300, -1000)
+script = ExtResource("checkpoint")
+
+[node name="Checkpoint3" type="Area2D" parent="."]
+position = Vector2(6650, -500)
+script = ExtResource("checkpoint")
+
+[node name="LaunchRamp1" type="StaticBody2D" parent="."]
+position = Vector2(7000, -500)
+script = ExtResource("launch")
+LaunchVelocity = Vector2(380, -1450)
+
+[node name="Checkpoint4" type="Area2D" parent="."]
+position = Vector2(7600, -920)
+script = ExtResource("checkpoint")
+
+[node name="Checkpoint5" type="Area2D" parent="."]
+position = Vector2(8300, -1370)
+script = ExtResource("checkpoint")
+
+[node name="Checkpoint6" type="Area2D" parent="."]
+position = Vector2(10587, -178)
+script = ExtResource("checkpoint")
+
+[node name="ExpressPackage1" type="Area2D" parent="."]
+position = Vector2(11400, -378)
+script = ExtResource("package")
+
+[node name="KillZone1" type="Area2D" parent="."]
+position = Vector2(5750, 450)
+script = ExtResource("killzone")
+TriggerSize = Vector2(13500, 100)
+
+[node name="Player" parent="." instance=ExtResource("player")]
+position = Vector2(-600, -26)
