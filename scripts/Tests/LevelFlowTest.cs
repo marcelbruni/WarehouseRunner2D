@@ -42,6 +42,11 @@ public partial class LevelFlowTest : Node
         var race = GD.Load<PackedScene>(level.ScenePath).Instantiate<RaceController>();
         race.ProcessMode = ProcessModeEnum.Pausable;
         race.SaveRecords = false;
+        if (race.LevelId != level.Id)
+        {
+            _failures.Add($"{level.Id}: scene saves records as '{race.LevelId}'");
+        }
+
         AddChild(race);
         var player = race.GetNode<PlayerController>("Player");
         player.InputSource = new IdleInput();

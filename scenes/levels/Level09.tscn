@@ -20,7 +20,7 @@
 
 [node name="Level09" type="Node2D"]
 script = ExtResource("race")
-LevelId = "level09"
+LevelId = "level09_hochregal"
 CameraBounds = Rect2i(-860, -1900, 7520, 2120)
 
 [node name="Background" type="Parallax2D" parent="."]
