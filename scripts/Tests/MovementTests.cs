@@ -36,7 +36,8 @@ public partial class MovementTests : Node2D
             ("Rollout_PressedJustBeforeLanding_IsBufferedAndPerfect", RolloutBufferedBeforeLanding),
             ("GroundRoll_WhileRunning_IsSlightlySlowerThanRollout", GroundRollWhileRunningIsSlowerThanRollout),
             ("GroundRoll_WhenStanding_DoesNothing", GroundRollWhenStandingDoesNothing),
-            ("GroundRoll_AgainWhileStillFast_IsBlockedUntilSpeedIsNormal", GroundRollBlockedUntilSpeedNormal),
+            ("GroundRoll_AgainDuringCooldown_IsBlocked", GroundRollBlockedDuringCooldown),
+            ("GroundRoll_AtVeryHighSpeed_Works", GroundRollAtVeryHighSpeed),
             ("RollJump_OutOfRoll_FliesFartherThanRunningJump", RollJumpFliesFarther),
             ("PowerDash_AfterRollJump_IsFasterThanDash", PowerDashAfterRollJumpIsFaster),
             ("SpeedLoop_RollJumpDash_SustainsHighSpeed", () => SpeedLoopSustainsHighSpeed(startWithRoll: true)),
@@ -233,19 +234,42 @@ public partial class MovementTests : Node2D
         Expect("GroundRoll", roll > _player.Tuning.RunSpeed * 1.1f && roll < rollout, $"roll {roll:0} rollout {rollout:0}");
     }
 
-    private async Task GroundRollBlockedUntilSpeedNormal()
+    private async Task GroundRollBlockedDuringCooldown()
     {
+        var cooldownTicks = Mathf.CeilToInt(_player.Tuning.GroundRollCooldown * Engine.PhysicsTicksPerSecond);
+        var rolloutTicks = Mathf.CeilToInt(_player.Tuning.RolloutDuration * Engine.PhysicsTicksPerSecond);
         await RunTo(direction: 1, ticks: 60);
         _input.PressDashOrRoll();
-        await Ticks(45);
+        await Ticks(rolloutTicks + 3);
         _input.PressDashOrRoll();
         await Ticks(1);
-        Expect("GroundRollRepeat", _player.State != PlayerState.RollingOut, $"second roll while fast: state {_player.State}, speed {_player.GroundSpeed:0}");
-        await Until(() => !_player.IsBoosted && Mathf.Abs(_player.GroundSpeed) <= _player.Tuning.RunSpeed, 240);
-        await Ticks(1);
+        Expect("GroundRollCooldown", _player.State != PlayerState.RollingOut, $"second roll during cooldown: state {_player.State}");
+        await Ticks(cooldownTicks - rolloutTicks);
         _input.PressDashOrRoll();
         await Ticks(1);
-        Expect("GroundRollRepeat", _player.State == PlayerState.RollingOut, $"roll after speed normal: state {_player.State}");
+        Expect("GroundRollCooldown", _player.State == PlayerState.RollingOut, $"roll after cooldown: state {_player.State}, speed {_player.GroundSpeed:0}");
+    }
+
+    private async Task GroundRollAtVeryHighSpeed()
+    {
+        _input.MoveX = 1f;
+        _player.Launch(new Vector2(950f, 0f));
+        await Ticks(30);
+        Expect("GroundRollFast", _player.State == PlayerState.Grounded, $"not running before roll: state {_player.State}");
+        var speedBefore = _player.GroundSpeed;
+        _input.PressDashOrRoll();
+        await Ticks(1);
+        Expect("GroundRollFast", _player.State == PlayerState.RollingOut, $"no roll at speed {speedBefore:0}: state {_player.State}");
+        Expect("GroundRollFast", _player.GroundSpeed >= speedBefore - 10f, $"roll lost speed: {speedBefore:0} -> {_player.GroundSpeed:0}");
+
+        // A second roll while still far above run speed must work once the cooldown is over.
+        await Until(() => _player.State == PlayerState.Grounded, 120);
+        await Ticks(Mathf.CeilToInt(_player.Tuning.GroundRollCooldown * Engine.PhysicsTicksPerSecond));
+        var speedAgain = _player.GroundSpeed;
+        _input.PressDashOrRoll();
+        await Ticks(1);
+        Expect("GroundRollFast", speedAgain > _player.Tuning.RunSpeed * 1.3f, $"test setup: speed {speedAgain:0} already back near run speed");
+        Expect("GroundRollFast", _player.State == PlayerState.RollingOut, $"no second roll at speed {speedAgain:0}: state {_player.State}");
     }
 
     private async Task GroundRollWhenStandingDoesNothing()

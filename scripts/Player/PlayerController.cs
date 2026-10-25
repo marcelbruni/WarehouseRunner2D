@@ -86,7 +86,7 @@ public partial class PlayerController : CharacterBody2D
     private float _dashSpeed;
     private float _dashExitSpeed;
     private bool _isRollJumpChain;
-    private bool _isGroundRollLocked;
+    private float _groundRollCooldownTimer;
     private float _slideJumpGraceTimer;
     private float _skidCooldownTimer;
     private float _slopeEntryLockTimer;
@@ -223,7 +223,7 @@ public partial class PlayerController : CharacterBody2D
         _canDoubleJump = true;
         _canDash = true;
         _isRollJumpChain = false;
-        _isGroundRollLocked = false;
+        _groundRollCooldownTimer = 0f;
         CurrentAirMove = AirMove.Fall;
         ChangeState(PlayerState.Airborne);
         SetCurled(false);
@@ -289,6 +289,7 @@ public partial class PlayerController : CharacterBody2D
         _slideJumpGraceTimer -= dt;
         _skidCooldownTimer -= dt;
         _slopeEntryLockTimer -= dt;
+        _groundRollCooldownTimer -= dt;
         _postLandingRollTimer -= dt;
         _timeSinceLanding += dt;
         _boostTimer -= dt;
@@ -316,14 +317,9 @@ public partial class PlayerController : CharacterBody2D
             return;
         }
 
-        if (_isGroundRollLocked && !IsBoosted && Mathf.Abs(_groundSpeed) <= Tuning.RunSpeed)
+        if (_rollRequested && IsRunning(input) && _groundRollCooldownTimer <= 0f)
         {
-            _isGroundRollLocked = false;
-        }
-
-        if (_rollRequested && IsRunning(input) && !_isGroundRollLocked)
-        {
-            _isGroundRollLocked = true;
+            _groundRollCooldownTimer = Tuning.GroundRollCooldown;
             StartRollout(RolloutKind.Ground, perfect: false, input);
             return;
         }

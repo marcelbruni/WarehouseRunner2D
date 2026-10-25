@@ -70,7 +70,7 @@ Alle Auslöser reagieren auf die Kollisionsebenen 1 (Welt/Spieler) und 2 („Gei
 | Jump → Dash → Jump | Jump während/nach dem Dash | Doppelsprung, der den Dash-Schwung mitnimmt |
 | Rollout nach Jump-Landung | Aktionstaste kurz vor/bei/nach der Landung | Rolle + Boost (×1.3 für 0.8 s) |
 | Rollout nach Dash-Landung | wie oben, nach einem Dash | Stärkerer Boost (×1.45 für 1.0 s) |
-| Rolle | Aktionstaste am Boden, nur im Laufen | Etwas langsamer als der Rollout (×1.2 für 0.5 s); erneut erst, wenn das Tempo wieder normal ist |
+| Rolle | Aktionstaste am Boden, nur im Laufen | Etwas langsamer als der Rollout (×1.2 für 0.5 s); erneut nach 0.45 s, bei jedem Tempo |
 | Roll Jump | Jump direkt aus Rolle oder Rollout | Fliegt weiter: horizontal ×1.2 (max. 650 px/s) |
 | Power-Dash | Dash nach einem Roll Jump | Stärkerer Dash (860 statt 720, danach 620 statt 520 px/s) |
 | Slide Jump | Rennen, abrupt Gegenrichtung (Rutsch-Pose), Jump; die Rutsch-Pose bleibt auch beim Zurück-und-wieder-vor | So hoch wie Sprung + Doppelsprung (~236 px), springt in die aktuell gedrückte Richtung |
