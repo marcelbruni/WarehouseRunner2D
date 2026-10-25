@@ -93,6 +93,9 @@ public partial class PlayerController : CharacterBody2D
 
     private float _wallNormalX;
     private float _wallCoyoteTimer;
+    private float _wallImpactSpeed;
+    private Vector2 _wallKickChain;
+    private bool _wallKickChainBroken;
     private float _steerLockTimer;
 
     private float _boostTimer;
@@ -224,6 +227,9 @@ public partial class PlayerController : CharacterBody2D
         _canDash = true;
         _isRollJumpChain = false;
         _groundRollCooldownTimer = 0f;
+        _wallImpactSpeed = 0f;
+        _wallKickChain = Vector2.Zero;
+        _wallKickChainBroken = false;
         CurrentAirMove = AirMove.Fall;
         ChangeState(PlayerState.Airborne);
         SetCurled(false);
@@ -439,6 +445,7 @@ public partial class PlayerController : CharacterBody2D
             var fromDash = State == PlayerState.Dashing || CurrentAirMove == AirMove.Dash;
             var horizontal = fromDash ? _dashDirection * _dashExitSpeed : Velocity.X;
             _canDoubleJump = false;
+            _wallKickChainBroken = true;
             StartJump(AirMove.DoubleJump, Tuning.DoubleJumpSpeed, horizontal, fromDash ? Trick.DashJump : Trick.DoubleJump);
             return true;
         }
@@ -489,12 +496,26 @@ public partial class PlayerController : CharacterBody2D
 
     private void StartWallKick()
     {
+        // A kick never gives less than the speed carried into it: the impact speed and
+        // current rise for the first kick, the previous kick for chained ones. A double
+        // jump cancels the carry-over until the next landing.
+        var horizontal = Tuning.WallKickHorizontalSpeed;
+        var vertical = Tuning.WallKickSpeed;
+        if (!_wallKickChainBroken)
+        {
+            horizontal = Mathf.Max(horizontal, Mathf.Max(_wallImpactSpeed, _wallKickChain.X));
+            vertical = Mathf.Min(Mathf.Max(vertical, Mathf.Max(-Velocity.Y, _wallKickChain.Y)), Tuning.WallKickMaxSpeed);
+        }
+
+        _wallKickChain = new Vector2(horizontal, vertical);
+        _wallImpactSpeed = 0f;
+
         _wallCoyoteTimer = 0f;
         _steerLockTimer = Tuning.WallKickInputLockTime;
         _canDash = true;
         _canDoubleJump = true;
         Facing = Mathf.Sign(_wallNormalX);
-        StartJump(AirMove.WallKick, Tuning.WallKickSpeed, _wallNormalX * Tuning.WallKickHorizontalSpeed, Trick.WallKick);
+        StartJump(AirMove.WallKick, vertical, _wallNormalX * horizontal, Trick.WallKick);
     }
 
     private void StartDash(PlayerInput input)
@@ -613,6 +634,7 @@ public partial class PlayerController : CharacterBody2D
 
     private void ResolveContacts(PlayerInput input)
     {
+        var wasTouchingWall = IsTouchingWall;
         IsTouchingWall = false;
 
         if (IsOnFloor())
@@ -650,6 +672,11 @@ public partial class PlayerController : CharacterBody2D
             IsTouchingWall = true;
             _wallNormalX = GetWallNormal().X;
             _wallCoyoteTimer = Tuning.WallCoyoteTime;
+            if (!wasTouchingWall)
+            {
+                _wallImpactSpeed = _preMoveVelocity.X * _wallNormalX < 0f ? Mathf.Abs(_preMoveVelocity.X) : 0f;
+            }
+
             if (State == PlayerState.Dashing)
             {
                 EndDash();
@@ -665,6 +692,9 @@ public partial class PlayerController : CharacterBody2D
             : RolloutKind.None;
 
         _groundSpeed = _preMoveVelocity.X;
+        _wallImpactSpeed = 0f;
+        _wallKickChain = Vector2.Zero;
+        _wallKickChainBroken = false;
         _canDoubleJump = true;
         _canDash = true;
         _usedDashThisAirtime = false;

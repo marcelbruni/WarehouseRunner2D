@@ -89,7 +89,7 @@ Alle Auslöser reagieren auf die Kollisionsebenen 1 (Welt/Spieler) und 2 („Gei
 | Laufen | A/D, Pfeile, Stick | Beschleunigt auf Laufgeschwindigkeit |
 | Jump | Leertaste/W/↑, Pad A | Normaler Sprung |
 | Double Jump | Jump in der Luft | Zweiter Sprung, einmal pro Luftphase |
-| Wall Kick | an der Wand von ihr weg lenken + Jump | stösst schräg nach oben ab, Dash **und Doppelsprung** sind danach wieder verfügbar |
+| Wall Kick | an der Wand von ihr weg lenken + Jump | stösst schräg nach oben ab, Dash **und Doppelsprung** sind danach wieder verfügbar. Behält mitgebrachtes Tempo (Aufprall, Steigen, vorheriger Wall Kick; seitlich unbegrenzt, hoch max. 1020), bis zu einem Doppelsprung oder der Landung |
 | Jump → Dash | Aktionstaste (Shift/J/S/↓/Ctrl/K, Pad X/B) in der Luft | Horizontaler Schub ohne Schwerkraft, einmal pro Luftphase |
 | Jump → Dash → Jump | Jump während/nach dem Dash | Doppelsprung, der den Dash-Schwung mitnimmt |
 | Rollout nach Jump-Landung | Aktionstaste kurz vor/bei/nach der Landung | Rolle + Boost (×1.3 für 0.8 s) |

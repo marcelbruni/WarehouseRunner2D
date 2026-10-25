@@ -54,6 +54,8 @@ public partial class MovementTests : Node2D
             ("TiltedCrate_LandingUphill_GetsNoSpeedBonus", TiltedCrateUphillGivesNoBonus),
             ("TiltedConveyor_StandingOnIt_IsNotSlippery", TiltedConveyorIsNotSlippery),
             ("WallKick_SteeringAwayFromWall_PushesUpAndAway", WallKickPushesUpAndAway),
+            ("WallKick_ChainedWithSpeed_KeepsSpeed", () => WallKickChainKeepsSpeed(doubleJumpBetween: false)),
+            ("WallKick_DoubleJumpBetween_ResetsChain", () => WallKickChainKeepsSpeed(doubleJumpBetween: true)),
             ("WallJump_SteeringIntoWall_IsDoubleJump", JumpSteeringIntoWallIsDoubleJump),
             ("WallJump_NoSteering_IsDoubleJump", JumpNeutralAtWallIsDoubleJump),
             ("WallKick_AfterDoubleJump_RefreshesDoubleJump", WallKickRefreshesDoubleJump),
@@ -504,6 +506,44 @@ public partial class MovementTests : Node2D
         await Ticks(1);
         Expect("WallKick", _player.CurrentAirMove == AirMove.WallKick, $"air move {_player.CurrentAirMove}");
         Expect("WallKick", _player.Velocity.X < 0f && _player.Velocity.Y < 0f, $"velocity {_player.Velocity}");
+    }
+
+    private async Task WallKickChainKeepsSpeed(bool doubleJumpBetween)
+    {
+        var scenario = doubleJumpBetween ? "WallKickChainBroken" : "WallKickChain";
+        AddConcrete(new Vector2(120f, -600f), new Vector2(40f, 1200f));
+        AddConcrete(new Vector2(-160f, -600f), new Vector2(40f, 1200f));
+        await SettleAt(new Vector2(40f, FloorTop - PlayerHalfHeight));
+        _input.MoveX = 1f;
+        _player.Launch(new Vector2(650f, -200f));
+        Expect(scenario, await Until(() => _player.IsTouchingWall, 60), "never reached the right wall");
+        _input.MoveX = -1f;
+        _input.PressJump();
+        await Ticks(1);
+        var first = _player.Velocity;
+        Expect(scenario, first.X < -600f, $"first kick ignored the impact speed: {first}");
+
+        if (doubleJumpBetween)
+        {
+            await Ticks(10);
+            _input.PressJump();
+        }
+
+        await Ticks(2);
+        Expect(scenario, await Until(() => _player.IsTouchingWall, 90), "never reached the left wall");
+        _input.MoveX = 1f;
+        _input.PressJump();
+        await Ticks(1);
+        var second = _player.Velocity;
+        Expect(scenario, _player.CurrentAirMove == AirMove.WallKick, $"second jump was {_player.CurrentAirMove}");
+        if (doubleJumpBetween)
+        {
+            Expect(scenario, second.X < _player.Tuning.WallKickHorizontalSpeed + 10f, $"chain not reset by double jump: {second}");
+        }
+        else
+        {
+            Expect(scenario, second.X >= -first.X - 1f && -second.Y >= -first.Y - 1f, $"chained kick {second} weaker than first {first}");
+        }
     }
 
     private async Task JumpSteeringIntoWallIsDoubleJump()
