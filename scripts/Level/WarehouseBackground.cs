@@ -27,12 +27,92 @@ public partial class WarehouseBackground : Node2D
     [Export]
     public float Depth { get; set; } = 400f;
 
+    private const float CoverMargin = 200f;
+
+    private float _left = -1000f;
+    private float _authoredWidth;
+    private float _authoredHeight;
+    private float _authoredDepth;
+
+    public override void _Ready()
+    {
+        _authoredWidth = Width;
+        _authoredHeight = Height;
+        _authoredDepth = Depth;
+        if (Engine.IsEditorHint())
+        {
+            return;
+        }
+
+        FitToCameraBounds();
+        GetViewport().SizeChanged += FitToCameraBounds;
+    }
+
+    public override void _ExitTree()
+    {
+        if (!Engine.IsEditorHint())
+        {
+            GetViewport().SizeChanged -= FitToCameraBounds;
+        }
+    }
+
+    // Grows the drawn area so every camera position allowed by the level's
+    // CameraBounds sees background, taking the parallax scroll into account.
+    private void FitToCameraBounds()
+    {
+        var level = FindLevel();
+        if (level == null)
+        {
+            return;
+        }
+
+        var scale = Vector2.One;
+        var offset = Vector2.Zero;
+        if (GetParent() is Parallax2D parallax)
+        {
+            scale = parallax.ScrollScale;
+            offset = parallax.ScrollOffset;
+        }
+
+        var bounds = level.CameraBounds;
+        var view = GetViewportRect().Size;
+        var screenMin = (Vector2)bounds.Position;
+        var screenMax = new Vector2(
+            Mathf.Max(bounds.Position.X, bounds.End.X - view.X),
+            Mathf.Max(bounds.Position.Y, bounds.End.Y - view.Y));
+
+        // Parallax2D shifts its children by screenOffset * (1 - scale) + offset,
+        // so a screen whose top-left is at S shows local coordinates S * scale - offset.
+        var coverStart = (screenMin * scale) - offset - new Vector2(CoverMargin, CoverMargin);
+        var coverEnd = (screenMax * scale) - offset + view + new Vector2(CoverMargin, CoverMargin);
+
+        _left = Mathf.Min(-1000f, coverStart.X);
+        Width = Mathf.Max(_authoredWidth, coverEnd.X);
+        Height = Mathf.Max(_authoredHeight, -coverStart.Y);
+        Depth = Mathf.Max(_authoredDepth, coverEnd.Y);
+        QueueRedraw();
+    }
+
+    private RaceController? FindLevel()
+    {
+        for (var node = GetParent(); node != null; node = node.GetParent())
+        {
+            if (node is RaceController level)
+            {
+                return level;
+            }
+        }
+
+        return null;
+    }
+
     public override void _Draw()
     {
-        DrawRect(new Rect2(-1000f, -Height, Width + 2000f, Height + Depth), Wall);
+        var wallWidth = Width + 1000f - _left;
+        DrawRect(new Rect2(_left, -Height, wallWidth, Height + Depth), Wall);
         for (var y = -Height; y < Depth; y += 160f)
         {
-            DrawRect(new Rect2(-1000f, y, Width + 2000f, 6f), WallStripe);
+            DrawRect(new Rect2(_left, y, wallWidth, 6f), WallStripe);
         }
 
         var seed = 7u;
