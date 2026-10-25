@@ -26,6 +26,7 @@ public partial class RaceController : Node2D
     private Vector2 _respawnPosition;
     private double _elapsed;
     private double? _bestTime;
+    private MedalTimes? _medals;
 
     [Export]
     public string LevelId { get; set; } = "level01";
@@ -53,7 +54,8 @@ public partial class RaceController : Node2D
         ConnectTriggers(this);
 
         _bestTime = RecordStore.LoadBestTime(LevelId);
-        _hud.SetBest(_bestTime);
+        _medals = LevelCatalog.Find(LevelId)?.Medals;
+        _hud.SetBest(_bestTime, _medals);
         _hud.SetTime(0);
         UpdateObjective();
     }
@@ -209,10 +211,11 @@ public partial class RaceController : Node2D
     {
         SetPhase(RunPhase.Finished);
         _hud.SetTime(_elapsed);
-        _hud.ShowResult(_elapsed, _bestTime, hasNextLevel: LevelCatalog.NextAfter(LevelId) is not null);
+        _hud.ShowResult(_elapsed, _bestTime, hasNextLevel: LevelCatalog.NextAfter(LevelId) is not null, _medals);
         if (SaveRecords && (_bestTime is null || _elapsed < _bestTime))
         {
             RecordStore.SaveBestTime(LevelId, _elapsed);
+            _hud.SetBest(_elapsed, _medals);
         }
     }
 

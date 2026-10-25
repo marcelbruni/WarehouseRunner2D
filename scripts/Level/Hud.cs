@@ -1,4 +1,5 @@
 using Godot;
+using WarehouseRunner.Core;
 using WarehouseRunner.Player;
 
 namespace WarehouseRunner.Level;
@@ -63,7 +64,22 @@ public partial class Hud : CanvasLayer
 
     public void SetObjective(string text) => _objective.Text = text;
 
-    public void SetBest(double? seconds) => _best.Text = seconds is { } best ? $"Bestzeit {FormatTime(best)}" : "Bestzeit --:--.--";
+    public void SetBest(double? seconds, MedalTimes? medals)
+    {
+        var bestLine = seconds is { } best ? $"Bestzeit {FormatTime(best)}" : "Bestzeit --:--.--";
+        if (medals is null)
+        {
+            _best.Text = bestLine;
+            return;
+        }
+
+        var earned = seconds is { } time ? medals.For(time) : Medal.None;
+        var next = MedalTimes.NextAfter(earned);
+        var goalLine = next is { } goal
+            ? $"Ziel {MedalTimes.Name(goal)} {FormatTime(medals.TimeFor(goal))}"
+            : "Alle Medaillen geholt!";
+        _best.Text = $"{bestLine}\n{goalLine}";
+    }
 
     public void SetSpeed(float speed, float runSpeed, bool boosted) => _speedMeter.Update(speed, runSpeed, boosted);
 
@@ -94,13 +110,23 @@ public partial class Hud : CanvasLayer
         _hintTween.TweenProperty(_hint, "modulate", Colors.Transparent, 0.5f);
     }
 
-    public void ShowResult(double time, double? previousBest, bool hasNextLevel)
+    public void ShowResult(double time, double? previousBest, bool hasNextLevel, MedalTimes? medals)
     {
         var isRecord = previousBest is null || time < previousBest;
         var recordLine = isRecord ? "NEUER REKORD!" : $"Bestzeit: {FormatTime(previousBest!.Value)}";
-        _result.Text = $"Feierabend!\n{FormatTime(time)}\n{recordLine}\n\n{(hasNextLevel ? "Enter / A: nächstes Level" : "Enter / A: zum Startbildschirm")}\nR: neuer Lauf   Esc: Levelauswahl";
+        var medalLines = medals is null ? string.Empty : MedalResultLines(time, medals);
+        _result.Text = $"Feierabend!\n{FormatTime(time)}\n{recordLine}{medalLines}\n\n{(hasNextLevel ? "Enter / A: nächstes Level" : "Enter / A: zum Startbildschirm")}\nR: neuer Lauf   Esc: Levelauswahl";
         _result.Visible = true;
         _resultDim.Visible = true;
+    }
+
+    private static string MedalResultLines(double time, MedalTimes medals)
+    {
+        var medal = medals.For(time);
+        var earnedLine = medal == Medal.None ? "Keine Medaille" : $"{MedalTimes.Name(medal).ToUpperInvariant()}-MEDAILLE!";
+        var next = MedalTimes.NextAfter(medal);
+        var nextLine = next is { } goal ? $"\n{MedalTimes.Name(goal)}: {FormatTime(medals.TimeFor(goal))}" : string.Empty;
+        return $"\n\n{earnedLine}{nextLine}";
     }
 
     public static string FormatTime(double seconds)

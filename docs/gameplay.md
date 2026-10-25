@@ -17,15 +17,15 @@ einen Hinweis und muss zurück.
 
 ## Levels
 
-Start ist das Menü mit Levelauswahl und Bestzeit pro Level. Esc führt aus jedem
-Level zurück zur Auswahl. Nach dem Ausstempeln geht es mit Enter ins nächste
+Start ist das Menü mit Levelauswahl, Bestzeit und Medaille pro Level. Esc führt aus jedem
+Level zurück zur Auswahl. Nach dem Ausstempeln geht es mit Enter (Gamepad: A) ins nächste
 Level, nach dem letzten Level zurück zum Startbildschirm.
 
 | Nr. | Name | Erzwingt |
 |---|---|---|
-| 1 | Erster Arbeitstag | Sprung (Kiste 100), Doppelsprung (Kiste 200), Slide Jump + Doppelsprung (Kante 290), Wall Kick (Kamin 560) |
+| 1 | Erster Arbeitstag | Sprung (Kiste 96), Doppelsprung (Kiste 192), Slide Jump + Doppelsprung (Kante 288), Wall Kick (Kamin 560) |
 | 2 | Rollen lernen | Rolle unter niedrigen Regalen (3×), beim zweiten Regal nach einem Sprung über eine Kiste als Rollout |
-| 3 | Dash-Schulung | Doppelsprung + Dash (Lücke 600), Slide Jump + Doppelsprung (Kante 300), Sprung + Dash (Lücke 230 unter niedriger Decke, flache Grube: wer 40 px tiefer fällt, startet neu) |
+| 3 | Dash-Schulung | Doppelsprung + Dash (Lücke 600), Slide Jump + Doppelsprung (Kante 288), Sprung + Dash (Lücke 230 unter niedriger Decke, flache Grube: wer 40 px tiefer fällt, startet neu) |
 | 4 | Profi-Tricks | Roll Jump → Power-Dash → Sprung über zwei Lücken à 840, dazwischen Dash-Rollout |
 | 5 | Hauptlager | die erste grosse Karte: Rutschkisten, Förderbänder, Paketsuche |
 | 6 | AI Level | Lagerroboter (rempeln dich weg, Draufspringen erlaubt), Barcode-Scanner (rot = zurück zum Checkpoint, grüne Welle), Lieferdrohnen als fliegende Plattformen, ein Express-Paket, das vor dir flieht |
@@ -38,6 +38,30 @@ Level, nach dem letzten Level zurück zum Startbildschirm.
 Jedes Level hat denselben Ablauf (einstempeln, Paket, Rampe, ausstempeln).
 Hinweisschilder erklären die jeweilige Technik. `LevelSkillProofs` belegt
 automatisch, dass die Hindernisse die Technik wirklich brauchen.
+
+## Medaillen
+
+Jedes Level hat drei Zielzeiten (in `LevelCatalog`). Gold ist die eigene
+Bestzeit beim Testen, Silber rund +15 %, Bronze rund +35 %, auf halbe Sekunden
+gerundet. Gezählt wird die angezeigte Zeit (Hundertstel).
+
+| Nr. | Gold | Silber | Bronze |
+|---|---|---|---|
+| 1 | 7.00 | 8.0 | 9.5 |
+| 2 | 6.65 | 7.5 | 9.0 |
+| 3 | 7.40 | 8.5 | 10.0 |
+| 4 | 6.25 | 7.0 | 8.5 |
+| 5 | 14.10 | 16.0 | 19.0 |
+| 6 | 13.15 | 15.0 | 18.0 |
+| 7 | 13.00 | 15.0 | 17.5 |
+| 8 | 8.90 | 10.0 | 12.0 |
+| 9 | 28.85 | 33.0 | 39.0 |
+| 10 | 19.65 | 22.5 | 26.5 |
+| 11 | 17.00 | 19.5 | 23.0 |
+
+Im Level zeigt die Anzeige oben rechts die nächste Medaille als Ziel, der
+Schlussbildschirm die geholte Medaille. In der Levelauswahl steht vor jedem
+Level die beste Medaille, darunter die drei Zeiten des gewählten Levels.
 
 **Durchrollen:** Beim Rollen ist die Figur ein Ball (halbe Höhe) und passt unter
 niedrige Regale (40 px Lücke). Solange über ihr kein Platz zum Aufstehen ist,
@@ -132,6 +156,5 @@ Diese Punkte waren nicht in der Vorgabe und sind von Claude hinzugefügt:
   Hubwagen, Rolltore als Timing-Hindernisse.
 - Sound (Stempeluhr „KA-CHUNK“, Förderband-Brummen, Schritte).
 - Ghost-Replay der Bestzeit (gute Vorstufe für Multiplayer).
-- Mehrere Level, Level-Auswahl, Medaillen-Zeiten.
 - Multiplayer: Godot High-Level Multiplayer, Server-autoritativ, Eingaben über
   `IPlayerInputSource` übertragen.

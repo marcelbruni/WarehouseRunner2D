@@ -23,6 +23,7 @@ public partial class LevelFlowTest : Node
         _snapshotDirectory = OS.GetCmdlineUserArgs()
             .FirstOrDefault(a => a.StartsWith(SnapshotArgument))?[SnapshotArgument.Length..];
 
+        CheckMedalTimes();
         foreach (var level in LevelCatalog.Levels)
         {
             await RunLevel(level);
@@ -35,6 +36,32 @@ public partial class LevelFlowTest : Node
 
         GD.Print(_failures.Count == 0 ? "PASS LevelFlow" : "FAIL LevelFlow");
         GetTree().Quit(_failures.Count == 0 ? 0 : 1);
+    }
+
+    private void CheckMedalTimes()
+    {
+        foreach (var level in LevelCatalog.Levels)
+        {
+            var m = level.Medals;
+            if (!(m.Gold > 0 && m.Gold < m.Silver && m.Silver < m.Bronze))
+            {
+                _failures.Add($"{level.Id}: medal times out of order (gold {m.Gold}, silver {m.Silver}, bronze {m.Bronze})");
+            }
+        }
+
+        var medals = new MedalTimes(7.0, 8.0, 9.5);
+        var cases = new (double Time, Medal Expected)[]
+        {
+            (6.5, Medal.Gold), (7.004, Medal.Gold), (7.006, Medal.Silver), (8.0, Medal.Silver),
+            (9.5, Medal.Bronze), (9.51, Medal.None),
+        };
+        foreach (var (time, expected) in cases)
+        {
+            if (medals.For(time) != expected)
+            {
+                _failures.Add($"medal for {time}: {medals.For(time)}, expected {expected}");
+            }
+        }
     }
 
     private async Task RunLevel(LevelInfo level)
