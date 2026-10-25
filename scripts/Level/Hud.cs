@@ -98,7 +98,7 @@ public partial class Hud : CanvasLayer
     {
         var isRecord = previousBest is null || time < previousBest;
         var recordLine = isRecord ? "NEUER REKORD!" : $"Bestzeit: {FormatTime(previousBest!.Value)}";
-        _result.Text = $"Feierabend!\n{FormatTime(time)}\n{recordLine}\n\n{(hasNextLevel ? "Enter: nächstes Level" : "Enter: zum Startbildschirm")}\nR: neuer Lauf   Esc: Levelauswahl";
+        _result.Text = $"Feierabend!\n{FormatTime(time)}\n{recordLine}\n\n{(hasNextLevel ? "Enter / A: nächstes Level" : "Enter / A: zum Startbildschirm")}\nR: neuer Lauf   Esc: Levelauswahl";
         _result.Visible = true;
         _resultDim.Visible = true;
     }

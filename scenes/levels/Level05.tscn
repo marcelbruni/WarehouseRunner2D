@@ -40,41 +40,41 @@ Mode = 1
 [node name="Course" type="Node2D" parent="."]
 
 [node name="WarmupLow" type="StaticBody2D" parent="Course"]
-position = Vector2(248, -32)
+position = Vector2(248, -48)
 script = ExtResource("3_crate")
-Size = Vector2(96, 64)
+Size = Vector2(96, 96)
 
 [node name="WarmupHigh" type="StaticBody2D" parent="Course"]
-position = Vector2(484, -64)
+position = Vector2(500, -96)
 script = ExtResource("3_crate")
-Size = Vector2(128, 128)
+Size = Vector2(96, 192)
 
 [node name="FirstSlope" type="StaticBody2D" parent="Course"]
-position = Vector2(696, -41)
-rotation = 0.383972
+position = Vector2(696, -73)
+rotation = 0.545583
 script = ExtResource("3_crate")
-Size = Vector2(340, 50)
+Size = Vector2(368.8, 50)
 
 [node name="StepCrate" type="StaticBody2D" parent="Course"]
-position = Vector2(2130, -30)
+position = Vector2(2112, -48)
 script = ExtResource("3_crate")
-Size = Vector2(60, 60)
+Size = Vector2(96, 96)
 
 [node name="CrateWall" type="StaticBody2D" parent="Course"]
-position = Vector2(2280, -122.5)
+position = Vector2(2280, -144)
 script = ExtResource("3_crate")
-Size = Vector2(160, 245)
+Size = Vector2(160, 288)
 
 [node name="WallSlope" type="StaticBody2D" parent="Course"]
-position = Vector2(2546.7, -108.35)
-rotation = 0.523599
+position = Vector2(2546.7, -129.85)
+rotation = 0.600785
 script = ExtResource("3_crate")
-Size = Vector2(460, 50)
+Size = Vector2(482.9, 50)
 
 [node name="RampTop" type="StaticBody2D" parent="Course"]
-position = Vector2(4520, -86)
+position = Vector2(4520, -96)
 script = ExtResource("3_crate")
-Size = Vector2(300, 172)
+Size = Vector2(300, 192)
 
 [node name="RackLeft" type="StaticBody2D" parent="Course"]
 position = Vector2(4940, -455)
@@ -87,9 +87,9 @@ script = ExtResource("3_crate")
 Size = Vector2(80, 550)
 
 [node name="StairsLow" type="StaticBody2D" parent="Course"]
-position = Vector2(5450, -90)
+position = Vector2(5450, -96)
 script = ExtResource("3_crate")
-Size = Vector2(100, 180)
+Size = Vector2(100, 192)
 
 [node name="StairsMid" type="StaticBody2D" parent="Course"]
 position = Vector2(5600, -360)
@@ -102,15 +102,15 @@ script = ExtResource("3_crate")
 Size = Vector2(100, 40)
 
 [node name="FinalCrate" type="StaticBody2D" parent="Course"]
-position = Vector2(5910, -70)
+position = Vector2(5910, -96)
 script = ExtResource("3_crate")
-Size = Vector2(120, 140)
+Size = Vector2(120, 192)
 
 [node name="FinalSlope" type="StaticBody2D" parent="Course"]
-position = Vector2(6141.7, -56.2)
-rotation = 0.349066
+position = Vector2(6141.7, -82.2)
+rotation = 0.471294
 script = ExtResource("3_crate")
-Size = Vector2(380, 40)
+Size = Vector2(400.8, 40)
 
 [node name="FloorStart" type="StaticBody2D" parent="Course"]
 position = Vector2(100, 100)
@@ -150,10 +150,10 @@ Size = Vector2(500, 24)
 BeltSpeed = 260.0
 
 [node name="Escalator" type="StaticBody2D" parent="Course"]
-position = Vector2(4139, -77.2)
-rotation = -0.349066
+position = Vector2(4139, -87.2)
+rotation = -0.386129
 script = ExtResource("5_belt")
-Size = Vector2(500, 24)
+Size = Vector2(507.2, 24)
 BeltSpeed = 200.0
 
 [node name="ExpressPackage" type="Area2D" parent="."]

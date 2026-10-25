@@ -56,6 +56,7 @@ public partial class LevelSkillProofs : Node
         await ProveRollLevel();
         await ProveDashLevel();
         await ProveLevel04();
+        await ProveMainWarehouseLevel();
         await ProveAiLevel();
         await ProveFriendsLevel();
         await ProveSlideLevel();
@@ -76,15 +77,15 @@ public partial class LevelSkillProofs : Node
     {
         const string scene = "res://scenes/levels/Level01.tscn";
 
-        var lowCrate = new Section("L1 Kiste 100 (Sprung)", scene, p => p.GlobalPosition.X > 300f && p.IsOnGround, 240);
+        var lowCrate = new Section("L1 Kiste 96 (Sprung)", scene, p => p.GlobalPosition.X > 300f && p.IsOnGround, 240);
         await Prove(lowCrate, required: Jumps(Opener.RunningJump, 0f, 60f, 130f, withDoubleJump: false, withDash: false),
             insufficient: [new Plan(Opener.WalkOff, 0f, StandY, 0f, 0, null, null)]);
 
-        var highCrate = new Section("L1 Kiste 200 (Doppelsprung)", scene, p => p.GlobalPosition.X > 800f && p.IsOnGround, 300);
+        var highCrate = new Section("L1 Kiste 192 (Doppelsprung)", scene, p => p.GlobalPosition.X > 800f && p.IsOnGround, 300);
         await Prove(highCrate, required: Jumps(Opener.RunningJump, 450f, 520f, 620f, withDoubleJump: true, withDash: false),
             insufficient: Jumps(Opener.RunningJump, 450f, 500f, 640f, withDoubleJump: false, withDash: false));
 
-        var ledge = new Section("L1 Kante 290 (Slide Jump)", scene, p => p.GlobalPosition.Y < -300f && p.IsOnGround, 360);
+        var ledge = new Section("L1 Kante 288 (Slide Jump)", scene, p => p.GlobalPosition.Y < -300f && p.IsOnGround, 360);
         await Prove(ledge, required: SlideJumps(1300f, withDoubleJump: true, withDash: false),
             insufficient: Jumps(Opener.RunningJump, 900f, 1100f, 1340f, withDoubleJump: true, withDash: false)
                 .Concat(SlideJumps(1300f, withDoubleJump: false, withDash: false)));
@@ -114,9 +115,9 @@ public partial class LevelSkillProofs : Node
             Jumps(Opener.RunningJump, 1550f, 1700f, 1890f, withDoubleJump: true, withDash: true)
                 .Concat(Jumps(Opener.RollJump, 1550f, 1700f, 1890f, withDoubleJump: true, withDash: true))
                 .Concat(SlideJumps(1850f, withDoubleJump: true, withDash: true))
-                .Select(plan => plan with { StartY = -326f }));
+                .Select(plan => plan with { StartY = -314f }));
 
-        var ledge = new Section("L3 Kante 300 (Slide Jump + Doppelsprung)", scene, p => p.GlobalPosition.Y < -310f && p.IsOnGround, 360);
+        var ledge = new Section("L3 Kante 288 (Slide Jump + Doppelsprung)", scene, p => p.GlobalPosition.Y < -300f && p.IsOnGround, 360);
         await Prove(ledge, required: SlideJumps(1430f, withDoubleJump: true, withDash: false),
             insufficient: Jumps(Opener.RunningJump, 1000f, 1250f, 1470f, withDoubleJump: true, withDash: false));
     }
@@ -149,6 +150,21 @@ public partial class LevelSkillProofs : Node
         }
     }
 
+    private async Task ProveMainWarehouseLevel()
+    {
+        const string scene = "res://scenes/levels/Level05.tscn";
+        await ProvePossible(new Section("L5 Aufwärmkisten und erste Rutsche", scene, p => p.IsOnGround && p.GlobalPosition.X > 880f, 400),
+            Hops(-300f, StandY, 60).Concat(Jumps(Opener.RunningJump, -300f, 60f, 200f, withDoubleJump: true, withDash: false)));
+        await ProvePossible(new Section("L5 Stufenkiste auf die Kistenwand", scene, p => p.IsOnGround && p.GlobalPosition.X > 2760f, 500),
+            Jumps(Opener.RunningJump, 2075f, 2090f, 2150f, withDoubleJump: true, withDash: false).Select(plan => plan with { StartY = -122f }));
+        await ProvePossible(new Section("L5 Rolltreppe auf die Rampe", scene, p => p.IsOnGround && p.GlobalPosition.X > 4380f && p.GlobalPosition.Y < -205f, 500),
+            [new Plan(Opener.WalkOff, 3850f, StandY, 0f, 0, null, null)]);
+        await ProvePossible(new Section("L5 Treppenkiste auf die mittlere Stufe", scene, p => p.IsOnGround && p.GlobalPosition.Y < -395f, 400),
+            Hops(5260f, StandY, 60));
+        await ProvePossible(new Section("L5 Letzte Kiste und Rutsche", scene, p => p.IsOnGround && p.GlobalPosition.X > 6330f, 400),
+            Jumps(Opener.RunningJump, 5650f, 5680f, 5840f, withDoubleJump: true, withDash: false));
+    }
+
     private async Task ProveAiLevel()
     {
         const string scene = "res://scenes/levels/Level06.tscn";
@@ -160,10 +176,10 @@ public partial class LevelSkillProofs : Node
         await ProvePossible(new Section("L6 Scanner überspringen", scene, p => p.IsOnGround && p.GlobalPosition.X > 2170f, 400, ScannersAlwaysOn: true),
             Jumps(Opener.RunningJump, 1620f, 1640f, 1705f, withDoubleJump: true, withDash: true).Select(plan => plan with { StartY = -246f }));
         await ProvePossible(new Section("L6 Drohnen", scene, p => p.GlobalPosition.X > 3720f && p.IsOnGround && p.GlobalPosition.Y < 0f, 900), Hops(2420f, StandY, 480));
-        await ProvePossible(new Section("L6 Kiste 1 Paketjagd", scene, p => p.GlobalPosition.Y < -230f && p.IsOnGround, 400),
+        await ProvePossible(new Section("L6 Kiste 1 Paketjagd", scene, p => p.GlobalPosition.Y < -205f && p.IsOnGround, 400),
             Jumps(Opener.RunningJump, 3900f, 4050f, 4240f, withDoubleJump: true, withDash: false));
-        await ProvePossible(new Section("L6 Kiste 2 Paketjagd", scene, p => p.GlobalPosition.Y < -450f && p.IsOnGround, 400),
-            Jumps(Opener.RunningJump, 4260f, 4280f, 4345f, withDoubleJump: true, withDash: false).Select(plan => plan with { StartY = -246f }));
+        await ProvePossible(new Section("L6 Kiste 2 Paketjagd", scene, p => p.GlobalPosition.Y < -395f && p.IsOnGround, 400),
+            Jumps(Opener.RunningJump, 4260f, 4280f, 4345f, withDoubleJump: true, withDash: false).Select(plan => plan with { StartY = -218f }));
     }
 
     private async Task ProveFriendsLevel()
@@ -237,7 +253,7 @@ public partial class LevelSkillProofs : Node
         await ProvePossible(new Section("L9 Paket-Abstecher Kiste 1", scene, p => p.IsOnGround && p.GlobalPosition.Y < -1480f && p.GlobalPosition.X < -240f, 600),
             Jumps(Opener.RunningJump, 150f, -200f, -60f, withDoubleJump: true, withDash: false).Select(plan => plan with { Dir = -1f, StartY = -1326f, TriggerX = -plan.TriggerX - 260f }));
         await ProvePossible(new Section("L9 Paket-Abstecher Kiste 2", scene, p => p.IsOnGround && p.GlobalPosition.Y < -1680f, 600),
-            Jumps(Opener.RunningJump, -330f, -320f, -260f, withDoubleJump: true, withDash: false).Select(plan => plan with { StartY = -1526f }));
+            Jumps(Opener.RunningJump, -330f, -320f, -260f, withDoubleJump: true, withDash: false).Select(plan => plan with { StartY = -1518f }));
         await ProvePossible(new Section("L9 2. Stock Lücke über der Rolltreppe", scene, p => p.IsOnGround && p.GlobalPosition.X > 430f && p.GlobalPosition.Y < -1290f, 400),
             Jumps(Opener.RunningJump, 0f, 60f, 195f, withDoubleJump: false, withDash: false).Select(plan => plan with { StartY = -1326f }));
         await ProvePossible(new Section("L9 2. Stock Band und Grube", scene, p => p.IsOnGround && p.GlobalPosition.X > 1760f && p.GlobalPosition.Y < -1290f, 600),
@@ -278,7 +294,7 @@ public partial class LevelSkillProofs : Node
             new Vector2(8050f, -946f), floorY: -920f, useDash: false, exitAboveY: -1410f, expectSuccess: true);
         await ProvePossible(new Section("L10 Band, Rutschen bis Ziel", scene, p => p.IsOnGround && p.GlobalPosition.X > 10500f && p.GlobalPosition.Y > -220f, 900),
             [new Plan(Opener.WalkOff, 8300f, -1396f, 0f, 0, null, null)]);
-        await ProvePossible(new Section("L10 Paketkiste", scene, p => p.IsOnGround && p.GlobalPosition.Y < -330f, 400),
+        await ProvePossible(new Section("L10 Paketkiste", scene, p => p.IsOnGround && p.GlobalPosition.Y < -380f, 400),
             Jumps(Opener.RunningJump, 11000f, 11150f, 11340f, withDoubleJump: true, withDash: false).Select(plan => plan with { StartY = -204f }));
     }
 

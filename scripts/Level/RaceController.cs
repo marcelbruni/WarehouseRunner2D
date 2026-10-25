@@ -16,7 +16,12 @@ public enum RunPhase
 
 public partial class RaceController : Node2D
 {
+    // Continue shares the gamepad A button with Jump, so a jump pressed while
+    // clocking out must not skip the result screen.
+    private const double ContinueLockSeconds = 0.4;
+
     private PlayerController _player = null!;
+    private double _finishedFor;
     private Hud _hud = null!;
     private Vector2 _respawnPosition;
     private double _elapsed;
@@ -75,7 +80,12 @@ public partial class RaceController : Node2D
             return;
         }
 
-        if (Phase == RunPhase.Finished && Input.IsActionJustPressed(InputSetup.Continue))
+        if (Phase == RunPhase.Finished)
+        {
+            _finishedFor += delta;
+        }
+
+        if (Phase == RunPhase.Finished && _finishedFor >= ContinueLockSeconds && Input.IsActionJustPressed(InputSetup.Continue))
         {
             GetTree().ChangeSceneToFile(LevelCatalog.NextAfter(LevelId)?.ScenePath ?? LevelCatalog.MenuScenePath);
             return;

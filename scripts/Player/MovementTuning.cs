@@ -68,6 +68,8 @@ public partial class MovementTuning : Resource
     [Export] public float SlopeSlideGravityFactor { get; set; } = 1.1f;
     [Export] public float SlopeSteerAcceleration { get; set; } = 500f;
     [Export] public float SlopeSlideMaxSpeed { get; set; } = 820f;
+    [Export] public float SlopeEntrySpeedFactor { get; set; } = 1.05f;
+    [Export] public float SlopeEntryLockTime { get; set; } = 0.15f;
     [Export] public float SlopeSlideBoost { get; set; } = 1.35f;
     [Export] public float SlopeSlideBoostAfterTime { get; set; } = 0.9f;
 

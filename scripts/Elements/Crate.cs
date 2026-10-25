@@ -6,8 +6,12 @@ namespace WarehouseRunner.Elements;
 [GlobalClass]
 public partial class Crate : BoxBody
 {
+    // One crate stack step. Heights read as moves: 1 = jump, 2 = double jump,
+    // 3 = slide jump + double jump, 4+ = wall kick (see MovementEnvelope).
+    public const float GridSize = 96f;
+
     private const float SlipperyMinTiltDegrees = 3f;
-    private const float PreferredCellSize = 80f;
+    private const int MaxJumpableCells = 4;
 
     private static readonly Color Wood = new(0.69f, 0.48f, 0.24f);
     private static readonly Color WoodDark = new(0.43f, 0.29f, 0.13f);
@@ -21,7 +25,29 @@ public partial class Crate : BoxBody
         if (what == NotificationTransformChanged)
         {
             QueueRedraw();
+            if (Engine.IsEditorHint())
+            {
+                UpdateConfigurationWarnings();
+            }
         }
+    }
+
+    public override string[] _GetConfigurationWarnings()
+    {
+        // Thin ledges, slopes and tall wall-kick columns are exempt; only floor
+        // obstacles a player has to judge by eye need to sit on the grid.
+        var height = Size.Y;
+        var isObstacle = !IsSlippery
+            && Size.X >= GridSize * 0.9f
+            && height > GridSize * 0.6f
+            && height < GridSize * (MaxJumpableCells + 0.5f);
+        var cells = height / GridSize;
+        if (isObstacle && Mathf.Abs(cells - Mathf.Round(cells)) > 0.01f)
+        {
+            return [$"Höhe {height:0} liegt nicht im Kistenraster ({GridSize:0} px). Nächste Rasterhöhe: {Mathf.Max(1f, Mathf.Round(cells)) * GridSize:0}."];
+        }
+
+        return [];
     }
 
     public override void _EnterTree()
@@ -32,8 +58,8 @@ public partial class Crate : BoxBody
     public override void _Draw()
     {
         var rect = LocalRect;
-        var columns = Mathf.Max(1, Mathf.RoundToInt(rect.Size.X / PreferredCellSize));
-        var rows = Mathf.Max(1, Mathf.RoundToInt(rect.Size.Y / PreferredCellSize));
+        var columns = Mathf.Max(1, Mathf.RoundToInt(rect.Size.X / GridSize));
+        var rows = Mathf.Max(1, Mathf.RoundToInt(rect.Size.Y / GridSize));
         var cell = new Vector2(rect.Size.X / columns, rect.Size.Y / rows);
 
         for (var column = 0; column < columns; column++)

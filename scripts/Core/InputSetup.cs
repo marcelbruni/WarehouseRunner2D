@@ -22,7 +22,7 @@ public partial class InputSetup : Node
         Register(Restart, Keys(Key.R), Buttons(JoyButton.Start));
         Register(ToggleHelp, Keys(Key.F1), Buttons());
         Register(BackToMenu, Keys(Key.Escape), Buttons(JoyButton.Back));
-        Register(Continue, Keys(Key.Enter, Key.KpEnter), Buttons(JoyButton.Y));
+        Register(Continue, Keys(Key.Enter, Key.KpEnter), Buttons(JoyButton.A, JoyButton.Y));
 
         EnsureJoypadButton("ui_accept", JoyButton.A);
         EnsureJoypadButton("ui_up", JoyButton.DpadUp);

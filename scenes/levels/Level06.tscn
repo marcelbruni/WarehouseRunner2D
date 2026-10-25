@@ -71,19 +71,19 @@ script = ExtResource("crate")
 Size = Vector2(100, 40)
 
 [node name="Crate2" type="StaticBody2D" parent="Course"]
-position = Vector2(4300, -110)
+position = Vector2(4300, -96)
 script = ExtResource("crate")
-Size = Vector2(100, 220)
+Size = Vector2(100, 192)
 
 [node name="Crate3" type="StaticBody2D" parent="Course"]
-position = Vector2(4650, -220)
+position = Vector2(4650, -192)
 script = ExtResource("crate")
-Size = Vector2(100, 440)
+Size = Vector2(100, 384)
 
 [node name="Crate4" type="StaticBody2D" parent="Course"]
-position = Vector2(4950, -80)
+position = Vector2(4950, -96)
 script = ExtResource("crate")
-Size = Vector2(100, 160)
+Size = Vector2(100, 192)
 
 [node name="Concrete1" type="StaticBody2D" parent="Course"]
 position = Vector2(900, 100)

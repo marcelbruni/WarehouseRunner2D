@@ -62,25 +62,25 @@ script = ExtResource("clock")
 Mode = 1
 
 [node name="Crate1" type="StaticBody2D" parent="Course"]
-position = Vector2(250, -50)
+position = Vector2(250, -48)
 script = ExtResource("crate")
-Size = Vector2(100, 100)
+Size = Vector2(100, 96)
 
 [node name="Crate2" type="StaticBody2D" parent="Course"]
-position = Vector2(1360, -100)
+position = Vector2(1360, -96)
 script = ExtResource("crate")
-Size = Vector2(120, 200)
+Size = Vector2(120, 192)
 
 [node name="Crate3" type="StaticBody2D" parent="Course"]
-position = Vector2(2560, -110)
+position = Vector2(2560, -96)
 script = ExtResource("crate")
-Size = Vector2(120, 220)
+Size = Vector2(120, 192)
 
 [node name="Crate4" type="StaticBody2D" parent="Course"]
-position = Vector2(2795.53, -84.02)
-rotation = 0.523599
+position = Vector2(2795.53, -70.02)
+rotation = 0.466739
 script = ExtResource("crate")
-Size = Vector2(440, 60)
+Size = Vector2(426.7, 60)
 
 [node name="Crate5" type="StaticBody2D" parent="Course"]
 position = Vector2(3540, -450)
@@ -93,20 +93,20 @@ script = ExtResource("crate")
 Size = Vector2(80, 1260)
 
 [node name="Crate7" type="StaticBody2D" parent="Course"]
-position = Vector2(2050, -800)
+position = Vector2(2050, -796)
 script = ExtResource("crate")
-Size = Vector2(100, 200)
+Size = Vector2(100, 192)
 
 [node name="Crate8" type="StaticBody2D" parent="Course"]
-position = Vector2(1841.79, -774.02)
-rotation = -0.523599
+position = Vector2(1841.79, -770.02)
+rotation = -0.506105
 script = ExtResource("crate")
-Size = Vector2(400, 60)
+Size = Vector2(396.1, 60)
 
 [node name="Crate9" type="StaticBody2D" parent="Course"]
-position = Vector2(-300, -1400)
+position = Vector2(-300, -1396)
 script = ExtResource("crate")
-Size = Vector2(100, 200)
+Size = Vector2(100, 192)
 
 [node name="Crate10" type="StaticBody2D" parent="Course"]
 position = Vector2(-100, -1680)
@@ -114,15 +114,15 @@ script = ExtResource("crate")
 Size = Vector2(100, 40)
 
 [node name="Crate11" type="StaticBody2D" parent="Course"]
-position = Vector2(2060, -1410)
+position = Vector2(2060, -1396)
 script = ExtResource("crate")
-Size = Vector2(120, 220)
+Size = Vector2(120, 192)
 
 [node name="Crate12" type="StaticBody2D" parent="Course"]
-position = Vector2(2280.07, -1384.6)
-rotation = 0.558505
+position = Vector2(2280.07, -1370.6)
+rotation = 0.499235
 script = ExtResource("crate")
-Size = Vector2(415, 60)
+Size = Vector2(400.9, 60)
 
 [node name="Crate13" type="StaticBody2D" parent="Course"]
 position = Vector2(4636.13, -999.31)

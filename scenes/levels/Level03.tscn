@@ -61,9 +61,9 @@ script = ExtResource("clock")
 Mode = 1
 
 [node name="Crate1" type="StaticBody2D" parent="Course"]
-position = Vector2(1700, -150)
+position = Vector2(1700, -144)
 script = ExtResource("crate")
-Size = Vector2(400, 300)
+Size = Vector2(400, 288)
 
 [node name="Concrete1" type="StaticBody2D" parent="Course"]
 position = Vector2(-150, 100)

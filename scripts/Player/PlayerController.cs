@@ -89,6 +89,7 @@ public partial class PlayerController : CharacterBody2D
     private bool _isGroundRollLocked;
     private float _slideJumpGraceTimer;
     private float _skidCooldownTimer;
+    private float _slopeEntryLockTimer;
 
     private float _wallNormalX;
     private float _wallCoyoteTimer;
@@ -287,6 +288,7 @@ public partial class PlayerController : CharacterBody2D
         _steerLockTimer -= dt;
         _slideJumpGraceTimer -= dt;
         _skidCooldownTimer -= dt;
+        _slopeEntryLockTimer -= dt;
         _postLandingRollTimer -= dt;
         _timeSinceLanding += dt;
         _boostTimer -= dt;
@@ -598,9 +600,12 @@ public partial class PlayerController : CharacterBody2D
         var downhill = Mathf.Sign(normal.X);
         var steepness = Mathf.Abs(normal.X);
 
+        // The cap only stops gravity from adding more; speed carried in above it is kept.
+        _slopeEntryLockTimer = Tuning.SlopeEntryLockTime;
+        var limit = Mathf.Max(Tuning.SlopeSlideMaxSpeed, Mathf.Abs(_groundSpeed));
         _groundSpeed += downhill * Tuning.Gravity * steepness * Tuning.SlopeSlideGravityFactor * dt;
         _groundSpeed += input.MoveX * Tuning.SlopeSteerAcceleration * dt;
-        _groundSpeed = Mathf.Clamp(_groundSpeed, -Tuning.SlopeSlideMaxSpeed, Tuning.SlopeSlideMaxSpeed);
+        _groundSpeed = Mathf.Clamp(_groundSpeed, -limit, limit);
 
         ActivateBoost(Tuning.SlopeSlideBoost, Tuning.SlopeSlideBoostAfterTime);
 
@@ -695,6 +700,19 @@ public partial class PlayerController : CharacterBody2D
 
     private void EnterSlopeSlide()
     {
+        // _groundSpeed is measured along the slope (FloorConstantSpeed), so entering
+        // downhill with the same value would lose horizontal pace. Keep the horizontal
+        // pace plus a small bonus. The lock stops this from stacking when the state
+        // flickers at slope joints.
+        var normal = GetFloorNormal();
+        var downhill = Mathf.Sign(normal.X);
+        if (_slopeEntryLockTimer <= 0f && !Mathf.IsZeroApprox(downhill) && Mathf.Sign(_groundSpeed) != -downhill)
+        {
+            var keepPace = Mathf.Abs(_preMoveVelocity.X) / Mathf.Max(-normal.Y, 0.5f);
+            var entrySpeed = keepPace * Tuning.SlopeEntrySpeedFactor;
+            _groundSpeed = downhill * Mathf.Max(Mathf.Abs(_groundSpeed), entrySpeed);
+        }
+
         ChangeState(PlayerState.SlopeSliding);
         TrickPerformed?.Invoke(Trick.SlopeSlide, false);
     }

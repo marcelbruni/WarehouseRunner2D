@@ -21,6 +21,7 @@ public partial class BoxBody : StaticBody2D
             }
 
             QueueRedraw();
+            UpdateConfigurationWarnings();
         }
     }
 

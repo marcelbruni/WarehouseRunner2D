@@ -48,6 +48,9 @@ public partial class MovementTests : Node2D
             ("Conveyor_RunningAgainstBelt_IsSlower", ConveyorAgainstBeltIsSlower),
             ("Conveyor_JumpingOff_KeepsBeltMomentum", ConveyorJumpKeepsMomentum),
             ("TiltedCrate_StandingOnIt_SlidesAndBoosts", TiltedCrateSlidesAndBoosts),
+            ("TiltedCrate_LandingFast_KeepsHorizontalSpeed", () => TiltedCrateKeepsEntrySpeed(600f)),
+            ("TiltedCrate_LandingFasterThanSlideMax_KeepsHorizontalSpeed", () => TiltedCrateKeepsEntrySpeed(950f)),
+            ("TiltedCrate_LandingUphill_GetsNoSpeedBonus", TiltedCrateUphillGivesNoBonus),
             ("TiltedConveyor_StandingOnIt_IsNotSlippery", TiltedConveyorIsNotSlippery),
             ("WallKick_SteeringAwayFromWall_PushesUpAndAway", WallKickPushesUpAndAway),
             ("WallJump_SteeringIntoWall_IsDoubleJump", JumpSteeringIntoWallIsDoubleJump),
@@ -399,6 +402,60 @@ public partial class MovementTests : Node2D
         Expect("TiltedCrate", slid, $"never slid, state {_player.State}");
         Expect("TiltedCrate", _player.GlobalPosition.X - startX > 80f, $"moved {_player.GlobalPosition.X - startX:0}");
         Expect("TiltedCrate", _player.IsBoosted, "boost not active");
+    }
+
+    private async Task TiltedCrateKeepsEntrySpeed(float entrySpeed)
+    {
+        var scenario = $"TiltedCrateEntry{entrySpeed:0}";
+        AddCrate(new Vector2(0f, -150f), new Vector2(900f, 40f), Mathf.DegToRad(25f));
+        await SettleAt(new Vector2(-330f, -370f), settleTicks: 0);
+        _input.MoveX = 1f;
+        _player.Launch(new Vector2(entrySpeed, 0f));
+
+        var arrivalSpeed = entrySpeed;
+        var landed = false;
+        for (var i = 0; i < 60 && !landed; i++)
+        {
+            arrivalSpeed = _player.Velocity.X;
+            await Ticks(1);
+            landed = _player.State == PlayerState.SlopeSliding;
+        }
+
+        Expect(scenario, landed, $"never slid, state {_player.State}");
+        var startX = _player.GlobalPosition.X;
+        const int measureTicks = 12;
+        await Ticks(measureTicks);
+        var pace = (_player.GlobalPosition.X - startX) * Engine.PhysicsTicksPerSecond / measureTicks;
+        Expect(scenario, pace >= arrivalSpeed, $"horizontal pace {pace:0} after landing, arrived with {arrivalSpeed:0}");
+
+        // Slope gravity and steering add roughly 140 px/s over the measured ticks; the entry itself should only add a little.
+        Expect(scenario, pace <= (arrivalSpeed * 1.1f) + 150f, $"horizontal pace {pace:0} jumped too far above arrival {arrivalSpeed:0}");
+    }
+
+    private async Task TiltedCrateUphillGivesNoBonus()
+    {
+        const string scenario = "TiltedCrateUphill";
+        AddCrate(new Vector2(0f, -150f), new Vector2(900f, 40f), Mathf.DegToRad(25f));
+        await SettleAt(new Vector2(330f, -120f), settleTicks: 0);
+        _input.MoveX = -1f;
+        _player.Launch(new Vector2(-900f, 0f));
+
+        var arrivalSpeed = 900f;
+        var landed = false;
+        for (var i = 0; i < 60 && !landed; i++)
+        {
+            arrivalSpeed = -_player.Velocity.X;
+            await Ticks(1);
+            landed = _player.State == PlayerState.SlopeSliding;
+        }
+
+        Expect(scenario, landed, $"never slid, state {_player.State}");
+        Expect(scenario, Mathf.Abs(_player.GroundSpeed) <= arrivalSpeed, $"slide speed {Mathf.Abs(_player.GroundSpeed):0} above arrival {arrivalSpeed:0}");
+        var startX = _player.GlobalPosition.X;
+        const int measureTicks = 12;
+        await Ticks(measureTicks);
+        var pace = (startX - _player.GlobalPosition.X) * Engine.PhysicsTicksPerSecond / measureTicks;
+        Expect(scenario, pace < arrivalSpeed, $"uphill pace {pace:0} not below arrival {arrivalSpeed:0}");
     }
 
     private async Task TiltedConveyorIsNotSlippery()

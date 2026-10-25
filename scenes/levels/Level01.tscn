@@ -66,19 +66,19 @@ script = ExtResource("clock")
 Mode = 1
 
 [node name="Crate1" type="StaticBody2D" parent="Course"]
-position = Vector2(200, -50)
+position = Vector2(200, -48)
 script = ExtResource("crate")
-Size = Vector2(100, 100)
+Size = Vector2(100, 96)
 
 [node name="Crate2" type="StaticBody2D" parent="Course"]
-position = Vector2(710, -100)
+position = Vector2(710, -96)
 script = ExtResource("crate")
-Size = Vector2(120, 200)
+Size = Vector2(120, 192)
 
 [node name="Crate3" type="StaticBody2D" parent="Course"]
-position = Vector2(1520, -145)
+position = Vector2(1520, -144)
 script = ExtResource("crate")
-Size = Vector2(300, 290)
+Size = Vector2(300, 288)
 
 [node name="Crate4" type="StaticBody2D" parent="Course"]
 position = Vector2(2190, -385)
