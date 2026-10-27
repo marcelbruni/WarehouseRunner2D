@@ -43,6 +43,7 @@ public partial class RaceController : Node2D
 
     public override void _Ready()
     {
+        MusicPlayer.Play(MusicPlayer.LevelTrack(SceneFilePath));
         _player = GetNode<PlayerController>("Player");
         _respawnPosition = _player.GlobalPosition;
         ApplyCameraBounds(_player.GetNode<Camera2D>("Camera"));

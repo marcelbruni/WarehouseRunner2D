@@ -18,6 +18,7 @@ config/icon="res://icon.svg"
 [autoload]
 
 InputSetup="*res://scripts/Core/InputSetup.cs"
+MusicPlayer="*res://scripts/Core/MusicPlayer.cs"
 
 [display]
 

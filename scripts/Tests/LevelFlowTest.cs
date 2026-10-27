@@ -74,6 +74,11 @@ public partial class LevelFlowTest : Node
             _failures.Add($"{level.Id}: scene saves records as '{race.LevelId}'");
         }
 
+        if (!ResourceLoader.Exists(MusicPlayer.LevelTrack(level.ScenePath)))
+        {
+            _failures.Add($"{level.Id}: no music track {MusicPlayer.LevelTrack(level.ScenePath)}");
+        }
+
         AddChild(race);
         var player = race.GetNode<PlayerController>("Player");
         player.InputSource = new IdleInput();

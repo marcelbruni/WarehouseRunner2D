@@ -19,6 +19,7 @@ public partial class MainMenu : Node2D
 
     public override void _Ready()
     {
+        MusicPlayer.Play(MusicPlayer.MenuTheme);
         var layer = new CanvasLayer();
         AddChild(layer);
 
