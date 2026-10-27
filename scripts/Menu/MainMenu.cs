@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Godot;
 using WarehouseRunner.Core;
 using WarehouseRunner.Level;
@@ -67,11 +66,10 @@ public partial class MainMenu : Node2D
         var button = new Button
         {
             Text = $"{index + 1}.  {level.Title}     {bestText}",
-            Icon = MedalIcon(medal),
-            CustomMinimumSize = new Vector2(540f, 52f),
+            CustomMinimumSize = new Vector2(600f, 52f),
             Alignment = HorizontalAlignment.Left,
         };
-        button.AddThemeConstantOverride("h_separation", 12);
+        button.AddChild(CreateMedalRow(medal));
         button.AddThemeFontSizeOverride("font_size", 23);
         button.AddThemeStyleboxOverride("normal", CreateStyle(ButtonIdle));
         button.AddThemeStyleboxOverride("hover", CreateStyle(ButtonIdle.Lightened(0.15f)));
@@ -93,49 +91,21 @@ public partial class MainMenu : Node2D
     private static string MedalTimesText(MedalTimes medals) =>
         $"Gold {Hud.FormatTime(medals.Gold)}   ·   Silber {Hud.FormatTime(medals.Silver)}   ·   Bronze {Hud.FormatTime(medals.Bronze)}";
 
-    private static readonly Dictionary<Medal, ImageTexture> MedalIcons = new();
 
-    // A filled disc for an earned medal, an empty ring as a placeholder so titles stay aligned.
-    private static ImageTexture MedalIcon(Medal medal)
+    private static HBoxContainer CreateMedalRow(Medal earned)
     {
-        if (MedalIcons.TryGetValue(medal, out var cached))
+        var row = new HBoxContainer { MouseFilter = Control.MouseFilterEnum.Ignore, Alignment = BoxContainer.AlignmentMode.End };
+        row.AddThemeConstantOverride("separation", 4);
+        foreach (var medal in new[] { Medal.Bronze, Medal.Silver, Medal.Gold })
         {
-            return cached;
+            row.AddChild(MedalBadge.Create(medal, earned >= medal, 30f));
         }
 
-        const int size = 28;
-        const float radius = size / 2f - 1f;
-        var image = Image.CreateEmpty(size, size, false, Image.Format.Rgba8);
-        var fill = MedalTimes.ColorOf(medal);
-        var rim = medal == Medal.None ? fill : fill.Darkened(0.35f);
-        var center = new Vector2(size / 2f, size / 2f);
-        for (var y = 0; y < size; y++)
-        {
-            for (var x = 0; x < size; x++)
-            {
-                var distance = new Vector2(x + 0.5f, y + 0.5f).DistanceTo(center);
-                if (distance > radius)
-                {
-                    continue;
-                }
-
-                var onRim = distance > radius - 3f;
-                if (onRim)
-                {
-                    image.SetPixel(x, y, rim);
-                }
-                else if (medal != Medal.None)
-                {
-                    image.SetPixel(x, y, fill);
-                }
-            }
-        }
-
-        var texture = ImageTexture.CreateFromImage(image);
-        MedalIcons[medal] = texture;
-        return texture;
+        row.SetAnchorsAndOffsetsPreset(Control.LayoutPreset.CenterRight);
+        row.GrowHorizontal = Control.GrowDirection.Begin;
+        row.Position += new Vector2(-14f, 0f);
+        return row;
     }
-
 
     private static Label CreateLabel(string text, int fontSize, Color color) => new()
     {

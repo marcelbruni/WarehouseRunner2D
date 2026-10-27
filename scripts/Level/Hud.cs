@@ -22,6 +22,7 @@ public partial class Hud : CanvasLayer
     private Label _help = null!;
     private Label _result = null!;
     private ColorRect _resultDim = null!;
+    private Control _root = null!;
     private SpeedMeter _speedMeter = null!;
     private Tween? _trickTween;
     private Tween? _hintTween;
@@ -32,6 +33,7 @@ public partial class Hud : CanvasLayer
         root.SetAnchorsPreset(Control.LayoutPreset.FullRect);
         root.MouseFilter = Control.MouseFilterEnum.Ignore;
         AddChild(root);
+        _root = root;
 
         _timer = AddLabel(root, Control.LayoutPreset.TopLeft, 44, new Vector2(24f, 16f));
         _best = AddLabel(root, Control.LayoutPreset.TopRight, 22, new Vector2(-24f, 20f), HorizontalAlignment.Right);
@@ -119,6 +121,41 @@ public partial class Hud : CanvasLayer
         _result.Text = $"Feierabend!\n{FormatTime(time)}\n{recordLine}{medalLines}\n\n{(hasNextLevel ? "Enter / A: nächstes Level" : "Enter / A: zum Startbildschirm")}\nR: neuer Lauf   Esc: Levelauswahl";
         _result.Visible = true;
         _resultDim.Visible = true;
+        if (medals?.For(time) is { } medal and not Medal.None)
+        {
+            SlapMedal(medal);
+        }
+    }
+
+    private void SlapMedal(Medal medal)
+    {
+        var badge = MedalBadge.Create(medal, earned: true, 150f);
+        _root.AddChild(badge);
+        badge.SetAnchorsAndOffsetsPreset(Control.LayoutPreset.Center, Control.LayoutPresetMode.Minsize);
+        badge.Position += new Vector2(330f, -60f);
+        badge.PivotOffset = badge.CustomMinimumSize / 2f;
+        badge.Scale = Vector2.One * 3.5f;
+        badge.Rotation = -0.7f;
+        badge.Modulate = Colors.Transparent;
+
+        var slap = CreateTween();
+        slap.TweenInterval(0.35f);
+        slap.TweenProperty(badge, "modulate", Colors.White, 0.08f);
+        slap.Parallel().TweenProperty(badge, "scale", Vector2.One * 0.85f, 0.16f).SetTrans(Tween.TransitionType.Quad).SetEase(Tween.EaseType.In);
+        slap.Parallel().TweenProperty(badge, "rotation", 0.18f, 0.16f);
+        slap.TweenCallback(Callable.From(ShakeScreen));
+        slap.TweenProperty(badge, "scale", Vector2.One * 1.08f, 0.08f);
+        slap.TweenProperty(badge, "scale", Vector2.One, 0.12f).SetTrans(Tween.TransitionType.Back).SetEase(Tween.EaseType.Out);
+        slap.Parallel().TweenProperty(badge, "rotation", 0.12f, 0.12f);
+    }
+
+    private void ShakeScreen()
+    {
+        var shake = CreateTween();
+        foreach (var offset in new[] { new Vector2(10f, -6f), new Vector2(-8f, 5f), new Vector2(5f, -3f), Vector2.Zero })
+        {
+            shake.TweenProperty(_root, "position", offset, 0.04f);
+        }
     }
 
     private static string MedalResultLines(double time, MedalTimes medals)
