@@ -41,6 +41,7 @@ public static class LevelCatalog
     [
         new("Grundausbildung", "Sprünge, Rollen, Dash und Wall Kicks · ohne Rutschen und Bänder",
         [
+            new("level12", "Tempo-Training", "Rolle · Roll Jump · Power-Dash · Rollout · ohne Hindernisse, nur Tempo", "res://scenes/levels/Level12.tscn", new(8.50, 10.0, 11.5)),
             new("level01", "Erster Arbeitstag", "Sprung · Doppelsprung · Slide Jump · Wall Kick", "res://scenes/levels/Level01.tscn", new(7.00, 8.0, 9.5)),
             new("level02", "Rollen lernen", "Rolle · Rollout · Durchrollen unter Regalen", "res://scenes/levels/Level02.tscn", new(6.65, 7.5, 9.0)),
             new("level03", "Dash-Schulung", "Doppelsprung + Dash · Slide Jump + Doppelsprung · Sprung + Dash", "res://scenes/levels/Level03.tscn", new(7.40, 8.5, 10.0)),
