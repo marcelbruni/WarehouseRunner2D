@@ -68,11 +68,19 @@ public partial class MovementTuning : Resource
     [ExportGroup("Slippery Slope")]
     [Export] public float SlopeSlideGravityFactor { get; set; } = 1.1f;
     [Export] public float SlopeSteerAcceleration { get; set; } = 500f;
-    [Export] public float SlopeSlideMaxSpeed { get; set; } = 820f;
+    [Export] public float SlopeSlideShallowMaxSpeed { get; set; } = 720f;
+    [Export] public float SlopeSlideMaxSpeed { get; set; } = 950f;
+    [Export] public float SlopeSlideShallowAngle { get; set; } = 20f;
+    [Export] public float SlopeSlideSteepAngle { get; set; } = 45f;
     [Export] public float SlopeEntrySpeedFactor { get; set; } = 1.05f;
     [Export] public float SlopeEntryLockTime { get; set; } = 0.15f;
     [Export] public float SlopeSlideBoost { get; set; } = 1.35f;
     [Export] public float SlopeSlideBoostAfterTime { get; set; } = 0.9f;
+
+    [ExportGroup("Crouch")]
+    [Export] public float CrouchFriction { get; set; } = 1100f;
+    [Export] public float CrouchSlideGravityFactor { get; set; } = 1.4f;
+    [Export] public float CrouchSlideMaxSpeedFactor { get; set; } = 1.15f;
 
     [ExportGroup("Wall")]
     [Export] public float WallSlideMaxFallSpeed { get; set; } = 240f;

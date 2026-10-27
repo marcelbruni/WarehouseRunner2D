@@ -134,6 +134,8 @@ public partial class PlayerController : CharacterBody2D
 
     public bool IsCurledUp { get; private set; }
 
+    public bool IsCrouching { get; private set; }
+
     public bool IsOnGround => State is PlayerState.Grounded or PlayerState.Skidding or PlayerState.RollingOut or PlayerState.SlopeSliding;
 
     public override void _Ready()
@@ -156,7 +158,8 @@ public partial class PlayerController : CharacterBody2D
         TrackInputBuffers(input, dt);
         TickTimers(dt);
         StateTime += dt;
-        if (IsCurledUp && State != PlayerState.RollingOut)
+        UpdateCrouch(input);
+        if (IsCurledUp && State != PlayerState.RollingOut && !IsCrouching)
         {
             TryStandUp();
         }
@@ -232,6 +235,7 @@ public partial class PlayerController : CharacterBody2D
         _wallKickChainBroken = false;
         CurrentAirMove = AirMove.Fall;
         ChangeState(PlayerState.Airborne);
+        IsCrouching = false;
         SetCurled(false);
         ResetPhysicsInterpolation();
     }
@@ -241,6 +245,31 @@ public partial class PlayerController : CharacterBody2D
         IsCurledUp = curled;
         _collision.Shape = curled ? _curledShape : _standingShape;
         _collision.Position = curled ? CurledShapeOffset : _standingShapeOffset;
+    }
+
+    private void UpdateCrouch(PlayerInput input)
+    {
+        var canCrouch = State is PlayerState.Grounded or PlayerState.SlopeSliding;
+        if (input.CrouchHeld && canCrouch && !IsCrouching)
+        {
+            IsCrouching = true;
+            SetCurled(true);
+        }
+        else if (IsCrouching && (!input.CrouchHeld || !canCrouch))
+        {
+            IsCrouching = !TryStandUp() && canCrouch;
+        }
+    }
+
+    private bool TryStandUpFromCrouch()
+    {
+        if (IsCrouching && !TryStandUp())
+        {
+            return false;
+        }
+
+        IsCrouching = false;
+        return true;
     }
 
     private bool TryStandUp()
@@ -303,6 +332,12 @@ public partial class PlayerController : CharacterBody2D
 
     private void UpdateGrounded(PlayerInput input, float dt)
     {
+        if (IsCrouching)
+        {
+            UpdateCrouching(input, dt);
+            return;
+        }
+
         if (ConsumeJumpBuffer())
         {
             if (_slideJumpGraceTimer > 0f)
@@ -345,6 +380,22 @@ public partial class PlayerController : CharacterBody2D
             Tuning.GroundFriction,
             dt);
 
+        if (!Mathf.IsZeroApprox(input.MoveX))
+        {
+            Facing = Mathf.Sign(input.MoveX);
+        }
+    }
+
+    private void UpdateCrouching(PlayerInput input, float dt)
+    {
+        if (_jumpBufferTimer > 0f && TryStandUpFromCrouch())
+        {
+            ConsumeJumpBuffer();
+            StartJump(AirMove.Jump, Tuning.JumpSpeed, _groundSpeed, Trick.Jump);
+            return;
+        }
+
+        _groundSpeed = Mathf.MoveToward(_groundSpeed, 0f, Tuning.CrouchFriction * dt);
         if (!Mathf.IsZeroApprox(input.MoveX))
         {
             Facing = Mathf.Sign(input.MoveX);
@@ -607,8 +658,9 @@ public partial class PlayerController : CharacterBody2D
 
     private void UpdateSlopeSliding(PlayerInput input, float dt)
     {
-        if (ConsumeJumpBuffer())
+        if (_jumpBufferTimer > 0f && TryStandUpFromCrouch())
         {
+            ConsumeJumpBuffer();
             StartJump(AirMove.Jump, Tuning.JumpSpeed, _groundSpeed, Trick.Jump);
             return;
         }
@@ -616,11 +668,12 @@ public partial class PlayerController : CharacterBody2D
         var normal = GetFloorNormal();
         var downhill = Mathf.Sign(normal.X);
         var steepness = Mathf.Abs(normal.X);
+        var crouchFactor = IsCrouching ? Tuning.CrouchSlideGravityFactor : 1f;
 
         // The cap only stops gravity from adding more; speed carried in above it is kept.
         _slopeEntryLockTimer = Tuning.SlopeEntryLockTime;
-        var limit = Mathf.Max(Tuning.SlopeSlideMaxSpeed, Mathf.Abs(_groundSpeed));
-        _groundSpeed += downhill * Tuning.Gravity * steepness * Tuning.SlopeSlideGravityFactor * dt;
+        var limit = Mathf.Max(SlopeSlideMaxSpeed(normal), Mathf.Abs(_groundSpeed));
+        _groundSpeed += downhill * Tuning.Gravity * steepness * Tuning.SlopeSlideGravityFactor * crouchFactor * dt;
         _groundSpeed += input.MoveX * Tuning.SlopeSteerAcceleration * dt;
         _groundSpeed = Mathf.Clamp(_groundSpeed, -limit, limit);
 
@@ -630,6 +683,14 @@ public partial class PlayerController : CharacterBody2D
         {
             Facing = Mathf.Sign(_groundSpeed);
         }
+    }
+
+    private float SlopeSlideMaxSpeed(Vector2 floorNormal)
+    {
+        var angle = Mathf.RadToDeg(floorNormal.AngleTo(UpDirection));
+        var steepness = Mathf.Clamp(Mathf.InverseLerp(Tuning.SlopeSlideShallowAngle, Tuning.SlopeSlideSteepAngle, Mathf.Abs(angle)), 0f, 1f);
+        var maxSpeed = Mathf.Lerp(Tuning.SlopeSlideShallowMaxSpeed, Tuning.SlopeSlideMaxSpeed, steepness);
+        return IsCrouching ? maxSpeed * Tuning.CrouchSlideMaxSpeedFactor : maxSpeed;
     }
 
     private void ResolveContacts(PlayerInput input)

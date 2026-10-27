@@ -11,6 +11,7 @@ public partial class Hud : CanvasLayer
         "Leertaste/W: Springen (in der Luft: Doppelsprung, an Wand: Wall Kick)\n" +
         "Shift/J/S/Ctrl/K: Dash in der Luft, Rollout bei der Landung, Rolle im Laufen\n" +
         "Rennen, Richtung wechseln + Springen: Slide Jump\n" +
+        "Pfeil runter halten: Ducken (auf schrägen Kisten schneller rutschen)\n" +
         "R: Neustart   Esc: Levelauswahl   F1: Hilfe ein/aus";
 
     private Label _timer = null!;

@@ -28,7 +28,7 @@ public partial class MainMenu : Node2D
         root.AddThemeConstantOverride("separation", 14);
         layer.AddChild(root);
 
-        root.AddChild(CreateLabel("WAREHOUSE RUNNER", 64, Accent));
+        root.AddChild(CreateLabel("Warehouse Runner 2D", 64, Accent));
         root.AddChild(CreateLabel("Levelauswahl", 26, Colors.White));
         root.AddChild(new Control { CustomMinimumSize = new Vector2(0f, 10f) });
 

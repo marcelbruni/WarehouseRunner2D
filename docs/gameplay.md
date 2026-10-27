@@ -90,7 +90,7 @@ Alle Auslöser reagieren auf die Kollisionsebenen 1 (Welt/Spieler) und 2 („Gei
 | Jump | Leertaste/W/↑, Pad A | Normaler Sprung |
 | Double Jump | Jump in der Luft | Zweiter Sprung, einmal pro Luftphase |
 | Wall Kick | an der Wand von ihr weg lenken + Jump | stösst schräg nach oben ab, Dash **und Doppelsprung** sind danach wieder verfügbar. Behält mitgebrachtes Tempo (Aufprall, Steigen, vorheriger Wall Kick; seitlich unbegrenzt, hoch max. 1020), bis zu einem Doppelsprung oder der Landung |
-| Jump → Dash | Aktionstaste (Shift/J/S/↓/Ctrl/K, Pad X/B) in der Luft | Horizontaler Schub ohne Schwerkraft, einmal pro Luftphase |
+| Jump → Dash | Aktionstaste (Shift/J/S/Ctrl/K, Pad X/B) in der Luft | Horizontaler Schub ohne Schwerkraft, einmal pro Luftphase |
 | Jump → Dash → Jump | Jump während/nach dem Dash | Doppelsprung, der den Dash-Schwung mitnimmt |
 | Rollout nach Jump-Landung | Aktionstaste kurz vor/bei/nach der Landung | Rolle + Boost (×1.3 für 0.8 s) |
 | Rollout nach Dash-Landung | wie oben, nach einem Dash | Stärkerer Boost (×1.45 für 1.0 s) |
@@ -99,7 +99,9 @@ Alle Auslöser reagieren auf die Kollisionsebenen 1 (Welt/Spieler) und 2 („Gei
 | Power-Dash | Dash nach einem Roll Jump | Stärkerer Dash (860 statt 720, danach 620 statt 520 px/s) |
 | Slide Jump | Rennen, abrupt Gegenrichtung (Rutsch-Pose), Jump; die Rutsch-Pose bleibt auch beim Zurück-und-wieder-vor | So hoch wie Sprung + Doppelsprung (~236 px), springt in die aktuell gedrückte Richtung |
 | Slide Jump → Double Jump / Dash / Dash → Jump | wie oben kombinieren | Alle Ketten möglich |
-| Schräge Kiste | einfach draufstehen | Rutschen bergab, Boost (×1.35) während und 0.9 s danach |
+| Schräge Kiste | einfach draufstehen | Rutschen bergab, Boost (×1.35) während und 0.9 s danach. Je steiler, desto schneller: Höchsttempo von 720 px/s (20°) bis 950 px/s (45°) |
+| Ducken | ↓ / linker Trigger halten | Kleinere Hitbox, kein Laufen und keine Rolle, Schwung läuft langsam aus. Springen ist möglich |
+| Ducken auf schräger Kiste | ↓ halten beim Rutschen | Rutscht schneller: stärkere Beschleunigung (×1.4) und 15 % höheres Höchsttempo |
 | Förderband | draufstehen/laufen | Bandgeschwindigkeit wird addiert (schneller oder langsamer); beim Absprung bleibt der Schwung |
 
 **Aktionstaste (Dash und Rollout auf derselben Taste):**

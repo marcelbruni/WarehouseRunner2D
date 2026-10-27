@@ -53,6 +53,9 @@ public partial class MovementTests : Node2D
             ("TiltedCrate_LandingFasterThanSlideMax_KeepsHorizontalSpeed", () => TiltedCrateKeepsEntrySpeed(950f)),
             ("TiltedCrate_LandingUphill_GetsNoSpeedBonus", TiltedCrateUphillGivesNoBonus),
             ("TiltedConveyor_StandingOnIt_IsNotSlippery", TiltedConveyorIsNotSlippery),
+            ("TiltedCrate_SteeperSlope_SlidesFasterButStaysNearOldMax", SteeperSlopeSlidesFaster),
+            ("Crouch_WhileRunning_StopsRunningAndBlocksRoll", CrouchStopsRunning),
+            ("Crouch_OnTiltedCrate_SlidesFaster", CrouchSlidesFaster),
             ("WallKick_SteeringAwayFromWall_PushesUpAndAway", WallKickPushesUpAndAway),
             ("WallKick_ChainedWithSpeed_KeepsSpeed", () => WallKickChainKeepsSpeed(doubleJumpBetween: false)),
             ("WallKick_DoubleJumpBetween_ResetsChain", () => WallKickChainKeepsSpeed(doubleJumpBetween: true)),
@@ -430,6 +433,49 @@ public partial class MovementTests : Node2D
         Expect("TiltedCrate", _player.IsBoosted, "boost not active");
     }
 
+    private async Task SteeperSlopeSlidesFaster()
+    {
+        var shallow = await MeasureSlideSpeed(25f, crouch: false);
+        var steep = await MeasureSlideSpeed(40f, crouch: false);
+        Expect("SteeperSlope", steep > shallow + 50f, $"25° reached {shallow:0}, 40° reached {steep:0}");
+        Expect("SteeperSlope", steep <= 960f, $"40° reached {steep:0}, should stay close to the old 820 cap");
+    }
+
+    private async Task CrouchSlidesFaster()
+    {
+        var standing = await MeasureSlideSpeed(33f, crouch: false);
+        var crouching = await MeasureSlideSpeed(33f, crouch: true);
+        Expect("CrouchSlide", crouching > standing * 1.08f, $"standing {standing:0}, crouching {crouching:0}");
+    }
+
+    private async Task<float> MeasureSlideSpeed(float degrees, bool crouch)
+    {
+        await SetUpWorld();
+        var angle = Mathf.DegToRad(degrees);
+        AddCrate(new Vector2(0f, -150f), new Vector2(1600f, 40f), angle);
+        await SettleAt(new Vector2((-800f * Mathf.Cos(angle)) + 60f, -150f - (800f * Mathf.Sin(angle)) - 70f), settleTicks: 0);
+        _input.CrouchHeld = crouch;
+        var top = 0f;
+        await Ticks(110, () => top = _player.State == PlayerState.SlopeSliding ? Mathf.Max(top, Mathf.Abs(_player.GroundSpeed)) : top);
+        Expect($"SlideSpeed{degrees:0}", !crouch || _player.IsCrouching, "not crouching on the slide");
+        return top;
+    }
+
+    private async Task CrouchStopsRunning()
+    {
+        await RunTo(1, 60);
+        _input.CrouchHeld = true;
+        await Ticks(5);
+        _input.PressDashOrRoll();
+        await Ticks(55);
+        Expect("Crouch", _player.IsCrouching, $"not crouching, state {_player.State}");
+        Expect("Crouch", _player.State == PlayerState.Grounded, $"state {_player.State}, roll should be blocked");
+        Expect("Crouch", Mathf.Abs(_player.GroundSpeed) < 1f, $"still moving at {_player.GroundSpeed:0} while holding right");
+        _input.CrouchHeld = false;
+        await Ticks(2);
+        Expect("Crouch", !_player.IsCrouching && !_player.IsCurledUp, "did not stand up after releasing crouch");
+    }
+
     private async Task TiltedCrateKeepsEntrySpeed(float entrySpeed)
     {
         var scenario = $"TiltedCrateEntry{entrySpeed:0}";
@@ -768,6 +814,8 @@ public partial class MovementTests : Node2D
 
         public bool JumpHeld { get; set; }
 
+        public bool CrouchHeld { get; set; }
+
         public void PressJump()
         {
             _jumpPressed = true;
@@ -778,7 +826,7 @@ public partial class MovementTests : Node2D
 
         public PlayerInput Sample()
         {
-            var sample = new PlayerInput(MoveX, _jumpPressed, JumpHeld, _actionPressed);
+            var sample = new PlayerInput(MoveX, _jumpPressed, JumpHeld, _actionPressed, CrouchHeld);
             _jumpPressed = false;
             _actionPressed = false;
             return sample;

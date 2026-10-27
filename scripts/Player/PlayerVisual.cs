@@ -21,6 +21,9 @@ public partial class PlayerVisual : Node2D
     private CpuParticles2D _dust = null!;
     private CpuParticles2D _landingDust = null!;
     private CpuParticles2D _boostSparks = null!;
+    private static readonly Vector2 CrouchScale = new(1.15f, 0.6f);
+    private static readonly Vector2 CrouchOffset = new(0f, 10f);
+
     private Vector2 _squash = Vector2.One;
     private float _runPhase;
     private float _rollAngle;
@@ -51,11 +54,12 @@ public partial class PlayerVisual : Node2D
             _rollAngle += _player.GroundSpeed * dt / 14f;
         }
 
-        Position = _player.IsCurledUp ? new Vector2(0f, 12f) : Vector2.Zero;
+        Position = _player.IsCrouching ? CrouchOffset : _player.IsCurledUp ? new Vector2(0f, 12f) : Vector2.Zero;
         Rotation = BodyRotation();
-        Scale = _squash;
+        Scale = _player.IsCrouching ? _squash * CrouchScale : _squash;
 
-        var skidding = _player.State is PlayerState.Skidding or PlayerState.SlopeSliding || _player.IsWallSliding;
+        var crouchSliding = _player.IsCrouching && Mathf.Abs(_player.GroundSpeed) > 100f;
+        var skidding = _player.State is PlayerState.Skidding or PlayerState.SlopeSliding || _player.IsWallSliding || crouchSliding;
         _dust.Emitting = skidding;
         _dust.Direction = new Vector2(-_player.Facing, -1f);
         _boostSparks.Emitting = _player.IsBoosted;
