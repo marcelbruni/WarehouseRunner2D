@@ -308,7 +308,7 @@ public partial class LevelSkillProofs : Node
         await ProveClimb(new Section("L11 Speed Jump in den Kamin 1", scene, p => p.GlobalPosition.X > 4130f && p.GlobalPosition.Y < -940f, 1500),
             new Vector2(2990f, -70f), floorY: 0f, useDash: false, exitAboveY: -940f, expectSuccess: true, takeoffX: 3760f);
         await ProveClimb(new Section("L11 Kamin 1 vom Boden", scene, p => p.GlobalPosition.X > 4130f && p.GlobalPosition.Y < -940f, 1500),
-            new Vector2(3990f, StandY), floorY: 0f, useDash: false, exitAboveY: -940f, expectSuccess: true);
+            new Vector2(3990f, StandY), floorY: 0f, useDash: false, exitAboveY: -1000f, expectSuccess: true);
         await ProvePossible(new Section("L11 Von der Wand in den Speed Jump 2", scene, p => p.IsOnGround && p.GlobalPosition.X > 4270f && p.GlobalPosition.Y > -760f, 300),
             [new Plan(Opener.WalkOff, 4150f, -926f, 0f, 0, null, null)]);
         await ProveClimb(new Section("L11 Speed Jump, Polsterfolie, Kamin 2", scene, p => p.IsOnGround && p.GlobalPosition.Y < -1510f, 1500),
