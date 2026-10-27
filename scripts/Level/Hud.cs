@@ -9,7 +9,7 @@ public partial class Hud : CanvasLayer
     private const string ControlsText =
         "A/D oder Pfeile: Laufen\n" +
         "Leertaste/W: Springen (in der Luft: Doppelsprung, an Wand: Wall Kick)\n" +
-        "Shift/J/S/Ctrl/K: Dash in der Luft, Rollout bei der Landung, Rolle im Laufen\n" +
+        "Shift/J/S/Ctrl/K: Dash in der Luft (mit Pfeil hoch/runter schräg oder senkrecht), Rollout bei der Landung, Rolle im Laufen\n" +
         "Rennen, Richtung wechseln + Springen: Slide Jump\n" +
         "Pfeil runter halten: Ducken (auf schrägen Kisten schneller rutschen)\n" +
         "R: Neustart   Esc: Levelauswahl   F1: Hilfe ein/aus";

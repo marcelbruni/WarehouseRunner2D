@@ -9,6 +9,8 @@ public partial class InputSetup : Node
     public const string Jump = "jump";
     public const string DashOrRoll = "dash_or_roll";
     public const string Crouch = "crouch";
+    public const string AimUp = "aim_up";
+    public const string AimDown = "aim_down";
     public const string Restart = "restart";
     public const string ToggleHelp = "toggle_help";
     public const string BackToMenu = "back_to_menu";
@@ -18,9 +20,11 @@ public partial class InputSetup : Node
     {
         Register(MoveLeft, Keys(Key.A, Key.Left), Buttons(JoyButton.DpadLeft), new Axis(JoyAxis.LeftX, -1f));
         Register(MoveRight, Keys(Key.D, Key.Right), Buttons(JoyButton.DpadRight), new Axis(JoyAxis.LeftX, 1f));
-        Register(Jump, Keys(Key.Space, Key.W, Key.Up), Buttons(JoyButton.A));
+        Register(Jump, Keys(Key.Space, Key.W), Buttons(JoyButton.A));
         Register(DashOrRoll, Keys(Key.Shift, Key.J, Key.S, Key.Ctrl, Key.K), Buttons(JoyButton.X, JoyButton.B));
         Register(Crouch, Keys(Key.Down), Buttons(), new Axis(JoyAxis.TriggerLeft, 1f));
+        Register(AimUp, Keys(Key.Up), Buttons(), new Axis(JoyAxis.LeftY, -1f));
+        Register(AimDown, Keys(Key.Down), Buttons(), new Axis(JoyAxis.LeftY, 1f));
         Register(Restart, Keys(Key.R), Buttons(JoyButton.Start));
         Register(ToggleHelp, Keys(Key.F1), Buttons());
         Register(BackToMenu, Keys(Key.Escape), Buttons(JoyButton.Back));

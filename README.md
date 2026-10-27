@@ -34,9 +34,10 @@ dotnet build
 | Aktion | Tastatur | Gamepad |
 |---|---|---|
 | Laufen | A/D, ←/→ | Linker Stick, D-Pad |
-| Springen / Doppelsprung / Wall Kick | Leertaste, W, ↑ | A |
+| Springen / Doppelsprung / Wall Kick | Leertaste, W | A |
 | Dash (Luft) / Rollout (Landung) / Rolle (im Laufen) | Shift, J, S, Ctrl, K | X, B |
 | Ducken (halten) | ↓ | Linker Trigger |
+| Dash-Richtung (beim Dash halten) | ↑/↓ zusammen mit ←/→ | Linker Stick hoch/runter |
 | Neustart | R | Start |
 | Zurück zur Levelauswahl | Esc | Back |
 | Nach dem Ziel: nächstes Level | Enter | Y |

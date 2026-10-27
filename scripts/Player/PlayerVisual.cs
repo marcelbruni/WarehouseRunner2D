@@ -102,7 +102,7 @@ public partial class PlayerVisual : Node2D
             case PlayerState.RollingOut:
                 return _rollAngle;
             case PlayerState.Dashing:
-                return facing * 1.25f;
+                return Mathf.Atan2(_player.DashDirection.X, -_player.DashDirection.Y) * 0.8f;
             case PlayerState.Skidding:
                 return -Mathf.Sign(_player.GroundSpeed) * 0.35f;
             case PlayerState.SlopeSliding:

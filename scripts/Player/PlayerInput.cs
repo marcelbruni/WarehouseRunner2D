@@ -8,7 +8,8 @@ public readonly record struct PlayerInput(
     bool JumpPressed,
     bool JumpHeld,
     bool ActionPressed,
-    bool CrouchHeld = false);
+    bool CrouchHeld = false,
+    float AimY = 0f);
 
 public interface IPlayerInputSource
 {
@@ -22,5 +23,6 @@ public sealed class LocalInputSource : IPlayerInputSource
         Input.IsActionJustPressed(InputSetup.Jump),
         Input.IsActionPressed(InputSetup.Jump),
         Input.IsActionJustPressed(InputSetup.DashOrRoll),
-        Input.IsActionPressed(InputSetup.Crouch));
+        Input.IsActionPressed(InputSetup.Crouch),
+        Input.GetAxis(InputSetup.AimUp, InputSetup.AimDown));
 }

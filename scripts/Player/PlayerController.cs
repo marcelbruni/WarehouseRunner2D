@@ -82,7 +82,7 @@ public partial class PlayerController : CharacterBody2D
     private bool _usedDashThisAirtime;
     private bool _performedAirAction;
 
-    private int _dashDirection = 1;
+    private Vector2 _dashDirection = Vector2.Right;
     private float _dashSpeed;
     private float _dashExitSpeed;
     private bool _isRollJumpChain;
@@ -135,6 +135,8 @@ public partial class PlayerController : CharacterBody2D
     public bool IsCurledUp { get; private set; }
 
     public bool IsCrouching { get; private set; }
+
+    public Vector2 DashDirection => _dashDirection;
 
     public bool IsOnGround => State is PlayerState.Grounded or PlayerState.Skidding or PlayerState.RollingOut or PlayerState.SlopeSliding;
 
@@ -494,7 +496,7 @@ public partial class PlayerController : CharacterBody2D
         if (_canDoubleJump)
         {
             var fromDash = State == PlayerState.Dashing || CurrentAirMove == AirMove.Dash;
-            var horizontal = fromDash ? _dashDirection * _dashExitSpeed : Velocity.X;
+            var horizontal = fromDash ? _dashDirection.X * _dashExitSpeed : Velocity.X;
             _canDoubleJump = false;
             _wallKickChainBroken = true;
             StartJump(AirMove.DoubleJump, Tuning.DoubleJumpSpeed, horizontal, fromDash ? Trick.DashJump : Trick.DoubleJump);
@@ -571,17 +573,27 @@ public partial class PlayerController : CharacterBody2D
 
     private void StartDash(PlayerInput input)
     {
-        _dashDirection = !Mathf.IsZeroApprox(input.MoveX) ? Mathf.Sign(input.MoveX) : Facing;
-        Facing = _dashDirection;
+        _dashDirection = DashAim(input);
+        if (!Mathf.IsZeroApprox(_dashDirection.X))
+        {
+            Facing = Mathf.Sign(_dashDirection.X);
+        }
+
         _canDash = false;
         _usedDashThisAirtime = true;
         _performedAirAction = true;
         IsWallSliding = false;
         _dashSpeed = _isRollJumpChain ? Tuning.ChainDashSpeed : Tuning.DashSpeed;
         _dashExitSpeed = _isRollJumpChain ? Tuning.ChainDashExitSpeed : Tuning.DashExitSpeed;
-        Velocity = new Vector2(_dashDirection * _dashSpeed, 0f);
+        Velocity = _dashDirection * _dashSpeed;
         ChangeState(PlayerState.Dashing);
         TrickPerformed?.Invoke(_isRollJumpChain ? Trick.PowerDash : Trick.Dash, false);
+    }
+
+    private Vector2 DashAim(PlayerInput input)
+    {
+        var aim = new Vector2(input.MoveX, input.AimY);
+        return aim.IsZeroApprox() ? new Vector2(Facing, 0f) : aim.Normalized();
     }
 
     private void UpdateDashing(PlayerInput input)
@@ -597,12 +609,12 @@ public partial class PlayerController : CharacterBody2D
             return;
         }
 
-        Velocity = new Vector2(_dashDirection * _dashSpeed, 0f);
+        Velocity = _dashDirection * _dashSpeed;
     }
 
     private void EndDash()
     {
-        Velocity = new Vector2(_dashDirection * _dashExitSpeed, 0f);
+        Velocity = _dashDirection * _dashExitSpeed;
         CurrentAirMove = AirMove.Dash;
         ChangeState(PlayerState.Airborne);
     }

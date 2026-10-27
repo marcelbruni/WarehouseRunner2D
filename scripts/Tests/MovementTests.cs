@@ -31,6 +31,10 @@ public partial class MovementTests : Node2D
             ("SlideJump_ThenDoubleJumpThenDashThenJump_AllChain", SlideJumpChainWorks),
             ("SlideJump_BackThenForwardAgain_StaysSkiddingAndTriggers", SlideJumpBackThenForwardTriggers),
             ("JumpDashJump_InAir_KeepsDashMomentum", JumpDashJumpKeepsDashMomentum),
+            ("Dash_HoldingOnlyUp_GoesStraightUp", () => AimedDash(0f, -1f, 0f, -1f)),
+            ("Dash_ForwardAndUp_GoesDiagonallyUp", () => AimedDash(1f, -1f, 0.7071f, -0.7071f)),
+            ("Dash_ForwardAndDown_GoesDiagonallyDown", () => AimedDash(1f, 1f, 0.7071f, 0.7071f)),
+            ("Dash_StickSlightlyUp_AnglesSlightly", () => AimedDash(1f, -0.5f, 0.8944f, -0.4472f)),
             ("Rollout_AfterJumpLanding_BoostsSpeed", RolloutAfterJumpLandingBoostsSpeed),
             ("Rollout_AfterDashLanding_IsStrongerThanJumpRollout", DashRolloutIsStrongerThanJumpRollout),
             ("Rollout_PressedJustBeforeLanding_IsBufferedAndPerfect", RolloutBufferedBeforeLanding),
@@ -175,6 +179,22 @@ public partial class MovementTests : Node2D
         Expect("SlideJumpChain", _player.State == PlayerState.Dashing, $"after dash press {_player.State}");
         await Ticks(30);
         Expect("SlideJumpChain", _player.State == PlayerState.Airborne && _player.CurrentAirMove == AirMove.Dash, $"after dash {_player.State}/{_player.CurrentAirMove}");
+    }
+
+    private async Task AimedDash(float moveX, float aimY, float expectedX, float expectedY)
+    {
+        var scenario = $"AimedDash({moveX:0.#},{aimY:0.#})";
+        _input.PressJump();
+        await Ticks(20);
+        _input.MoveX = moveX;
+        _input.AimY = aimY;
+        _input.PressDashOrRoll();
+        await Ticks(1);
+        var expected = new Vector2(expectedX, expectedY) * _player.Tuning.DashSpeed;
+        Expect(scenario, _player.State == PlayerState.Dashing, $"state {_player.State}");
+        Expect(scenario, _player.Velocity.DistanceTo(expected) < 1f, $"velocity {_player.Velocity}, expected {expected}");
+        await Ticks(30);
+        Expect(scenario, _player.State != PlayerState.Dashing, "dash did not end");
     }
 
     private async Task JumpDashJumpKeepsDashMomentum()
@@ -816,6 +836,8 @@ public partial class MovementTests : Node2D
 
         public bool CrouchHeld { get; set; }
 
+        public float AimY { get; set; }
+
         public void PressJump()
         {
             _jumpPressed = true;
@@ -826,7 +848,7 @@ public partial class MovementTests : Node2D
 
         public PlayerInput Sample()
         {
-            var sample = new PlayerInput(MoveX, _jumpPressed, JumpHeld, _actionPressed, CrouchHeld);
+            var sample = new PlayerInput(MoveX, _jumpPressed, JumpHeld, _actionPressed, CrouchHeld, AimY);
             _jumpPressed = false;
             _actionPressed = false;
             return sample;
