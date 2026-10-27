@@ -55,7 +55,7 @@ gerundet. Gezählt wird die angezeigte Zeit (Hundertstel).
 
 | Nr. | Name | Gold | Silber | Bronze |
 |---|---|---|---|---|
-| 1-1 | Tempo-Training | 8.50 | 10.0 | 11.5 |
+| 1-1 | Tempo-Training | 3.80 | 4.5 | 5.0 |
 | 1-2 | Erster Arbeitstag | 7.00 | 8.0 | 9.5 |
 | 1-3 | Rollen lernen | 6.65 | 7.5 | 9.0 |
 | 1-4 | Dash-Schulung | 7.40 | 8.5 | 10.0 |

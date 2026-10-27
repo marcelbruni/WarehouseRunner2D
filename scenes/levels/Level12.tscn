@@ -21,7 +21,7 @@
 [node name="Level12" type="Node2D"]
 script = ExtResource("race")
 LevelId = "level12"
-CameraBounds = Rect2i(-760, -1100, 7120, 1320)
+CameraBounds = Rect2i(-760, -1100, 3620, 1320)
 
 [node name="Background" type="Parallax2D" parent="."]
 z_index = -10
@@ -47,21 +47,21 @@ script = ExtResource("sign")
 Text = "Rolle, Roll Jump, Power-Dash,\nRollout bei der Landung\nund gleich wieder springen"
 
 [node name="Sign3" type="Node2D" parent="."]
-position = Vector2(2500, 0)
+position = Vector2(1150, 0)
 script = ExtResource("sign")
 Text = "Rhythmus halten:\nJump, Dash, Rollout, Jump ..."
 
 [node name="Sign4" type="Node2D" parent="."]
-position = Vector2(4500, 0)
+position = Vector2(1800, 0)
 script = ExtResource("sign")
 Text = "noch schneller?\nRollout ganz knapp vor der Landung\n= perfekter Rollout"
 
 [node name="LoadingDock1" type="Area2D" parent="."]
-position = Vector2(5700, 0)
+position = Vector2(2200, 0)
 script = ExtResource("dock")
 
 [node name="ClockOut1" type="Area2D" parent="."]
-position = Vector2(6000, 0)
+position = Vector2(2500, 0)
 script = ExtResource("clock")
 Mode = 1
 
@@ -71,14 +71,14 @@ script = ExtResource("concrete")
 Size = Vector2(60, 1300)
 
 [node name="Concrete2" type="StaticBody2D" parent="Course"]
-position = Vector2(6330, -450)
+position = Vector2(2830, -450)
 script = ExtResource("concrete")
 Size = Vector2(60, 1300)
 
 [node name="Concrete3" type="StaticBody2D" parent="Course"]
-position = Vector2(2800, 100)
+position = Vector2(1050, 100)
 script = ExtResource("concrete")
-Size = Vector2(7000, 200)
+Size = Vector2(3500, 200)
 
 [node name="ExpressPackage1" type="Area2D" parent="."]
 position = Vector2(80, -40)
