@@ -4,7 +4,7 @@ namespace WarehouseRunner.Core;
 
 public partial class MusicPlayer : Node
 {
-    public const string MenuTheme = "res://assets/music/menu_theme.wav";
+    public const string MenuTheme = "res://assets/music/menu_theme.ogg";
 
     private const float VolumeDb = -6f;
 
@@ -22,7 +22,7 @@ public partial class MusicPlayer : Node
 
     public static void Play(string path) => _instance?.Switch(path);
 
-    public static string LevelTrack(string scenePath) => $"res://assets/music/{scenePath.GetFile().GetBaseName().ToLowerInvariant()}.wav";
+    public static string LevelTrack(string scenePath) => $"res://assets/music/{scenePath.GetFile().GetBaseName().ToLowerInvariant()}.ogg";
 
     private void Switch(string path)
     {
