@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Godot;
 using WarehouseRunner.Core;
 using WarehouseRunner.Level;
@@ -9,12 +10,18 @@ public partial class MainMenu : Node2D
     private static readonly Color ButtonIdle = new(0.12f, 0.13f, 0.16f, 0.85f);
     private static readonly Color ButtonFocus = new(0.95f, 0.55f, 0.12f, 0.95f);
     private static readonly Color Accent = new(1f, 0.82f, 0.1f);
+    private static readonly Color Muted = new(0.75f, 0.78f, 0.82f);
 
-    private const int ColumnCount = 2;
+    private const float PackageTileSize = 380f;
 
     private static int _lastSelectedIndex;
+    private static int _lastPackageIndex;
+    private static bool _packageOpen;
 
+    private Label _subtitle = null!;
+    private VBoxContainer _content = null!;
     private Label _skills = null!;
+    private Label _footer = null!;
 
     public override void _Ready()
     {
@@ -24,58 +31,186 @@ public partial class MainMenu : Node2D
 
         var root = new VBoxContainer { Alignment = BoxContainer.AlignmentMode.Center };
         root.SetAnchorsAndOffsetsPreset(Control.LayoutPreset.FullRect);
-        root.AddThemeConstantOverride("separation", 14);
+        root.AddThemeConstantOverride("separation", 8);
         layer.AddChild(root);
 
         root.AddChild(CreateLabel("Warehouse Runner 2D", 64, Accent));
-        root.AddChild(CreateLabel("Levelauswahl", 26, Colors.White));
+        _subtitle = CreateLabel("Levelauswahl", 26, Colors.White);
+        root.AddChild(_subtitle);
         root.AddChild(new Control { CustomMinimumSize = new Vector2(0f, 10f) });
 
-        var columns = new HBoxContainer { Alignment = BoxContainer.AlignmentMode.Center };
-        columns.AddThemeConstantOverride("separation", 20);
-        root.AddChild(columns);
-        var rowsPerColumn = Mathf.CeilToInt(LevelCatalog.Levels.Count / (float)ColumnCount);
-        VBoxContainer? column = null;
-        var buttons = new Button[LevelCatalog.Levels.Count];
-        for (var i = 0; i < LevelCatalog.Levels.Count; i++)
-        {
-            if (i % rowsPerColumn == 0)
-            {
-                column = new VBoxContainer();
-                column.AddThemeConstantOverride("separation", 10);
-                columns.AddChild(column);
-            }
-
-            buttons[i] = CreateLevelButton(i, LevelCatalog.Levels[i]);
-            column!.AddChild(buttons[i]);
-        }
+        _content = new VBoxContainer();
+        _content.AddThemeConstantOverride("separation", 8);
+        root.AddChild(_content);
 
         _skills = CreateLabel(string.Empty, 22, new Color(0.85f, 0.88f, 0.92f));
         root.AddChild(new Control { CustomMinimumSize = new Vector2(0f, 6f) });
         root.AddChild(_skills);
-        root.AddChild(CreateLabel("Pfeiltasten: auswählen     Enter/Leertaste: starten", 18, new Color(0.7f, 0.72f, 0.76f)));
+        _footer = CreateLabel(string.Empty, 18, new Color(0.7f, 0.72f, 0.76f));
+        root.AddChild(_footer);
 
-        buttons[Mathf.Clamp(_lastSelectedIndex, 0, buttons.Length - 1)].GrabFocus();
+        if (_packageOpen)
+        {
+            ShowLevels(_lastPackageIndex);
+        }
+        else
+        {
+            ShowPackages();
+        }
     }
 
-    private Button CreateLevelButton(int index, LevelInfo level)
+    public static void SelectLevel(string levelId)
+    {
+        var index = 0;
+        for (var p = 0; p < LevelCatalog.Packages.Count; p++)
+        {
+            foreach (var level in LevelCatalog.Packages[p].Levels)
+            {
+                if (level.Id == levelId)
+                {
+                    _packageOpen = true;
+                    _lastPackageIndex = p;
+                    _lastSelectedIndex = index;
+                    return;
+                }
+
+                index++;
+            }
+        }
+    }
+
+    public override void _UnhandledInput(InputEvent @event)
+    {
+        if (_packageOpen && (@event.IsActionPressed("ui_cancel") || @event.IsActionPressed(InputSetup.BackToMenu)))
+        {
+            GetViewport().SetInputAsHandled();
+            ShowPackages();
+        }
+    }
+
+    private void ShowPackages()
+    {
+        _packageOpen = false;
+        ClearContent();
+        _subtitle.Text = "Levelauswahl";
+        _skills.Text = string.Empty;
+        _footer.Text = "Pfeiltasten: auswählen     Enter/Leertaste: Paket öffnen";
+
+        var row = new HBoxContainer { Alignment = BoxContainer.AlignmentMode.Center };
+        row.AddThemeConstantOverride("separation", 40);
+        _content.AddChild(row);
+        var tiles = new List<Button>();
+        for (var p = 0; p < LevelCatalog.Packages.Count; p++)
+        {
+            var tile = CreatePackageTile(p, LevelCatalog.Packages[p]);
+            tiles.Add(tile);
+            row.AddChild(tile);
+        }
+
+        tiles[Mathf.Clamp(_lastPackageIndex, 0, tiles.Count - 1)].GrabFocus();
+    }
+
+    private void ShowLevels(int packageIndex)
+    {
+        _packageOpen = true;
+        _lastPackageIndex = packageIndex;
+        ClearContent();
+        var package = LevelCatalog.Packages[packageIndex];
+        _subtitle.Text = $"Paket {packageIndex + 1} · {package.Title}";
+        _footer.Text = "Pfeiltasten: auswählen     Enter/Leertaste: starten     Esc: zurück zu den Paketen";
+
+        var list = new VBoxContainer();
+        list.AddThemeConstantOverride("separation", 8);
+        list.SizeFlagsHorizontal = Control.SizeFlags.ShrinkCenter;
+        _content.AddChild(list);
+        list.AddChild(CreateLabel(package.Description, 17, Muted));
+
+        var firstIndex = 0;
+        for (var p = 0; p < packageIndex; p++)
+        {
+            firstIndex += LevelCatalog.Packages[p].Levels.Count;
+        }
+
+        var buttons = new List<Button>();
+        for (var i = 0; i < package.Levels.Count; i++)
+        {
+            var button = CreateLevelButton(firstIndex + i, $"{packageIndex + 1}-{i + 1}", package.Levels[i]);
+            buttons.Add(button);
+            list.AddChild(button);
+        }
+
+        list.AddChild(CreateBackButton());
+
+        var selected = _lastSelectedIndex - firstIndex;
+        buttons[selected >= 0 && selected < buttons.Count ? selected : 0].GrabFocus();
+    }
+
+    private void ClearContent()
+    {
+        foreach (var child in _content.GetChildren())
+        {
+            _content.RemoveChild(child);
+            child.QueueFree();
+        }
+    }
+
+    private Button CreatePackageTile(int index, LevelPackage package)
+    {
+        var tile = new Button { CustomMinimumSize = new Vector2(PackageTileSize, PackageTileSize) };
+        ApplyButtonStyle(tile);
+
+        var text = new VBoxContainer { Alignment = BoxContainer.AlignmentMode.Center, MouseFilter = Control.MouseFilterEnum.Ignore };
+        text.AddThemeConstantOverride("separation", 14);
+        tile.AddChild(text);
+        text.SetAnchorsAndOffsetsPreset(Control.LayoutPreset.FullRect);
+        text.AddChild(CreateLabel($"PAKET {index + 1}", 28, Accent));
+        text.AddChild(CreateLabel(package.Title, 42, Colors.White));
+        var description = CreateLabel(package.Description, 20, Muted);
+        description.AutowrapMode = TextServer.AutowrapMode.WordSmart;
+        description.CustomMinimumSize = new Vector2(PackageTileSize - 60f, 0f);
+        text.AddChild(description);
+        text.AddChild(CreateLabel($"{package.Levels.Count} Levels", 22, Colors.White));
+        foreach (var child in text.GetChildren())
+        {
+            ((Control)child).MouseFilter = Control.MouseFilterEnum.Ignore;
+        }
+
+        tile.FocusEntered += () => _lastPackageIndex = index;
+        tile.MouseEntered += tile.GrabFocus;
+        tile.Pressed += () => ShowLevels(index);
+        return tile;
+    }
+
+    private Button CreateBackButton()
+    {
+        var button = new Button
+        {
+            Text = "← Zurück zu den Paketen",
+            CustomMinimumSize = new Vector2(600f, 40f),
+            Alignment = HorizontalAlignment.Left,
+        };
+        ApplyButtonStyle(button);
+        button.AddThemeFontSizeOverride("font_size", 19);
+        button.FocusEntered += () => _skills.Text = string.Empty;
+        button.MouseEntered += button.GrabFocus;
+        button.Pressed += ShowPackages;
+        return button;
+    }
+
+    private Button CreateLevelButton(int index, string number, LevelInfo level)
     {
         var best = RecordStore.LoadBestTime(level.Id);
         var bestText = best is { } seconds ? Hud.FormatTime(seconds) : "--:--.--";
         var medal = best is { } time ? level.Medals.For(time) : Medal.None;
         var button = new Button
         {
-            Text = $"{index + 1}.  {level.Title}     {bestText}",
-            CustomMinimumSize = new Vector2(600f, 52f),
+            Text = $"{number}  {level.Title}     {bestText}",
+            CustomMinimumSize = new Vector2(600f, 48f),
             Alignment = HorizontalAlignment.Left,
         };
         button.AddChild(CreateMedalRow(medal));
+        ApplyButtonStyle(button);
         button.AddThemeFontSizeOverride("font_size", 23);
-        button.AddThemeStyleboxOverride("normal", CreateStyle(ButtonIdle));
-        button.AddThemeStyleboxOverride("hover", CreateStyle(ButtonIdle.Lightened(0.15f)));
-        button.AddThemeStyleboxOverride("pressed", CreateStyle(ButtonFocus));
-        button.AddThemeStyleboxOverride("focus", CreateStyle(ButtonFocus));
-        button.AddThemeColorOverride("font_focus_color", Colors.Black);
         button.FocusEntered += () =>
         {
             RememberSelection(index);
@@ -86,11 +221,19 @@ public partial class MainMenu : Node2D
         return button;
     }
 
+    private static void ApplyButtonStyle(Button button)
+    {
+        button.AddThemeStyleboxOverride("normal", CreateStyle(ButtonIdle));
+        button.AddThemeStyleboxOverride("hover", CreateStyle(ButtonIdle.Lightened(0.15f)));
+        button.AddThemeStyleboxOverride("pressed", CreateStyle(ButtonFocus));
+        button.AddThemeStyleboxOverride("focus", CreateStyle(ButtonFocus));
+        button.AddThemeColorOverride("font_focus_color", Colors.Black);
+    }
+
     private static void RememberSelection(int index) => _lastSelectedIndex = index;
 
     private static string MedalTimesText(MedalTimes medals) =>
         $"Gold {Hud.FormatTime(medals.Gold)}   ·   Silber {Hud.FormatTime(medals.Silver)}   ·   Bronze {Hud.FormatTime(medals.Bronze)}";
-
 
     private static HBoxContainer CreateMedalRow(Medal earned)
     {

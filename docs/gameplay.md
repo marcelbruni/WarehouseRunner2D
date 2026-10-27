@@ -21,19 +21,26 @@ Start ist das Menü mit Levelauswahl, Bestzeit und Medaille pro Level. Esc führ
 Level zurück zur Auswahl. Nach dem Ausstempeln geht es mit Enter (Gamepad: A) ins nächste
 Level, nach dem letzten Level zurück zum Startbildschirm.
 
+Die Levels sind in zwei Pakete aufgeteilt. Die Levelauswahl zeigt zuerst die Pakete als grosse Kacheln; ein Klick (Enter, Gamepad A) öffnet die Levelliste des Pakets, Esc (Gamepad B) führt zurück zu den Paketen:
+
+- **Paket 1 · Grundausbildung:** nur Sprünge, Rollen, Dash und Wall Kicks, keine Rutschkisten und keine Förderbänder. Das AI Level (bewegte Roboter und Drohnen) bildet den Abschluss.
+- **Paket 2 · Förderhalle:** alle Levels mit Rutschkisten und Förderbändern. Zuerst die beiden Levels nur mit Bändern, dann die mit beidem.
+
+Eigene Pakete für bewegte Plattformen, nur Rutschen oder nur Bänder gibt es nicht: Kein Level hat nur Rutschen, nur zwei haben nur Bänder, und bewegte Plattformen prägen nur das AI Level. Das wären Pakete mit ein bis zwei Levels.
+
 | Nr. | Name | Erzwingt |
 |---|---|---|
-| 1 | Erster Arbeitstag | Sprung (Kiste 96), Doppelsprung (Kiste 192), Slide Jump + Doppelsprung (Kante 288), Wall Kick (Kamin 560) |
-| 2 | Rollen lernen | Rolle unter niedrigen Regalen (3×), beim zweiten Regal nach einem Sprung über eine Kiste als Rollout |
-| 3 | Dash-Schulung | Doppelsprung + Dash (Lücke 600), Slide Jump + Doppelsprung (Kante 288), Sprung + Dash (Lücke 230 unter niedriger Decke, flache Grube: wer 40 px tiefer fällt, startet neu) |
-| 4 | Profi-Tricks | Roll Jump → Power-Dash → Sprung über zwei Lücken à 840, dazwischen Dash-Rollout |
-| 5 | Hauptlager | die erste grosse Karte: Rutschkisten, Förderbänder, Paketsuche |
-| 6 | AI Level | Lagerroboter (rempeln dich weg, Draufspringen erlaubt), Barcode-Scanner (rot = zurück zum Checkpoint, grüne Welle), Lieferdrohnen als fliegende Plattformen, ein Express-Paket, das vor dir flieht |
-| 7 | Friends Ideas | zwei Präzisionskisten, bewegte Kiste, drei Speed-Jump-Bänder (runter, gerade, hoch) mit Kiste dazwischen, Abschussrampe zur Paketplattform, Luftpolster-Trampoline über der letzten Grube |
-| 8 | Rutschpartie | bergab: Drop direkt auf eine 700er-Rutschkiste (33°), Vorwärtsband geht in Aufwärtsband über, Rückwärtsband zum Überspringen, 900er-Rutsche (36°), Abschussband auf die nächste Rutsche, am Ende Gabelung oben/unten (3,8 s gegen 3,6 s) |
-| 9 | Hochregallager | Zickzack über drei Stockwerke: Erdgeschoss nach rechts (Kisten, Bänder, Rutschkiste), breiter Kamin (300 px, Wall Kick + Doppelsprung), 1. Stock zurück nach links, Rolltreppe in den 2. Stock mit Paket-Abstecher links, dann nach rechts und über zwei Riesenrutschen hinab zum Ziel. Wer in eine Grube fällt, landet ein Stockwerk tiefer |
-| 10 | Kletterhalle | drei Kamine, die oben direkt auf ein Förderband führen, drei Speed Jumps, Abschussrampe wie in Level 7, zwei lange Rutschen zum Ziel. Rund 1,65-fache Länge des Hauptlagers |
-| 11 | Taktstrasse | sechs Kisten im gleichen Abstand: im Takt durchhüpfen. Lücke in einen Speed Jump, der direkt in einen Kamin schleudert; oben von der Wand in den nächsten Speed Jump, auf eine Polsterfolie, die in den zweiten Kamin federt, oben aufs Förderband, über eine Lücke auf eine 45° geneigte Polsterfolie, die einen flach nach vorne zum Ziel schiesst |
+| 1-1 | Erster Arbeitstag | Sprung (Kiste 96), Doppelsprung (Kiste 192), Slide Jump + Doppelsprung (Kante 288), Wall Kick (Kamin 560) |
+| 1-2 | Rollen lernen | Rolle unter niedrigen Regalen (3×), beim zweiten Regal nach einem Sprung über eine Kiste als Rollout |
+| 1-3 | Dash-Schulung | Doppelsprung + Dash (Lücke 600), Slide Jump + Doppelsprung (Kante 288), Sprung + Dash (Lücke 230 unter niedriger Decke, flache Grube: wer 40 px tiefer fällt, startet neu) |
+| 1-4 | Profi-Tricks | Roll Jump → Power-Dash → Sprung über zwei Lücken à 840, dazwischen Dash-Rollout |
+| 1-5 | AI Level | Lagerroboter (rempeln dich weg, Draufspringen erlaubt), Barcode-Scanner (rot = zurück zum Checkpoint, grüne Welle), Lieferdrohnen als fliegende Plattformen, ein Express-Paket, das vor dir flieht |
+| 2-1 | Friends Ideas | zwei Präzisionskisten, bewegte Kiste, drei Speed-Jump-Bänder (runter, gerade, hoch) mit Kiste dazwischen, Abschussrampe zur Paketplattform, Luftpolster-Trampoline über der letzten Grube |
+| 2-2 | Taktstrasse | sechs Kisten im gleichen Abstand: im Takt durchhüpfen. Lücke in einen Speed Jump, der direkt in einen Kamin schleudert; oben von der Wand in den nächsten Speed Jump, auf eine Polsterfolie, die in den zweiten Kamin federt, oben aufs Förderband, über eine Lücke auf eine 45° geneigte Polsterfolie, die einen flach nach vorne zum Ziel schiesst |
+| 2-3 | Hauptlager | die erste grosse Karte: Rutschkisten, Förderbänder, Paketsuche |
+| 2-4 | Rutschpartie | bergab: Drop direkt auf eine 700er-Rutschkiste (33°), Vorwärtsband geht in Aufwärtsband über, Rückwärtsband zum Überspringen, 900er-Rutsche (36°), Abschussband auf die nächste Rutsche, am Ende Gabelung oben/unten (3,8 s gegen 3,6 s) |
+| 2-5 | Kletterhalle | drei Kamine, die oben direkt auf ein Förderband führen, drei Speed Jumps, Abschussrampe wie in Level 7, zwei lange Rutschen zum Ziel. Rund 1,65-fache Länge des Hauptlagers |
+| 2-6 | Hochregallager | Zickzack über drei Stockwerke: Erdgeschoss nach rechts (Kisten, Bänder, Rutschkiste), breiter Kamin (300 px, Wall Kick + Doppelsprung), 1. Stock zurück nach links, Rolltreppe in den 2. Stock mit Paket-Abstecher links, dann nach rechts und über zwei Riesenrutschen hinab zum Ziel. Wer in eine Grube fällt, landet ein Stockwerk tiefer |
 
 Jedes Level hat denselben Ablauf (einstempeln, Paket, Rampe, ausstempeln).
 Hinweisschilder erklären die jeweilige Technik. `LevelSkillProofs` belegt
@@ -45,19 +52,19 @@ Jedes Level hat drei Zielzeiten (in `LevelCatalog`). Gold ist die eigene
 Bestzeit beim Testen, Silber rund +15 %, Bronze rund +35 %, auf halbe Sekunden
 gerundet. Gezählt wird die angezeigte Zeit (Hundertstel).
 
-| Nr. | Gold | Silber | Bronze |
-|---|---|---|---|
-| 1 | 7.00 | 8.0 | 9.5 |
-| 2 | 6.65 | 7.5 | 9.0 |
-| 3 | 7.40 | 8.5 | 10.0 |
-| 4 | 6.25 | 7.0 | 8.5 |
-| 5 | 14.10 | 16.0 | 19.0 |
-| 6 | 13.15 | 15.0 | 18.0 |
-| 7 | 13.00 | 15.0 | 17.5 |
-| 8 | 8.90 | 10.0 | 12.0 |
-| 9 | 28.85 | 33.0 | 39.0 |
-| 10 | 19.65 | 22.5 | 26.5 |
-| 11 | 17.00 | 19.5 | 23.0 |
+| Nr. | Name | Gold | Silber | Bronze |
+|---|---|---|---|---|
+| 1-1 | Erster Arbeitstag | 7.00 | 8.0 | 9.5 |
+| 1-2 | Rollen lernen | 6.65 | 7.5 | 9.0 |
+| 1-3 | Dash-Schulung | 7.40 | 8.5 | 10.0 |
+| 1-4 | Profi-Tricks | 6.25 | 7.0 | 8.5 |
+| 1-5 | AI Level | 13.15 | 15.0 | 18.0 |
+| 2-1 | Friends Ideas | 13.00 | 15.0 | 17.5 |
+| 2-2 | Taktstrasse | 17.00 | 19.5 | 23.0 |
+| 2-3 | Hauptlager | 14.10 | 16.0 | 19.0 |
+| 2-4 | Rutschpartie | 8.90 | 10.0 | 12.0 |
+| 2-5 | Kletterhalle | 19.65 | 22.5 | 26.5 |
+| 2-6 | Hochregallager | 28.85 | 33.0 | 39.0 |
 
 Im Level zeigt die Anzeige oben rechts die nächste Medaille als Ziel, der
 Schlussbildschirm die geholte Medaille. In der Levelauswahl steht vor jedem

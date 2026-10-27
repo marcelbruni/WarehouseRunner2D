@@ -1,6 +1,7 @@
 using Godot;
 using WarehouseRunner.Core;
 using WarehouseRunner.Elements;
+using WarehouseRunner.Menu;
 using WarehouseRunner.Player;
 
 namespace WarehouseRunner.Level;
@@ -79,7 +80,7 @@ public partial class RaceController : Node2D
 
         if (Input.IsActionJustPressed(InputSetup.BackToMenu))
         {
-            GetTree().ChangeSceneToFile(LevelCatalog.MenuScenePath);
+            ReturnToMenu();
             return;
         }
 
@@ -90,7 +91,15 @@ public partial class RaceController : Node2D
 
         if (Phase == RunPhase.Finished && _finishedFor >= ContinueLockSeconds && Input.IsActionJustPressed(InputSetup.Continue))
         {
-            GetTree().ChangeSceneToFile(LevelCatalog.NextAfter(LevelId)?.ScenePath ?? LevelCatalog.MenuScenePath);
+            if (LevelCatalog.NextAfter(LevelId) is { } next)
+            {
+                GetTree().ChangeSceneToFile(next.ScenePath);
+            }
+            else
+            {
+                ReturnToMenu();
+            }
+
             return;
         }
 
@@ -194,6 +203,12 @@ public partial class RaceController : Node2D
         _player.CarriesPackage = false;
         dock.DispatchTruck(_player.GlobalPosition + new Vector2(0f, -52f));
         SetPhase(RunPhase.PackageDelivered);
+    }
+
+    private void ReturnToMenu()
+    {
+        MainMenu.SelectLevel(LevelId);
+        GetTree().ChangeSceneToFile(LevelCatalog.MenuScenePath);
     }
 
     private void OnScanned()
