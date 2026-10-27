@@ -34,7 +34,8 @@ public partial class LevelSkillProofs : Node
         Hopper,
     }
 
-    private sealed record Plan(Opener Opener, float StartX, float StartY, float TriggerX, int RunBackTicks, int? DoubleJumpTick, int? DashTick, int DelayTicks = 0, float Dir = 1f)
+    private sealed record Plan(Opener Opener, float StartX, float StartY, float TriggerX, int RunBackTicks, int? DoubleJumpTick, int? DashTick, int DelayTicks = 0, float Dir = 1f,
+        float? AirMoveX = null, float? DashMoveX = null, float DashAimY = 0f, bool WallKickFirst = false)
     {
         public string Describe() => $"{Opener} start {StartX:0} trigger {TriggerX:0} back {RunBackTicks} dj {DoubleJumpTick?.ToString() ?? "-"} dash {DashTick?.ToString() ?? "-"} delay {DelayTicks}";
     }
@@ -63,6 +64,7 @@ public partial class LevelSkillProofs : Node
         await ProveNightShiftLevel();
         await ProveClimbingHallLevel();
         await ProveRhythmLevel();
+        await ProveTopShelfLevel();
 
         foreach (var failure in _failures)
         {
@@ -317,6 +319,27 @@ public partial class LevelSkillProofs : Node
             [new Plan(Opener.WalkOff, 6420f, -1526f, 0f, 0, null, null)]);
     }
 
+    private async Task ProveTopShelfLevel()
+    {
+        const string scene = "res://scenes/levels/Level13.tscn";
+        var package = new Vector2(-430f, -560f);
+        bool Reached(PlayerController p) => Mathf.Abs(p.GlobalPosition.X - package.X) < 41f && Mathf.Abs(p.GlobalPosition.Y - package.Y) < 54f;
+        var starts = new[] { -380f, -340f, -300f, -260f };
+        IEnumerable<Plan> Upward(IEnumerable<Plan> plans) => plans.Select(plan => plan with { AirMoveX = 0f, DashMoveX = 0f, DashAimY = -1f });
+        IEnumerable<Plan> Slides(bool dj, bool dash) => starts.SelectMany(start => Upward(SlideJumps(start, dj, dash)));
+
+        await Prove(new Section("L13 Paket oben (Slide Jump + Doppelsprung + Dash nach oben)", scene, Reached, 240),
+            required: Slides(dj: true, dash: true),
+            insufficient: Slides(dj: true, dash: false)
+                .Concat(Slides(dj: false, dash: true))
+                .Concat(Upward(Jumps(Opener.RunningJump, -560f, -480f, -380f, withDoubleJump: true, withDash: true))));
+
+        var wallStarts = new[] { -470f, -430f, -390f, -350f };
+        await ProvePossible(new Section("L13 Paket über die Wand (Slide Jump + Wall Kick + Doppelsprung + Dash)", scene, Reached, 300),
+            wallStarts.SelectMany(start => SlideJumps(start, withDoubleJump: true, withDash: true)
+                .Select(plan => plan with { Dir = -1f, WallKickFirst = true, DashMoveX = 0f, DashAimY = -1f })));
+    }
+
     private static IEnumerable<Plan> Jumps(Opener opener, float startX, float firstTrigger, float lastTrigger, bool withDoubleJump, bool withDash)
     {
         for (var trigger = firstTrigger; trigger <= lastTrigger; trigger += 20f)
@@ -545,6 +568,7 @@ public partial class LevelSkillProofs : Node
         public int SuccessTick { get; set; } = -1;
         public int TakeoffTick { get; set; } = -1;
         public int TriggerTick { get; set; } = -1;
+        public int KickTick { get; set; } = -1;
     }
 
     private static void Drive(Plan plan, PlayerController player, ProbeState state, int tick)
@@ -565,8 +589,22 @@ public partial class LevelSkillProofs : Node
 
         if (state.TakeoffTick >= 0)
         {
-            input.MoveX = plan.Dir;
-            var flight = tick - state.TakeoffTick;
+            input.AimY = 0f;
+            if (plan.WallKickFirst && state.KickTick < 0)
+            {
+                input.MoveX = plan.Dir;
+                if (player.IsTouchingWall)
+                {
+                    input.MoveX = -plan.Dir;
+                    input.PressJump();
+                    state.KickTick = tick;
+                }
+
+                return;
+            }
+
+            input.MoveX = plan.AirMoveX ?? (state.KickTick >= 0 ? -plan.Dir : plan.Dir);
+            var flight = tick - (state.KickTick >= 0 ? state.KickTick : state.TakeoffTick);
             if (flight == plan.DoubleJumpTick)
             {
                 input.PressJump();
@@ -574,6 +612,8 @@ public partial class LevelSkillProofs : Node
 
             if (flight == plan.DashTick)
             {
+                input.MoveX = plan.DashMoveX ?? input.MoveX;
+                input.AimY = plan.DashAimY;
                 input.PressAction();
             }
 
@@ -595,7 +635,7 @@ public partial class LevelSkillProofs : Node
 
                 break;
             case Opener.SlideJump:
-                input.MoveX = tick < plan.RunBackTicks ? -1f : 1f;
+                input.MoveX = tick < plan.RunBackTicks ? -plan.Dir : plan.Dir;
                 if (tick == plan.RunBackTicks + 3)
                 {
                     state.TriggerTick = tick;
@@ -749,6 +789,8 @@ public partial class LevelSkillProofs : Node
 
         public float MoveX { get; set; }
 
+        public float AimY { get; set; }
+
         public bool JumpHeld { get; private set; }
 
         public void PressJump()
@@ -761,7 +803,7 @@ public partial class LevelSkillProofs : Node
 
         public PlayerInput Sample()
         {
-            var sample = new PlayerInput(MoveX, _jumpPressed, JumpHeld, _actionPressed);
+            var sample = new PlayerInput(MoveX, _jumpPressed, JumpHeld, _actionPressed, false, AimY);
             _jumpPressed = false;
             _actionPressed = false;
             return sample;

@@ -46,6 +46,7 @@ public static class LevelCatalog
             new("level02", "Rollen lernen", "Rolle · Rollout · Durchrollen unter Regalen", "res://scenes/levels/Level02.tscn", new(6.65, 7.5, 9.0)),
             new("level03", "Dash-Schulung", "Doppelsprung + Dash · Slide Jump + Doppelsprung · Sprung + Dash", "res://scenes/levels/Level03.tscn", new(7.40, 8.5, 10.0)),
             new("level04", "Profi-Tricks", "Roll Jump · Power-Dash · Dash Jump · Dash-Rollout", "res://scenes/levels/Level04.tscn", new(6.25, 7.0, 8.5)),
+            new("level13", "Oberstes Regal", "Slide Jump · Doppelsprung · Dash nach oben · alternativ Wall Kick", "res://scenes/levels/Level13.tscn", new(3.20, 3.5, 4.5)),
             new("level06", "AI Level", "Lagerroboter · Barcode-Scanner · Lieferdrohnen · ein Paket mit eigenem Willen", "res://scenes/levels/Level06.tscn", new(13.15, 15.0, 18.0)),
         ]),
         new("Förderhalle", "Rutschkisten und Förderbänder · erst nur Bänder, dann beides",
