@@ -92,7 +92,7 @@ script = ExtResource("crate")
 Size = Vector2(110, 460)
 
 [node name="Crate7" type="StaticBody2D" parent="Course"]
-position = Vector2(3940, -660)
+position = Vector2(3800, -620)
 script = ExtResource("crate")
 Size = Vector2(80, 600)
 
