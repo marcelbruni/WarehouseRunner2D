@@ -64,6 +64,8 @@ public partial class MovementTests : Node2D
             ("WallKick_ChainedWithSpeed_KeepsSpeed", () => WallKickChainKeepsSpeed(doubleJumpBetween: false)),
             ("WallKick_DoubleJumpBetween_ResetsChain", () => WallKickChainKeepsSpeed(doubleJumpBetween: true)),
             ("WallJump_SteeringIntoWall_IsDoubleJump", JumpSteeringIntoWallIsDoubleJump),
+            ("WallKick_JumpPressedJustBeforeWall_KicksOnContact", () => EarlyWallKick(ticksBeforeContact: 4, expectKick: true)),
+            ("WallKick_JumpPressedFarFromWall_IsDoubleJump", () => EarlyWallKick(ticksBeforeContact: 30, expectKick: false)),
             ("WallJump_NoSteering_IsDoubleJump", JumpNeutralAtWallIsDoubleJump),
             ("WallKick_AfterDoubleJump_RefreshesDoubleJump", WallKickRefreshesDoubleJump),
             ("CoyoteJump_ShortlyAfterLeavingEdge_IsGroundJump", CoyoteJumpAfterLeavingEdge),
@@ -609,6 +611,31 @@ public partial class MovementTests : Node2D
         else
         {
             Expect(scenario, second.X >= -first.X - 1f && -second.Y >= -first.Y - 1f, $"chained kick {second} weaker than first {first}");
+        }
+    }
+
+    private async Task EarlyWallKick(int ticksBeforeContact, bool expectKick)
+    {
+        var scenario = $"EarlyWallKick({ticksBeforeContact})";
+        const float speed = 650f;
+        const float wallFace = 100f;
+        AddConcrete(new Vector2(wallFace + 20f, -600f), new Vector2(40f, 1200f));
+        var startX = wallFace - 13f - (speed * (ticksBeforeContact + 20) / Engine.PhysicsTicksPerSecond);
+        await SettleAt(new Vector2(startX, -400f), settleTicks: 0);
+        _input.MoveX = 1f;
+        _player.Launch(new Vector2(speed, -300f));
+        await Ticks(20);
+        _input.PressJump();
+        await Ticks(1);
+        if (expectKick)
+        {
+            Expect(scenario, _player.CurrentAirMove != AirMove.DoubleJump, "early press became a double jump");
+            Expect(scenario, await Until(() => _player.CurrentAirMove == AirMove.WallKick, 10), $"no kick on contact, air move {_player.CurrentAirMove}");
+            Expect(scenario, _player.Velocity.X < -600f, $"kick did not keep the impact speed: {_player.Velocity}");
+        }
+        else
+        {
+            Expect(scenario, _player.CurrentAirMove == AirMove.DoubleJump, $"far press should double jump, air move {_player.CurrentAirMove}");
         }
     }
 

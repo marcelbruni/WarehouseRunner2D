@@ -10,6 +10,8 @@ public partial class BubbleWrap : BoxBody
 {
     private const float PopDuration = 0.5f;
     private const float MinFallSpeed = 60f;
+    private const float SurfaceHeight = 40f;
+    private const float SurfaceOverhang = 16f;
 
     private static readonly Color Base = new(0.35f, 0.38f, 0.42f);
     private static readonly Color Bubble = new(0.8f, 0.92f, 1f, 0.75f);
@@ -30,8 +32,10 @@ public partial class BubbleWrap : BoxBody
     public override void _Ready()
     {
         base._Ready();
-        _surface = new Area2D { Position = new Vector2(0f, -Size.Y / 2f - 10f), CollisionMask = CollisionLayers.AnyPlayer };
-        _surface.AddChild(new CollisionShape2D { Shape = new RectangleShape2D { Size = new Vector2(Size.X, 20f) } });
+        // Generous on purpose: the player's rounded feet barely touch the pad's corners,
+        // and at full fall speed the overlap is only seen a tick after landing.
+        _surface = new Area2D { Position = new Vector2(0f, -Size.Y / 2f - (SurfaceHeight / 2f)), CollisionMask = CollisionLayers.AnyPlayer };
+        _surface.AddChild(new CollisionShape2D { Shape = new RectangleShape2D { Size = new Vector2(Size.X + (2f * SurfaceOverhang), SurfaceHeight) } });
         AddChild(_surface);
     }
 

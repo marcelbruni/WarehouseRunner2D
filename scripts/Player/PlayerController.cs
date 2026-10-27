@@ -93,6 +93,7 @@ public partial class PlayerController : CharacterBody2D
 
     private float _wallNormalX;
     private float _wallCoyoteTimer;
+    private bool _earlyWallKick;
     private float _wallImpactSpeed;
     private Vector2 _wallKickChain;
     private bool _wallKickChainBroken;
@@ -300,6 +301,7 @@ public partial class PlayerController : CharacterBody2D
     private void TrackInputBuffers(PlayerInput input, float dt)
     {
         _jumpBufferTimer = input.JumpPressed ? Tuning.JumpBufferTime : _jumpBufferTimer - dt;
+        _earlyWallKick &= _jumpBufferTimer > 0f;
         ResolveActionPress(input.ActionPressed);
         _rollBufferTimer = _rollRequested ? Tuning.RollEarlyWindow : _rollBufferTimer - dt;
     }
@@ -481,7 +483,7 @@ public partial class PlayerController : CharacterBody2D
 
     private bool TryAirJump(PlayerInput input)
     {
-        if (IsSteeringAwayFromWall(input))
+        if (IsSteeringAwayFromWall(input) || (_earlyWallKick && IsTouchingWall))
         {
             StartWallKick();
             return true;
@@ -491,6 +493,14 @@ public partial class PlayerController : CharacterBody2D
         {
             StartJump(AirMove.Jump, Tuning.JumpSpeed, Velocity.X, Trick.Jump);
             return true;
+        }
+
+        // A press just before reaching a wall at speed is held and fires as a kick on
+        // contact; otherwise the only valid moment would be the frame after impact.
+        if (!IsTouchingWall && IsWallAhead())
+        {
+            _earlyWallKick = true;
+            return false;
         }
 
         if (_canDoubleJump)
@@ -504,6 +514,17 @@ public partial class PlayerController : CharacterBody2D
         }
 
         return false;
+    }
+
+    private bool IsWallAhead()
+    {
+        if (Mathf.Abs(Velocity.X) < 1f)
+        {
+            return false;
+        }
+
+        var wall = MoveAndCollide(new Vector2(Velocity.X * Tuning.WallKickEarlyWindow, 0f), testOnly: true);
+        return wall is not null && Mathf.Abs(wall.GetNormal().X) >= 0.7f && Mathf.Sign(wall.GetNormal().X) == -Mathf.Sign(Velocity.X);
     }
 
     private bool IsSteeringAwayFromWall(PlayerInput input)
@@ -533,6 +554,7 @@ public partial class PlayerController : CharacterBody2D
     {
         _jumpBufferTimer = 0f;
         _coyoteTimer = 0f;
+        _earlyWallKick = false;
         _performedAirAction = true;
         Velocity = new Vector2(horizontal, -speed);
         CurrentAirMove = move;
