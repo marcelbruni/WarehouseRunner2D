@@ -21,12 +21,13 @@ public partial class PlayerVisual : Node2D
     private CpuParticles2D _dust = null!;
     private CpuParticles2D _landingDust = null!;
     private CpuParticles2D _boostSparks = null!;
-    private static readonly Vector2 CrouchScale = new(1.15f, 0.6f);
-    private static readonly Vector2 CrouchOffset = new(0f, 10f);
+    private const float CrouchBlendSpeed = 10f;
+    private const float CrouchLean = 0.25f;
 
     private Vector2 _squash = Vector2.One;
     private float _runPhase;
     private float _rollAngle;
+    private float _crouchBlend;
 
     private readonly record struct Pose(float LegSwing, float ArmSwing, float Crouch, bool ArmsUp, bool Tucked);
 
@@ -54,9 +55,10 @@ public partial class PlayerVisual : Node2D
             _rollAngle += _player.GroundSpeed * dt / 14f;
         }
 
-        Position = _player.IsCrouching ? CrouchOffset : _player.IsCurledUp ? new Vector2(0f, 12f) : Vector2.Zero;
+        _crouchBlend = Mathf.MoveToward(_crouchBlend, _player.IsCrouching ? 1f : 0f, dt * CrouchBlendSpeed);
+        Position = _player.IsCurledUp && !_player.IsCrouching ? new Vector2(0f, 12f) : Vector2.Zero;
         Rotation = BodyRotation();
-        Scale = _player.IsCrouching ? _squash * CrouchScale : _squash;
+        Scale = _squash;
 
         var crouchSliding = _player.IsCrouching && Mathf.Abs(_player.GroundSpeed) > 100f;
         var skidding = _player.State is PlayerState.Skidding or PlayerState.SlopeSliding || _player.IsWallSliding || crouchSliding;
@@ -77,10 +79,18 @@ public partial class PlayerVisual : Node2D
             return;
         }
 
-        DrawWorker(facing, CurrentPose());
+        if (_crouchBlend > 0f)
+        {
+            DrawCrouchingWorker(facing, _crouchBlend);
+        }
+        else
+        {
+            DrawWorker(facing, CurrentPose());
+        }
+
         if (_player.CarriesPackage)
         {
-            PackageArt.Draw(this, new Vector2(0f, -52f), 28f);
+            PackageArt.Draw(this, new Vector2(0f, Mathf.Lerp(-52f, -34f, _crouchBlend)), 28f);
         }
     }
 
@@ -156,6 +166,42 @@ public partial class PlayerVisual : Node2D
         DrawCircle(head, 8f, Skin);
         DrawCircle(head + P(4f, -1f), 1.6f, Colors.Black);
         DrawHelmet(head + new Vector2(0f, -2f), facing);
+    }
+
+    private void DrawCrouchingWorker(int facing, float t)
+    {
+        Vector2 P(float x, float y) => new(x * facing, y);
+        Vector2 Blend(Vector2 standing, Vector2 crouched) => standing.Lerp(crouched, t);
+
+        var hip = Blend(P(0f, 6f), P(-5f, 19f));
+        var frontKnee = Blend(P(1f, 16f), P(9f, 11f));
+        var backKnee = Blend(P(-1f, 16f), P(3f, 14f));
+        DrawBentLeg(hip, backKnee, Blend(P(-1f, FootY), P(-3f, FootY)), facing);
+
+        var lean = facing * CrouchLean * t;
+        Vector2 Torso(float x, float y) => hip + P(x, y).Rotated(lean);
+        var torsoHeight = Mathf.Lerp(24f, 18f, t);
+        DrawSetTransform(hip, lean);
+        DrawRect(new Rect2(-10f, -torsoHeight, 20f, torsoHeight), Vest);
+        DrawRect(new Rect2(-10f, -torsoHeight * 0.5f, 20f, 3f), Reflector);
+        DrawSetTransform(Vector2.Zero);
+
+        var head = Torso(2f, -torsoHeight - 8f);
+        DrawCircle(head, 8f, Skin);
+        DrawCircle(head + P(4f, -1f), 1.6f, Colors.Black);
+        DrawHelmet(head + new Vector2(0f, -2f), facing);
+
+        DrawBentLeg(hip, frontKnee, Blend(P(1f, FootY), P(6f, FootY)), facing);
+        var shoulder = Torso(1f, -torsoHeight + 4f);
+        DrawArm(shoulder, frontKnee + P(3f, -3f), backKnee + P(5f, -2f));
+    }
+
+    private void DrawBentLeg(Vector2 hip, Vector2 knee, Vector2 foot, int facing)
+    {
+        DrawLine(hip, knee, Pants, 7f);
+        DrawLine(knee, foot, Pants, 7f);
+        DrawCircle(knee, 3.5f, Pants);
+        DrawRect(new Rect2(foot + new Vector2(facing > 0 ? -3f : -7f, -2f), new Vector2(10f, 5f)), Boots);
     }
 
     private void DrawLeg(Vector2 hip, float swing, float length, int facing)
