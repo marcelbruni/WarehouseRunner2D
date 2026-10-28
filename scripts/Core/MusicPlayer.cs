@@ -7,6 +7,9 @@ public partial class MusicPlayer : Node
     public const string MenuTheme = "res://assets/music/menu_theme.ogg";
 
     private const float VolumeDb = -6f;
+    private const string SettingsPath = "user://settings.cfg";
+    private const string AudioSection = "audio";
+    private const string MutedKey = "muted";
 
     private static MusicPlayer? _instance;
 
@@ -18,7 +21,31 @@ public partial class MusicPlayer : Node
         _instance = this;
         ProcessMode = ProcessModeEnum.Always;
         AddChild(_player);
+        var settings = new ConfigFile();
+        settings.Load(SettingsPath);
+        ApplyMute(settings.GetValue(AudioSection, MutedKey, false).AsBool());
     }
+
+    public override void _Notification(int what)
+    {
+        if (what is (int)NotificationApplicationFocusOut or (int)NotificationApplicationFocusIn)
+        {
+            _player.StreamPaused = what == NotificationApplicationFocusOut;
+        }
+    }
+
+    public static bool IsMuted => AudioServer.IsBusMute(0);
+
+    public static void SetMuted(bool muted)
+    {
+        ApplyMute(muted);
+        var settings = new ConfigFile();
+        settings.Load(SettingsPath);
+        settings.SetValue(AudioSection, MutedKey, muted);
+        settings.Save(SettingsPath);
+    }
+
+    private static void ApplyMute(bool muted) => AudioServer.SetBusMute(0, muted);
 
     public static void Play(string path) => _instance?.Switch(path);
 

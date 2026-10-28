@@ -48,6 +48,7 @@ public static class LevelCatalog
             new("level04", "Profi-Tricks", "Roll Jump · Power-Dash · Dash Jump · Dash-Rollout", "res://scenes/levels/Level04.tscn", new(6.25, 7.0, 8.5)),
             new("level13", "Oberstes Regal", "Slide Jump · Doppelsprung · Dash nach oben · alternativ Wall Kick", "res://scenes/levels/Level13.tscn", new(3.20, 3.5, 4.5)),
             new("level06", "AI Level", "Lagerroboter · Barcode-Scanner · Lieferdrohnen · ein Paket mit eigenem Willen", "res://scenes/levels/Level06.tscn", new(13.15, 15.0, 18.0)),
+            new("level14", "Gabelstapler-Halle", "Rutschen · Gabelstapler · Drohnen · Durchrollen · Doppelsprung + Dash schräg hoch", "res://scenes/levels/Level14.tscn", new(18.00, 20.5, 24.5)),
         ]),
         new("Förderhalle", "Rutschkisten und Förderbänder · erst nur Bänder, dann beides",
         [

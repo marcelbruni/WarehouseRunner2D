@@ -48,6 +48,7 @@ public partial class MainMenu : Node2D
         root.AddChild(_skills);
         _footer = CreateLabel(string.Empty, 18, new Color(0.7f, 0.72f, 0.76f));
         root.AddChild(_footer);
+        layer.AddChild(CreateMuteButton());
 
         if (_packageOpen)
         {
@@ -179,6 +180,27 @@ public partial class MainMenu : Node2D
         tile.MouseEntered += tile.GrabFocus;
         tile.Pressed += () => ShowLevels(index);
         return tile;
+    }
+
+    private static Button CreateMuteButton()
+    {
+        var button = new Button { FocusMode = Control.FocusModeEnum.None, CustomMinimumSize = new Vector2(150f, 44f) };
+        ApplyButtonStyle(button);
+        button.AddThemeFontSizeOverride("font_size", 20);
+        void Refresh() => button.Text = MusicPlayer.IsMuted ? "Ton: aus" : "Ton: an";
+        Refresh();
+        button.Pressed += () =>
+        {
+            MusicPlayer.SetMuted(!MusicPlayer.IsMuted);
+            Refresh();
+        };
+        button.AnchorLeft = 1f;
+        button.AnchorRight = 1f;
+        button.OffsetLeft = -166f;
+        button.OffsetRight = -16f;
+        button.OffsetTop = 16f;
+        button.OffsetBottom = 60f;
+        return button;
     }
 
     private Button CreateBackButton()

@@ -362,7 +362,7 @@ public partial class PlayerController : CharacterBody2D
             return;
         }
 
-        if (_rollRequested && IsRunning(input) && _groundRollCooldownTimer <= 0f)
+        if (_rollRequested && (IsRunning(input) || IsPushingAgainstWall(input)) && _groundRollCooldownTimer <= 0f)
         {
             _groundRollCooldownTimer = Tuning.GroundRollCooldown;
             StartRollout(RolloutKind.Ground, perfect: false, input);
@@ -405,6 +405,11 @@ public partial class PlayerController : CharacterBody2D
             Facing = Mathf.Sign(input.MoveX);
         }
     }
+
+    // Running into a wall zeroes the ground speed; rolling must still work there
+    // so a low gap above the floor can be entered from a standstill.
+    private bool IsPushingAgainstWall(PlayerInput input) =>
+        !Mathf.IsZeroApprox(input.MoveX) && IsOnWall() && Mathf.Sign(GetWallNormal().X) == -Mathf.Sign(input.MoveX);
 
     private bool IsRunning(PlayerInput input) =>
         !Mathf.IsZeroApprox(input.MoveX) && Mathf.Abs(_groundSpeed) >= Tuning.GroundRollMinSpeed;

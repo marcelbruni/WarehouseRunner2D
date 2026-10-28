@@ -65,6 +65,7 @@ public partial class LevelSkillProofs : Node
         await ProveClimbingHallLevel();
         await ProveRhythmLevel();
         await ProveTopShelfLevel();
+        await ProveForkliftLevel();
 
         foreach (var failure in _failures)
         {
@@ -338,6 +339,59 @@ public partial class LevelSkillProofs : Node
         await ProvePossible(new Section("L13 Paket über die Wand (Slide Jump + Wall Kick + Doppelsprung + Dash)", scene, Reached, 300),
             wallStarts.SelectMany(start => SlideJumps(start, withDoubleJump: true, withDash: true)
                 .Select(plan => plan with { Dir = -1f, WallKickFirst = true, DashMoveX = 0f, DashAimY = -1f })));
+    }
+
+    private async Task ProveForkliftLevel()
+    {
+        const string scene = "res://scenes/levels/Level14.tscn";
+        const float fork1 = 2109f;
+        const float fork2 = 2489f;
+        const float drone1 = 2819f;
+        const float drone2 = 3339f;
+        const float wall = 4099f;
+        IEnumerable<Plan> Leap(float x, float y, bool dash) =>
+            Delayed(Jumps(Opener.RunningJump, x, x, x, withDoubleJump: true, withDash: dash).Select(plan => plan with { StartY = y, TriggerX = -10000f }), 420, 15);
+
+        await ProvePossible(new Section("L14 Einzelkiste → Dreifachkiste", scene, p => p.IsOnGround && p.GlobalPosition.Y < -280f, 300),
+            Jumps(Opener.RunningJump, 260f, 280f, 340f, withDoubleJump: true, withDash: false).Select(plan => plan with { StartY = -122f }));
+        await ProvePossible(new Section("L14 Rutschen bis zu den Gabelstaplern", scene, p => p.IsOnGround && p.GlobalPosition.X > 1720f && p.GlobalPosition.Y > -40f, 600),
+            [new Plan(Opener.WalkOff, 650f, -314f, 0f, 0, null, null)]);
+        await ProvePossible(new Section("L14 Boden → Gabelstapler 1", scene, p => p.IsOnGround && Mathf.Abs(p.GlobalPosition.X - fork1) < 50f && p.GlobalPosition.Y < -100f, 800, DiesBelowY: 300f),
+            Delayed(Jumps(Opener.RunningJump, fork1 - 400f, fork1 - 280f, fork1 - 140f, withDoubleJump: false, withDash: false), 400, 10));
+        await ProvePossible(new Section("L14 Gabelstapler 1 → Gabelstapler 2", scene, p => p.IsOnGround && Mathf.Abs(p.GlobalPosition.X - fork2) < 50f, 800, DiesBelowY: 300f),
+            Leap(fork1, -193f, dash: false));
+        await ProvePossible(new Section("L14 Gabelstapler 2 → Drohne 1", scene, p => p.IsOnGround && p.GlobalPosition.Y < -690f && p.GlobalPosition.X > drone1 - 70f, 800, DiesBelowY: 300f),
+            Leap(fork2, -262f, dash: true));
+        await ProvePossible(new Section("L14 Drohne 1 → Drohne 2", scene, p => p.IsOnGround && Mathf.Abs(p.GlobalPosition.X - drone2) < 70f, 800, DiesBelowY: 300f),
+            Leap(drone1, -726f, dash: true));
+        await ProvePossible(new Section("L14 Drohne 2 → Drohne 3 → Vorsprung", scene, p => p.IsOnGround && p.GlobalPosition.X > wall - 100f && p.GlobalPosition.X < wall && p.GlobalPosition.Y < -690f, 800, DiesBelowY: 300f),
+            Hops(drone2, -726f, 300));
+        IEnumerable<Plan> RollOut(bool dj, bool dash) => new[] { 80f, 60f, 40f }.SelectMany(lead => AirTimings(dj, dash)
+            .Select(t => new Plan(Opener.Roll, wall - 90f, -726f, wall - lead, 0, t.DoubleJump, t.Dash)));
+        await ProvePossible(new Section("L14 Vorsprung → durch die Lücke rollen", scene, p => p.GlobalPosition.X > wall + 250f, 300),
+            RollOut(dj: false, dash: false));
+        await ProvePossible(new Section("L14 Lücke zu Fuss", scene, p => p.GlobalPosition.X > wall + 250f, 300),
+            [new Plan(Opener.WalkOff, wall - 90f, -726f, 0f, 0, null, null)], expectImpossible: true);
+        await Prove(new Section("L14 Aus der Lücke rollen → Plattform (Doppelsprung + Dash)", scene, p => p.IsOnGround && p.GlobalPosition.Y < -690f && p.GlobalPosition.X > wall + 700f, 300, DiesBelowY: 300f),
+            required: RollOut(dj: true, dash: true),
+            insufficient: RollOut(dj: true, dash: false).Concat(RollOut(dj: false, dash: true)));
+        const float wall2 = wall + 1620f;
+        await ProvePossible(new Section("L14 Plattform 1 → Plattform 3", scene, p => p.IsOnGround && p.GlobalPosition.X > wall + 1150f && p.GlobalPosition.Y < -690f, 600, DiesBelowY: 300f),
+            Hops(wall + 725f, -726f, 120));
+        await ProvePossible(new Section("L14 Plattform 3 → Vorsprung 2", scene, p => p.IsOnGround && p.GlobalPosition.X > wall2 - 200f && p.GlobalPosition.X < wall2 && p.GlobalPosition.Y < -690f, 300, DiesBelowY: 300f),
+            Jumps(Opener.RunningJump, wall + 1180f, wall + 1200f, wall + 1260f, withDoubleJump: true, withDash: false).Select(plan => plan with { StartY = -726f })
+                .Append(new Plan(Opener.RunningJump, wall + 1180f, -726f, wall + 1250f, 0, null, null)));
+        await ProvePossible(new Section("L14 Vorsprung 2 → durch die Lücke rollen", scene, p => p.IsOnGround && p.GlobalPosition.X > wall2 + 250f && p.GlobalPosition.Y < -690f, 300),
+            new[] { 120f, 90f, 60f, 40f }.Select(lead => new Plan(Opener.Roll, wall2 - 190f, -726f, wall2 - lead, 0, null, null)));
+        await ProvePossible(new Section("L14 Lücke 2 zu Fuss", scene, p => p.GlobalPosition.X > wall2 + 250f, 300),
+            [new Plan(Opener.WalkOff, wall2 - 180f, -726f, 0f, 0, null, null)], expectImpossible: true);
+        IEnumerable<Plan> Exit(bool dj, bool dash, float aimY) =>
+            Jumps(Opener.RunningJump, wall2 + 250f, wall2 + 280f, wall2 + 440f, dj, dash).Select(plan => plan with { StartY = -726f, DashMoveX = dash ? 1f : null, DashAimY = aimY });
+        await Prove(new Section("L14 Ausstieg 2 → Rhythmus-Plattform (Doppelsprung + Dash schräg hoch)", scene, p => p.IsOnGround && p.GlobalPosition.Y < -980f, 300, DiesBelowY: 300f),
+            required: Exit(dj: true, dash: true, aimY: -1f),
+            insufficient: Exit(dj: true, dash: false, aimY: 0f).Concat(Exit(dj: true, dash: true, aimY: 0f)).Concat(Exit(dj: false, dash: true, aimY: -1f)));
+        await ProvePossible(new Section("L14 Rhythmus-Plattformen → Paket → Lücke → Rampe", scene, p => p.IsOnGround && p.GlobalPosition.X > wall2 + 2120f && p.GlobalPosition.Y < -980f, 900, DiesBelowY: 300f),
+            Hops(wall2 + 640f, -1016f, 120).Concat(Jumps(Opener.RunningJump, wall2 + 1320f, wall2 + 1500f, wall2 + 1600f, withDoubleJump: true, withDash: true).Select(plan => plan with { StartY = -1016f })));
     }
 
     private static IEnumerable<Plan> Jumps(Opener opener, float startX, float firstTrigger, float lastTrigger, bool withDoubleJump, bool withDash)
@@ -676,9 +730,15 @@ public partial class LevelSkillProofs : Node
                 if (player.GlobalPosition.X >= plan.TriggerX && player.State == PlayerState.Grounded)
                 {
                     input.PressAction();
+                    state.TriggerTick = state.TriggerTick < 0 ? tick : state.TriggerTick;
                 }
 
-                return;
+                if (plan.DoubleJumpTick is null && plan.DashTick is null)
+                {
+                    return;
+                }
+
+                break;
         }
 
         if (state.TriggerTick >= 0 && player.State == PlayerState.Airborne)

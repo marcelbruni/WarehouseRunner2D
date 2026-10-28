@@ -18,7 +18,10 @@ public partial class Crate : BoxBody
     private static readonly Color Film = new(0.75f, 0.9f, 1f, 0.35f);
     private static readonly Color FilmShine = new(1f, 1f, 1f, 0.55f);
 
-    public bool IsSlippery => Mathf.Abs(Mathf.PosMod(RotationDegrees + 45f, 90f) - 45f) > SlipperyMinTiltDegrees;
+    [Export]
+    public bool AlwaysSlippery { get; set; }
+
+    public bool IsSlippery => AlwaysSlippery || Mathf.Abs(Mathf.PosMod(RotationDegrees + 45f, 90f) - 45f) > SlipperyMinTiltDegrees;
 
     public override void _Notification(int what)
     {

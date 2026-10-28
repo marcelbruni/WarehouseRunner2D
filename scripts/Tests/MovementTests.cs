@@ -48,6 +48,7 @@ public partial class MovementTests : Node2D
             ("SpeedLoop_JumpDashRoll_SustainsHighSpeed", () => SpeedLoopSustainsHighSpeed(startWithRoll: false)),
             ("LowShelf_Rolling_PassesUnderneath", () => LowShelfPassage(roll: true)),
             ("LowShelf_Running_IsBlocked", () => LowShelfPassage(roll: false)),
+            ("LowShelf_RollWhileStuckAtShelf_PassesUnderneath", LowShelfRollFromStandstill),
             ("LowShelf_JumpWhileUnderneath_KeepsRolling", LowShelfJumpKeepsRolling),
             ("Conveyor_StandingStill_CarriesPlayer", ConveyorCarriesStandingPlayer),
             ("Conveyor_RunningAgainstBelt_IsSlower", ConveyorAgainstBeltIsSlower),
@@ -379,6 +380,18 @@ public partial class MovementTests : Node2D
         await Ticks(2);
         await Until(() => _player.IsOnGround, 240);
         return _player.GlobalPosition.X - startX;
+    }
+
+    private async Task LowShelfRollFromStandstill()
+    {
+        AddCrate(new Vector2(0f, -220f), new Vector2(400f, 360f));
+        await SettleAt(new Vector2(-500f, FloorTop - PlayerHalfHeight));
+        _input.MoveX = 1f;
+        await Ticks(150);
+        Expect("LowShelfStuck", Mathf.Abs(_player.GroundSpeed) < 1f && _player.GlobalPosition.X < -200f, $"not stuck at the shelf: x {_player.GlobalPosition.X:0}, speed {_player.GroundSpeed:0}");
+        _input.PressDashOrRoll();
+        await Ticks(240);
+        Expect("LowShelfStuck", _player.GlobalPosition.X > 230f, $"roll from standstill did not pass: x {_player.GlobalPosition.X:0}, state {_player.State}");
     }
 
     private async Task LowShelfPassage(bool roll)

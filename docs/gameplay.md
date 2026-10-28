@@ -37,6 +37,7 @@ Eigene Pakete für bewegte Plattformen, nur Rutschen oder nur Bänder gibt es ni
 | 1-5 | Profi-Tricks | Roll Jump → Power-Dash → Sprung über zwei Lücken à 840, dazwischen Dash-Rollout |
 | 1-6 | Oberstes Regal | sehr kurz: das Expresspaket hängt direkt nach der Stempeluhr so hoch, dass es nur mit Slide Jump + Doppelsprung + Dash nach oben erreichbar ist (Sprung + Doppelsprung + Dash reicht nicht); alternativ über die nahe linke Wand mit Slide Jump + Wall Kick + Doppelsprung + Dash. Danach Rampe und Ausstempeln |
 | 1-7 | AI Level | Lagerroboter (rempeln dich weg, Draufspringen erlaubt), Barcode-Scanner (rot = zurück zum Checkpoint, grüne Welle), Lieferdrohnen als fliegende Plattformen, ein Express-Paket, das vor dir flieht |
+| 1-8 | Gabelstapler-Halle | Einzelkiste, Abstand, Dreifachkiste mit Rutsche auf der Rückseite: Abwärtsrutsche geht direkt in eine flache und dann in eine leichte Aufwärtsrutsche über. Zwei Gabelstapler heben eine Einzel- und eine Doppelkiste, von oben auf drei Drohnen (seitwärts, still, seitwärts). Erste Wandöffnung nur rollend, kurzer Vorsprung davor und keiner danach: aus der Lücke rollen und direkt Doppelsprung + Dash auf drei Plattformen gleicher Höhe. Zweite Wandöffnung mit Vorsprüngen auf beiden Seiten, danach Doppelsprung + Dash schräg hoch auf stillstehende Plattformen, Paket auf Concrete in gleicher Höhe, grosse Lücke, Rampe |
 | 2-1 | Friends Ideas | zwei Präzisionskisten, bewegte Kiste, drei Speed-Jump-Bänder (runter, gerade, hoch) mit Kiste dazwischen, Abschussrampe zur Paketplattform, Luftpolster-Trampoline über der letzten Grube |
 | 2-2 | Taktstrasse | sechs Kisten im gleichen Abstand: im Takt durchhüpfen. Lücke in einen Speed Jump, der direkt in einen Kamin schleudert; oben von der Wand in den nächsten Speed Jump, auf eine Polsterfolie, die in den zweiten Kamin federt, oben aufs Förderband, über eine Lücke auf eine 45° geneigte Polsterfolie, die einen flach nach vorne zum Ziel schiesst |
 | 2-3 | Hauptlager | die erste grosse Karte: Rutschkisten, Förderbänder, Paketsuche |
@@ -63,6 +64,7 @@ gerundet. Gezählt wird die angezeigte Zeit (Hundertstel).
 | 1-5 | Profi-Tricks | 6.25 | 7.0 | 8.5 |
 | 1-6 | Oberstes Regal | 3.20 | 3.5 | 4.5 |
 | 1-7 | AI Level | 13.15 | 15.0 | 18.0 |
+| 1-8 | Gabelstapler-Halle | 18.00 | 20.5 | 24.5 |
 | 2-1 | Friends Ideas | 13.00 | 15.0 | 17.5 |
 | 2-2 | Taktstrasse | 17.00 | 19.5 | 23.0 |
 | 2-3 | Hauptlager | 14.10 | 16.0 | 19.0 |
