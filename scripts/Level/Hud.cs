@@ -7,12 +7,12 @@ namespace WarehouseRunner.Level;
 public partial class Hud : CanvasLayer
 {
     private const string ControlsText =
-        "A/D oder Pfeile: Laufen\n" +
-        "Leertaste/W: Springen (in der Luft: Doppelsprung, an Wand: Wall Kick)\n" +
-        "Shift/J/S/Ctrl/K: Dash in der Luft (mit Pfeil hoch/runter schräg oder senkrecht), Rollout bei der Landung, Rolle im Laufen\n" +
-        "Rennen, Richtung wechseln + Springen: Slide Jump\n" +
-        "Pfeil runter halten: Ducken (auf schrägen Kisten schneller rutschen)\n" +
-        "R: Neustart   Esc: Levelauswahl   F1: Hilfe ein/aus";
+        "A/D or arrows: run\n" +
+        "Space/W: jump (in the air: double jump, at a wall: wall kick)\n" +
+        "Shift/J/S/Ctrl/K: dash in the air (aim with up/down arrow), rollout when landing, roll while running\n" +
+        "Run, turn around + jump: slide jump\n" +
+        "Hold down arrow: crouch (slide faster on tilted crates)\n" +
+        "R: restart   Esc: level select   F1: toggle help";
 
     private Label _timer = null!;
     private Label _objective = null!;
@@ -69,7 +69,7 @@ public partial class Hud : CanvasLayer
 
     public void SetBest(double? seconds, MedalTimes? medals)
     {
-        var bestLine = seconds is { } best ? $"Bestzeit {FormatTime(best)}" : "Bestzeit --:--.--";
+        var bestLine = seconds is { } best ? $"Best {FormatTime(best)}" : "Best --:--.--";
         if (medals is null)
         {
             _best.Text = bestLine;
@@ -79,8 +79,8 @@ public partial class Hud : CanvasLayer
         var earned = seconds is { } time ? medals.For(time) : Medal.None;
         var next = MedalTimes.NextAfter(earned);
         var goalLine = next is { } goal
-            ? $"Ziel {MedalTimes.Name(goal)} {FormatTime(medals.TimeFor(goal))}"
-            : "Alle Medaillen geholt!";
+            ? $"Target {MedalTimes.Name(goal)} {FormatTime(medals.TimeFor(goal))}"
+            : "All medals collected!";
         _best.Text = $"{bestLine}\n{goalLine}";
     }
 
@@ -94,7 +94,7 @@ public partial class Hud : CanvasLayer
             return;
         }
 
-        _trick.Text = perfect ? $"{name}  PERFEKT!" : name;
+        _trick.Text = perfect ? $"{name}  PERFECT!" : name;
         _trick.AddThemeColorOverride("font_color", perfect ? new Color(1f, 0.85f, 0.2f) : Colors.White);
         _trickTween?.Kill();
         _trick.Modulate = Colors.White;
@@ -116,9 +116,9 @@ public partial class Hud : CanvasLayer
     public void ShowResult(double time, double? previousBest, bool hasNextLevel, MedalTimes? medals)
     {
         var isRecord = previousBest is null || time < previousBest;
-        var recordLine = isRecord ? "NEUER REKORD!" : $"Bestzeit: {FormatTime(previousBest!.Value)}";
+        var recordLine = isRecord ? "NEW RECORD!" : $"Best: {FormatTime(previousBest!.Value)}";
         var medalLines = medals is null ? string.Empty : MedalResultLines(time, medals);
-        _result.Text = $"Feierabend!\n{FormatTime(time)}\n{recordLine}{medalLines}\n\n{(hasNextLevel ? "Enter / A: nächstes Level" : "Enter / A: zum Startbildschirm")}\nR: neuer Lauf   Esc: Levelauswahl";
+        _result.Text = $"Shift over!\n{FormatTime(time)}\n{recordLine}{medalLines}\n\n{(hasNextLevel ? "Enter / A: next level" : "Enter / A: back to the start screen")}\nR: new run   Esc: level select";
         _result.Visible = true;
         _resultDim.Visible = true;
         if (medals?.For(time) is { } medal and not Medal.None)
@@ -161,7 +161,7 @@ public partial class Hud : CanvasLayer
     private static string MedalResultLines(double time, MedalTimes medals)
     {
         var medal = medals.For(time);
-        var earnedLine = medal == Medal.None ? "Keine Medaille" : $"{MedalTimes.Name(medal).ToUpperInvariant()}-MEDAILLE!";
+        var earnedLine = medal == Medal.None ? "No medal" : $"{MedalTimes.Name(medal).ToUpperInvariant()} MEDAL!";
         var next = MedalTimes.NextAfter(medal);
         var nextLine = next is { } goal ? $"\n{MedalTimes.Name(goal)}: {FormatTime(medals.TimeFor(goal))}" : string.Empty;
         return $"\n\n{earnedLine}{nextLine}";
@@ -175,17 +175,17 @@ public partial class Hud : CanvasLayer
 
     private static string? TrickName(Trick trick) => trick switch
     {
-        Trick.DoubleJump => "Doppelsprung",
+        Trick.DoubleJump => "Double Jump",
         Trick.SlideJump => "Slide Jump",
         Trick.Dash => "Dash",
         Trick.DashJump => "Dash Jump",
         Trick.WallKick => "Wall Kick",
         Trick.JumpRollout => "Rollout!",
-        Trick.DashRollout => "Dash-Rollout!",
-        Trick.GroundRoll => "Rolle",
+        Trick.DashRollout => "Dash Rollout!",
+        Trick.GroundRoll => "Roll",
         Trick.RollJump => "Roll Jump",
-        Trick.PowerDash => "Power-Dash!",
-        Trick.SlopeSlide => "Rutsch-Boost",
+        Trick.PowerDash => "Power Dash!",
+        Trick.SlopeSlide => "Slide Boost",
         _ => null,
     };
 

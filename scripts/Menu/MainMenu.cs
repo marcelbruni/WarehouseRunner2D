@@ -35,7 +35,7 @@ public partial class MainMenu : Node2D
         layer.AddChild(root);
 
         root.AddChild(CreateLabel("Warehouse Runner 2D", 64, Accent));
-        _subtitle = CreateLabel("Levelauswahl", 26, Colors.White);
+        _subtitle = CreateLabel("Level Select", 26, Colors.White);
         root.AddChild(_subtitle);
         root.AddChild(new Control { CustomMinimumSize = new Vector2(0f, 10f) });
 
@@ -93,9 +93,9 @@ public partial class MainMenu : Node2D
     {
         _packageOpen = false;
         ClearContent();
-        _subtitle.Text = "Levelauswahl";
+        _subtitle.Text = "Level Select";
         _skills.Text = string.Empty;
-        _footer.Text = "Pfeiltasten: auswählen     Enter/Leertaste: Paket öffnen";
+        _footer.Text = "Arrow keys: select     Enter/Space: open package";
 
         var row = new HBoxContainer { Alignment = BoxContainer.AlignmentMode.Center };
         row.AddThemeConstantOverride("separation", 40);
@@ -117,8 +117,8 @@ public partial class MainMenu : Node2D
         _lastPackageIndex = packageIndex;
         ClearContent();
         var package = LevelCatalog.Packages[packageIndex];
-        _subtitle.Text = $"Paket {packageIndex + 1} · {package.Title}";
-        _footer.Text = "Pfeiltasten: auswählen     Enter/Leertaste: starten     Esc: zurück zu den Paketen";
+        _subtitle.Text = $"Package {packageIndex + 1} · {package.Title}";
+        _footer.Text = "Arrow keys: select     Enter/Space: start     Esc: back to packages";
 
         var list = new VBoxContainer();
         list.AddThemeConstantOverride("separation", 8);
@@ -164,7 +164,7 @@ public partial class MainMenu : Node2D
         text.AddThemeConstantOverride("separation", 14);
         tile.AddChild(text);
         text.SetAnchorsAndOffsetsPreset(Control.LayoutPreset.FullRect);
-        text.AddChild(CreateLabel($"PAKET {index + 1}", 28, Accent));
+        text.AddChild(CreateLabel($"PACKAGE {index + 1}", 28, Accent));
         text.AddChild(CreateLabel(package.Title, 42, Colors.White));
         var description = CreateLabel(package.Description, 20, Muted);
         description.AutowrapMode = TextServer.AutowrapMode.WordSmart;
@@ -187,7 +187,7 @@ public partial class MainMenu : Node2D
         var button = new Button { FocusMode = Control.FocusModeEnum.None, CustomMinimumSize = new Vector2(150f, 44f) };
         ApplyButtonStyle(button);
         button.AddThemeFontSizeOverride("font_size", 20);
-        void Refresh() => button.Text = MusicPlayer.IsMuted ? "Ton: aus" : "Ton: an";
+        void Refresh() => button.Text = MusicPlayer.IsMuted ? "Sound: off" : "Sound: on";
         Refresh();
         button.Pressed += () =>
         {
@@ -207,7 +207,7 @@ public partial class MainMenu : Node2D
     {
         var button = new Button
         {
-            Text = "← Zurück zu den Paketen",
+            Text = "← Back to packages",
             CustomMinimumSize = new Vector2(600f, 40f),
             Alignment = HorizontalAlignment.Left,
         };
@@ -255,7 +255,7 @@ public partial class MainMenu : Node2D
     private static void RememberSelection(int index) => _lastSelectedIndex = index;
 
     private static string MedalTimesText(MedalTimes medals) =>
-        $"Gold {Hud.FormatTime(medals.Gold)}   ·   Silber {Hud.FormatTime(medals.Silver)}   ·   Bronze {Hud.FormatTime(medals.Bronze)}";
+        $"Gold {Hud.FormatTime(medals.Gold)}   ·   Silver {Hud.FormatTime(medals.Silver)}   ·   Bronze {Hud.FormatTime(medals.Bronze)}";
 
     private static HBoxContainer CreateMedalRow(Medal earned)
     {

@@ -87,7 +87,7 @@ public partial class LaunchRamp : StaticBody2D
             DrawPolyline([at - (tangent * 5f) + (normal * 4f), at + (tangent * 4f), at - (tangent * 5f) - (normal * 4f)], Chevron, 2f);
         }
 
-        DrawString(ThemeDB.FallbackFont, Lip + new Vector2(-40f, -50f), "HUII!", HorizontalAlignment.Left, -1, 16, Chevron with { A = _flash > 0f ? 1f : 0.35f });
+        DrawString(ThemeDB.FallbackFont, Lip + new Vector2(-40f, -50f), "WHOOSH!", HorizontalAlignment.Left, -1, 16, Chevron with { A = _flash > 0f ? 1f : 0.35f });
     }
 
     private Vector2[] Surface()

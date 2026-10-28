@@ -164,7 +164,7 @@ public partial class RaceController : Node2D
                 break;
             case (TimeClockMode.ClockOut, RunPhase.SearchingPackage or RunPhase.CarryingPackage):
                 clock.Reject();
-                _hud.ShowHint("Noch nicht Feierabend: Das Express-Paket muss erst in den LKW!");
+                _hud.ShowHint("Not done yet: the express package has to go on the truck first!");
                 break;
         }
     }
@@ -173,7 +173,7 @@ public partial class RaceController : Node2D
     {
         if (Phase == RunPhase.WaitingForClockIn)
         {
-            _hud.ShowHint("Erst einstempeln!");
+            _hud.ShowHint("Clock in first!");
             return;
         }
 
@@ -191,7 +191,7 @@ public partial class RaceController : Node2D
     {
         if (Phase == RunPhase.SearchingPackage)
         {
-            _hud.ShowHint("Ohne Express-Paket fährt der LKW nicht los!");
+            _hud.ShowHint("The truck won't leave without the express package!");
             return;
         }
 
@@ -214,7 +214,7 @@ public partial class RaceController : Node2D
     private void OnScanned()
     {
         _player.Respawn(_respawnPosition);
-        _hud.ShowHint("Gescannt! Artikel unbekannt, zurück zum Checkpoint.");
+        _hud.ShowHint("Scanned! Unknown item, back to the checkpoint.");
     }
 
     private void OnCheckpoint(Checkpoint checkpoint)
@@ -245,11 +245,11 @@ public partial class RaceController : Node2D
     {
         _hud.SetObjective(Phase switch
         {
-            RunPhase.WaitingForClockIn => "Stempel dich ein!",
-            RunPhase.SearchingPackage => "Finde das goldene Express-Paket",
-            RunPhase.CarryingPackage => "Bring das Paket zur Rampe 3",
-            RunPhase.PackageDelivered => "LKW ist weg, jetzt ausstempeln!",
-            _ => "Feierabend!",
+            RunPhase.WaitingForClockIn => "Clock in!",
+            RunPhase.SearchingPackage => "Find the golden express package",
+            RunPhase.CarryingPackage => "Bring the package to dock 3",
+            RunPhase.PackageDelivered => "Truck is gone, now clock out!",
+            _ => "Shift over!",
         });
     }
 }

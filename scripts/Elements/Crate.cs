@@ -47,7 +47,7 @@ public partial class Crate : BoxBody
         var cells = height / GridSize;
         if (isObstacle && Mathf.Abs(cells - Mathf.Round(cells)) > 0.01f)
         {
-            return [$"Höhe {height:0} liegt nicht im Kistenraster ({GridSize:0} px). Nächste Rasterhöhe: {Mathf.Max(1f, Mathf.Round(cells)) * GridSize:0}."];
+            return [$"Height {height:0} is off the crate grid ({GridSize:0} px). Nearest grid height: {Mathf.Max(1f, Mathf.Round(cells)) * GridSize:0}."];
         }
 
         return [];

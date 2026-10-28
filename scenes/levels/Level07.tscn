@@ -39,17 +39,17 @@ script = ExtResource("clock")
 [node name="Sign1" type="Node2D" parent="."]
 position = Vector2(-60, 0)
 script = ExtResource("sign")
-Text = "Friends Ideas\nzielen, springen, staunen"
+Text = "Friends Ideas\naim, jump, be amazed"
 
 [node name="Sign2" type="Node2D" parent="."]
 position = Vector2(1800, 0)
 script = ExtResource("sign")
-Text = "Speed Jump\nweit springen, das Band\nschleudert dich weiter"
+Text = "Speed Jump\njump far, the belt\nflings you further"
 
 [node name="Sign3" type="Node2D" parent="."]
 position = Vector2(7330, 0)
 script = ExtResource("sign")
-Text = "Luftpolsterfolie\nPLOPP!"
+Text = "Bubble wrap\nPOP!"
 
 [node name="LoadingDock1" type="Area2D" parent="."]
 position = Vector2(8600, 0)

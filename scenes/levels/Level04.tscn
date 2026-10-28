@@ -39,12 +39,12 @@ script = ExtResource("clock")
 [node name="Sign1" type="Node2D" parent="."]
 position = Vector2(-60, 0)
 script = ExtResource("sign")
-Text = "Roll Jump → Power-Dash → Sprung\nim Laufen rollen, springen,\ndashen, nochmal springen"
+Text = "Roll Jump → Power Dash → Jump\nroll while running, jump,\ndash, jump again"
 
 [node name="Sign2" type="Node2D" parent="."]
 position = Vector2(1490, 0)
 script = ExtResource("sign")
-Text = "Dash-Rollout\nbei der Landung sofort rollen\nund wieder springen"
+Text = "Dash Rollout\nroll right as you land\nand jump again"
 
 [node name="LoadingDock1" type="Area2D" parent="."]
 position = Vector2(3000, 0)

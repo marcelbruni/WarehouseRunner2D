@@ -40,22 +40,22 @@ script = ExtResource("clock")
 [node name="Sign1" type="Node2D" parent="."]
 position = Vector2(-100, 0)
 script = ExtResource("sign")
-Text = "Gabelstapler-Halle\nrutschen, mitfahren, durchrollen"
+Text = "Forklift hall\nslide, ride along, roll through"
 
 [node name="Sign2" type="Node2D" parent="."]
 position = Vector2(4049, -700)
 script = ExtResource("sign")
-Text = "durchrollen, dann direkt\nDoppelsprung + Dash"
+Text = "roll through, then right away\ndouble jump + dash"
 
 [node name="Sign3" type="Node2D" parent="."]
 position = Vector2(5549, -700)
 script = ExtResource("sign")
-Text = "nur rollend\ndurch die Lücke"
+Text = "roll through\nthe gap"
 
 [node name="Sign4" type="Node2D" parent="."]
 position = Vector2(6019, -700)
 script = ExtResource("sign")
-Text = "Doppelsprung +\nDash schräg nach oben"
+Text = "Double jump +\ndiagonal dash upward"
 
 [node name="LoadingDock1" type="Area2D" parent="."]
 position = Vector2(8069, -990)

@@ -39,22 +39,22 @@ script = ExtResource("clock")
 [node name="Sign1" type="Node2D" parent="."]
 position = Vector2(-80, 0)
 script = ExtResource("sign")
-Text = "Springen\nLeertaste / W / Pfeil hoch"
+Text = "Jump\nSpace / W"
 
 [node name="Sign2" type="Node2D" parent="."]
 position = Vector2(450, 0)
 script = ExtResource("sign")
-Text = "Doppelsprung\nin der Luft nochmal springen"
+Text = "Double Jump\njump again in the air"
 
 [node name="Sign3" type="Node2D" parent="."]
 position = Vector2(1060, 0)
 script = ExtResource("sign")
-Text = "Slide Jump\nrennen, kurz Gegenrichtung, springen\noben nochmal springen"
+Text = "Slide Jump\nrun, briefly turn around, jump\njump again at the top"
 
 [node name="Sign4" type="Node2D" parent="."]
 position = Vector2(1930, 0)
 script = ExtResource("sign")
-Text = "Wall Kick\nan der Wand von ihr weg\nlenken und springen"
+Text = "Wall Kick\nat the wall, steer away\nand jump"
 
 [node name="LoadingDock1" type="Area2D" parent="."]
 position = Vector2(2750, 0)

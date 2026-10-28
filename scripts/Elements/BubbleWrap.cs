@@ -86,7 +86,7 @@ public partial class BubbleWrap : BoxBody
 
         if (_popTimer > 0f)
         {
-            DrawString(ThemeDB.FallbackFont, new Vector2(_popX - 30f, rect.Position.Y - 30f - ((PopDuration - _popTimer) * 60f)), "PLOPP!", HorizontalAlignment.Left, -1, 20, new Color(1f, 1f, 1f, _popTimer / PopDuration));
+            DrawString(ThemeDB.FallbackFont, new Vector2(_popX - 30f, rect.Position.Y - 30f - ((PopDuration - _popTimer) * 60f)), "POP!", HorizontalAlignment.Left, -1, 20, new Color(1f, 1f, 1f, _popTimer / PopDuration));
         }
     }
 }

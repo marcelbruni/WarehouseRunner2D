@@ -39,22 +39,22 @@ script = ExtResource("clock")
 [node name="Sign1" type="Node2D" parent="."]
 position = Vector2(-150, 0)
 script = ExtResource("sign")
-Text = "Tempo-Training\nnur geradeaus, nichts im Weg"
+Text = "Speed training\nstraight ahead, nothing in the way"
 
 [node name="Sign2" type="Node2D" parent="."]
 position = Vector2(500, 0)
 script = ExtResource("sign")
-Text = "Rolle, Roll Jump, Power-Dash,\nRollout bei der Landung\nund gleich wieder springen"
+Text = "Roll, roll jump, power dash,\nrollout when landing\nand jump again right away"
 
 [node name="Sign3" type="Node2D" parent="."]
 position = Vector2(1150, 0)
 script = ExtResource("sign")
-Text = "Rhythmus halten:\nJump, Dash, Rollout, Jump ..."
+Text = "Keep the rhythm:\njump, dash, rollout, jump ..."
 
 [node name="Sign4" type="Node2D" parent="."]
 position = Vector2(1800, 0)
 script = ExtResource("sign")
-Text = "noch schneller?\nRollout ganz knapp vor der Landung\n= perfekter Rollout"
+Text = "Even faster?\nrollout right before landing\n= perfect rollout"
 
 [node name="LoadingDock1" type="Area2D" parent="."]
 position = Vector2(2200, 0)

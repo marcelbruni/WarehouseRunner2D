@@ -38,9 +38,9 @@ public sealed record MedalTimes(double Gold, double Silver, double Bronze)
     public static string Name(Medal medal) => medal switch
     {
         Medal.Gold => "Gold",
-        Medal.Silver => "Silber",
+        Medal.Silver => "Silver",
         Medal.Bronze => "Bronze",
-        _ => "Keine",
+        _ => "None",
     };
 
     public static Color ColorOf(Medal medal) => medal switch

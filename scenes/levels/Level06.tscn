@@ -39,22 +39,22 @@ script = ExtResource("clock")
 [node name="Sign1" type="Node2D" parent="."]
 position = Vector2(-60, 0)
 script = ExtResource("sign")
-Text = "KI-Lagerroboter\nnicht anrempeln,\ndraufspringen ist erlaubt"
+Text = "AI warehouse robots\ndon't bump into them,\njumping on top is fine"
 
 [node name="Sign2" type="Node2D" parent="."]
 position = Vector2(1470, 0)
 script = ExtResource("sign")
-Text = "Barcode-Scanner\nrot = gescannt = zurück\nTipp: grüne Welle"
+Text = "Barcode scanners\nred = scanned = sent back\ntip: ride the green wave"
 
 [node name="Sign3" type="Node2D" parent="."]
 position = Vector2(2420, 0)
 script = ExtResource("sign")
-Text = "Lieferdrohnen\nbitte nicht füttern"
+Text = "Delivery drones\nplease don't feed"
 
 [node name="Sign4" type="Node2D" parent="."]
 position = Vector2(3900, 0)
 script = ExtResource("sign")
-Text = "Das Express-Paket\nhat heute keine Lust"
+Text = "The express package\nisn't in the mood today"
 
 [node name="LoadingDock1" type="Area2D" parent="."]
 position = Vector2(5300, 0)

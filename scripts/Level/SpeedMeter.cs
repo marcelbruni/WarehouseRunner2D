@@ -30,6 +30,6 @@ public partial class SpeedMeter : Control
         DrawRect(new Rect2(bar.Position, new Vector2(bar.Size.X * fill, bar.Size.Y)), _boosted ? Boosted : Normal);
         var runMark = bar.Size.X / FullScaleFactor;
         DrawLine(new Vector2(runMark, 0f), new Vector2(runMark, bar.Size.Y), Colors.White, 2f);
-        DrawString(ThemeDB.FallbackFont, new Vector2(6f, bar.Size.Y - 8f), _boosted ? "BOOST" : "TEMPO", HorizontalAlignment.Left, -1, 14, Colors.White);
+        DrawString(ThemeDB.FallbackFont, new Vector2(6f, bar.Size.Y - 8f), _boosted ? "BOOST" : "SPEED", HorizontalAlignment.Left, -1, 14, Colors.White);
     }
 }

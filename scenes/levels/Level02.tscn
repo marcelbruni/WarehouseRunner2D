@@ -39,17 +39,17 @@ script = ExtResource("clock")
 [node name="Sign1" type="Node2D" parent="."]
 position = Vector2(-60, 0)
 script = ExtResource("sign")
-Text = "Rolle\nim Laufen Aktionstaste\nrollt unter niedrige Regale"
+Text = "Roll\naction key while running\nrolls under low shelves"
 
 [node name="Sign2" type="Node2D" parent="."]
 position = Vector2(680, 0)
 script = ExtResource("sign")
-Text = "Rollout\nüber die Kiste springen,\nkurz vor der Landung Aktionstaste"
+Text = "Rollout\njump over the crate,\naction key just before landing"
 
 [node name="Sign3" type="Node2D" parent="."]
 position = Vector2(1800, 0)
 script = ExtResource("sign")
-Text = "Langes Regal\nim Tunnel rollst du weiter"
+Text = "Long shelf\nyou keep rolling in the tunnel"
 
 [node name="LoadingDock1" type="Area2D" parent="."]
 position = Vector2(2850, 0)

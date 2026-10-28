@@ -11,7 +11,7 @@ public partial class ExpressPackage : PlayerTrigger
     private const float FleeDuration = 0.45f;
     private const float RemarkDuration = 1.2f;
 
-    private static readonly string[] Remarks = ["Nö!", "Fang mich doch!", "Ich bin ein freies Paket!", "Na gut..."];
+    private static readonly string[] Remarks = ["Nope!", "Catch me if you can!", "I'm a free package!", "Fine..."];
 
     private float _time;
     private int _nextFleeIndex;

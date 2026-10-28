@@ -98,7 +98,7 @@ public partial class TimeClock : PlayerTrigger
         DrawLine(face, face + (Vector2.Up.Rotated(minute / 60f * Mathf.Tau) * 12f), HousingDark, 1.5f);
 
         DrawRect(new Rect2(-14f, 14f, 28f, 5f), HousingDark);
-        var label = _mode == TimeClockMode.ClockIn ? "EIN" : "AUS";
+        var label = _mode == TimeClockMode.ClockIn ? "IN" : "OUT";
         DrawString(ThemeDB.FallbackFont, new Vector2(-14f, 33f), label, HorizontalAlignment.Left, -1, 12, HousingDark);
 
         if (_punchFlash > 0f)

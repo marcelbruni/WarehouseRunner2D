@@ -40,17 +40,17 @@ script = ExtResource("clock")
 [node name="Sign1" type="Node2D" parent="."]
 position = Vector2(-150, 0)
 script = ExtResource("sign")
-Text = "Hochregallager\nrechts, zurück, ganz oben rüber"
+Text = "High-bay warehouse\nright, back, then across the top"
 
 [node name="Sign2" type="Node2D" parent="."]
 position = Vector2(3330, 0)
 script = ExtResource("sign")
-Text = "Breiter Kamin\nWall Kick + Doppelsprung"
+Text = "Wide chimney\nwall kick + double jump"
 
 [node name="Sign3" type="Node2D" parent="."]
 position = Vector2(4000, -1300)
 script = ExtResource("sign")
-Text = "Ab nach unten!"
+Text = "Down you go!"
 
 [node name="LoadingDock1" type="Area2D" parent="."]
 position = Vector2(6100, 0)

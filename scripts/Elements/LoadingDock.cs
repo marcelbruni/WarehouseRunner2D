@@ -60,7 +60,7 @@ public partial class LoadingDock : PlayerTrigger
         var opening = new Rect2(-DoorWidth / 2f, -DoorHeight, DoorWidth, DoorHeight);
         DrawRect(opening.Grow(14f), Frame);
         DrawRect(opening, Yard);
-        DrawString(ThemeDB.FallbackFont, new Vector2(-48f, -DoorHeight - 22f), "RAMPE 3", HorizontalAlignment.Left, -1, 20, Hazard);
+        DrawString(ThemeDB.FallbackFont, new Vector2(-48f, -DoorHeight - 22f), "DOCK 3", HorizontalAlignment.Left, -1, 20, Hazard);
 
         DrawTruck();
         DrawFlyingPackage();
