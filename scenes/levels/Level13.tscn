@@ -33,11 +33,11 @@ script = ExtResource("background")
 [node name="Course" type="Node2D" parent="."]
 
 [node name="ClockIn1" type="Area2D" parent="."]
-position = Vector2(-500, 0)
+position = Vector2(-400, 0)
 script = ExtResource("clock")
 
 [node name="Sign1" type="Node2D" parent="."]
-position = Vector2(-300, 0)
+position = Vector2(-150, 0)
 script = ExtResource("sign")
 Text = "Oberstes Regal\nSlide Jump, Doppelsprung,\nDash nach oben (Pfeil hoch + Dash)\noder über die Wand"
 
@@ -66,7 +66,7 @@ script = ExtResource("concrete")
 Size = Vector2(1700, 200)
 
 [node name="ExpressPackage1" type="Area2D" parent="."]
-position = Vector2(-430, -560)
+position = Vector2(-330, -560)
 script = ExtResource("package")
 
 [node name="Player" parent="." instance=ExtResource("player")]

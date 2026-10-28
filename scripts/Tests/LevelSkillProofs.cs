@@ -322,9 +322,9 @@ public partial class LevelSkillProofs : Node
     private async Task ProveTopShelfLevel()
     {
         const string scene = "res://scenes/levels/Level13.tscn";
-        var package = new Vector2(-430f, -560f);
+        var package = new Vector2(-330f, -560f);
         bool Reached(PlayerController p) => Mathf.Abs(p.GlobalPosition.X - package.X) < 41f && Mathf.Abs(p.GlobalPosition.Y - package.Y) < 54f;
-        var starts = new[] { -380f, -340f, -300f, -260f };
+        var starts = new[] { -280f, -240f, -200f, -160f };
         IEnumerable<Plan> Upward(IEnumerable<Plan> plans) => plans.Select(plan => plan with { AirMoveX = 0f, DashMoveX = 0f, DashAimY = -1f });
         IEnumerable<Plan> Slides(bool dj, bool dash) => starts.SelectMany(start => Upward(SlideJumps(start, dj, dash)));
 
@@ -332,9 +332,9 @@ public partial class LevelSkillProofs : Node
             required: Slides(dj: true, dash: true),
             insufficient: Slides(dj: true, dash: false)
                 .Concat(Slides(dj: false, dash: true))
-                .Concat(Upward(Jumps(Opener.RunningJump, -560f, -480f, -380f, withDoubleJump: true, withDash: true))));
+                .Concat(Upward(Jumps(Opener.RunningJump, -560f, -380f, -280f, withDoubleJump: true, withDash: true))));
 
-        var wallStarts = new[] { -470f, -430f, -390f, -350f };
+        var wallStarts = new[] { -400f, -350f, -300f, -250f };
         await ProvePossible(new Section("L13 Paket über die Wand (Slide Jump + Wall Kick + Doppelsprung + Dash)", scene, Reached, 300),
             wallStarts.SelectMany(start => SlideJumps(start, withDoubleJump: true, withDash: true)
                 .Select(plan => plan with { Dir = -1f, WallKickFirst = true, DashMoveX = 0f, DashAimY = -1f })));
