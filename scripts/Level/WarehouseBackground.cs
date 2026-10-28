@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Godot;
 
 namespace WarehouseRunner.Level;
@@ -29,6 +30,7 @@ public partial class WarehouseBackground : Node2D
 
     private const float CoverMargin = 200f;
 
+    private readonly List<BackgroundRack> _racks = new();
     private float _left = -1000f;
     private float _authoredWidth;
     private float _authoredHeight;
@@ -41,6 +43,7 @@ public partial class WarehouseBackground : Node2D
         _authoredDepth = Depth;
         if (Engine.IsEditorHint())
         {
+            RebuildRacks();
             return;
         }
 
@@ -91,6 +94,7 @@ public partial class WarehouseBackground : Node2D
         Height = Mathf.Max(_authoredHeight, -coverStart.Y);
         Depth = Mathf.Max(_authoredDepth, coverEnd.Y);
         QueueRedraw();
+        RebuildRacks();
     }
 
     private RaceController? FindLevel()
@@ -115,23 +119,36 @@ public partial class WarehouseBackground : Node2D
             DrawRect(new Rect2(_left, y, wallWidth, 6f), WallStripe);
         }
 
+    }
+
+    private void RebuildRacks()
+    {
+        foreach (var rack in _racks)
+        {
+            rack.QueueFree();
+        }
+
+        _racks.Clear();
         var seed = 7u;
         for (var x = -600f; x < Width; x += RackSpacing)
         {
-            DrawRack(x, ref seed);
-            DrawLamp(x + (RackSpacing / 2f));
+            var rack = new BackgroundRack();
+            AddRack(rack, x, ref seed);
+            AddLamp(rack, x + (RackSpacing / 2f));
+            AddChild(rack);
+            _racks.Add(rack);
         }
     }
 
-    private void DrawRack(float left, ref uint seed)
+    private void AddRack(BackgroundRack rack, float left, ref uint seed)
     {
         var top = -Height + 300f;
-        DrawRect(new Rect2(left, top, 8f, -top), RackUpright);
-        DrawRect(new Rect2(left + RackWidth - 8f, top, 8f, -top), RackUpright);
+        rack.AddRect(new Rect2(left, top, 8f, -top), RackUpright);
+        rack.AddRect(new Rect2(left + RackWidth - 8f, top, 8f, -top), RackUpright);
 
         for (var y = -40f; y > top; y -= ShelfSpacing)
         {
-            DrawRect(new Rect2(left, y, RackWidth, 6f), RackBeam);
+            rack.AddRect(new Rect2(left, y, RackWidth, 6f), RackBeam);
             var x = left + 12f;
             while (x < left + RackWidth - 50f)
             {
@@ -140,8 +157,8 @@ public partial class WarehouseBackground : Node2D
                 if (NextRandom(ref seed) % 4 != 0)
                 {
                     var box = new Rect2(x, y - boxHeight, boxWidth, boxHeight);
-                    DrawRect(box, Cardboard);
-                    DrawRect(box, CardboardDark, false, 2f);
+                    rack.AddRect(box, Cardboard);
+                    rack.AddRect(box, CardboardDark, filled: false);
                 }
 
                 x += boxWidth + 6f;
@@ -149,12 +166,12 @@ public partial class WarehouseBackground : Node2D
         }
     }
 
-    private void DrawLamp(float x)
+    private void AddLamp(BackgroundRack rack, float x)
     {
         var lampY = -Height + 120f;
-        DrawLine(new Vector2(x, -Height), new Vector2(x, lampY), Colors.Black, 2f);
-        DrawRect(new Rect2(x - 30f, lampY, 60f, 10f), new Color(0.9f, 0.9f, 0.85f));
-        DrawColoredPolygon([new Vector2(x - 30f, lampY + 10f), new Vector2(x + 30f, lampY + 10f), new Vector2(x + 220f, 0f), new Vector2(x - 220f, 0f)], LampLight);
+        rack.AddLine(new Vector2(x, -Height), new Vector2(x, lampY), Colors.Black);
+        rack.AddRect(new Rect2(x - 30f, lampY, 60f, 10f), new Color(0.9f, 0.9f, 0.85f));
+        rack.AddPolygon([new Vector2(x - 30f, lampY + 10f), new Vector2(x + 30f, lampY + 10f), new Vector2(x + 220f, 0f), new Vector2(x - 220f, 0f)], LampLight);
     }
 
     private static uint NextRandom(ref uint seed)
