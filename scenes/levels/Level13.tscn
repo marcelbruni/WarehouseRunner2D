@@ -39,7 +39,7 @@ script = ExtResource("clock")
 [node name="Sign1" type="Node2D" parent="."]
 position = Vector2(-150, 0)
 script = ExtResource("sign")
-Text = "Top shelf\nslide jump, double jump,\nupward dash (up arrow + dash)\nor off the wall"
+Text = "Top shelf\nslide jump, double jump,\nupward dash (W or up + dash)\nor off the wall"
 
 [node name="LoadingDock1" type="Area2D" parent="."]
 position = Vector2(600, 0)

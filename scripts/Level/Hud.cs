@@ -8,10 +8,10 @@ public partial class Hud : CanvasLayer
 {
     private const string ControlsText =
         "A/D or arrows: run\n" +
-        "Space/W: jump (in the air: double jump, at a wall: wall kick)\n" +
-        "Shift/J/S/Ctrl/K: dash in the air (aim with up/down arrow), rollout when landing, roll while running\n" +
+        "Space: jump (in the air: double jump, at a wall: wall kick)\n" +
+        "Shift/J/Ctrl/K: dash in the air (aim with W/S or up/down), rollout when landing, roll while running\n" +
         "Run, turn around + jump: slide jump\n" +
-        "Hold down arrow: crouch (slide faster on tilted crates)\n" +
+        "Hold S or down: crouch (slide faster on tilted crates)\n" +
         "R: restart   Esc: level select   F1: toggle help";
 
     private Label _timer = null!;

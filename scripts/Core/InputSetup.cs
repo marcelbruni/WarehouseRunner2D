@@ -20,11 +20,11 @@ public partial class InputSetup : Node
     {
         Register(MoveLeft, Keys(Key.A, Key.Left), Buttons(JoyButton.DpadLeft), new Axis(JoyAxis.LeftX, -1f));
         Register(MoveRight, Keys(Key.D, Key.Right), Buttons(JoyButton.DpadRight), new Axis(JoyAxis.LeftX, 1f));
-        Register(Jump, Keys(Key.Space, Key.W), Buttons(JoyButton.A));
-        Register(DashOrRoll, Keys(Key.Shift, Key.J, Key.S, Key.Ctrl, Key.K), Buttons(JoyButton.X, JoyButton.B));
-        Register(Crouch, Keys(Key.Down), Buttons(), new Axis(JoyAxis.TriggerLeft, 1f));
-        Register(AimUp, Keys(Key.Up), Buttons(), new Axis(JoyAxis.LeftY, -1f));
-        Register(AimDown, Keys(Key.Down), Buttons(), new Axis(JoyAxis.LeftY, 1f));
+        Register(Jump, Keys(Key.Space), Buttons(JoyButton.A));
+        Register(DashOrRoll, Keys(Key.Shift, Key.J, Key.Ctrl, Key.K), Buttons(JoyButton.X, JoyButton.B));
+        Register(Crouch, Keys(Key.Down, Key.S), Buttons(), new Axis(JoyAxis.TriggerLeft, 1f));
+        Register(AimUp, Keys(Key.Up, Key.W), Buttons(), new Axis(JoyAxis.LeftY, -1f));
+        Register(AimDown, Keys(Key.Down, Key.S), Buttons(), new Axis(JoyAxis.LeftY, 1f));
         Register(Restart, Keys(Key.R), Buttons(JoyButton.Start));
         Register(ToggleHelp, Keys(Key.F1), Buttons());
         Register(BackToMenu, Keys(Key.Escape), Buttons(JoyButton.Back));
@@ -35,6 +35,17 @@ public partial class InputSetup : Node
         EnsureJoypadButton("ui_down", JoyButton.DpadDown);
         EnsureJoypadButton("ui_left", JoyButton.DpadLeft);
         EnsureJoypadButton("ui_right", JoyButton.DpadRight);
+        EnsureKey("ui_up", Key.W);
+        EnsureKey("ui_down", Key.S);
+    }
+
+    private static void EnsureKey(string action, Key key)
+    {
+        var inputEvent = new InputEventKey { PhysicalKeycode = key };
+        if (!InputMap.ActionHasEvent(action, inputEvent))
+        {
+            InputMap.ActionAddEvent(action, inputEvent);
+        }
     }
 
     private static void EnsureJoypadButton(string action, JoyButton button)
