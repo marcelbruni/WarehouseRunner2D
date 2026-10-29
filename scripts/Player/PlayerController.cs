@@ -109,6 +109,9 @@ public partial class PlayerController : CharacterBody2D
 
     public event Action<float, float>? WallHit;
 
+    // Seconds between the rollout press and the landing (negative = pressed early), NaN when the rollout was missed.
+    public event Action<float>? RolloutTimed;
+
     [Export]
     public MovementTuning Tuning { get; set; } = new();
 
@@ -333,7 +336,12 @@ public partial class PlayerController : CharacterBody2D
         _skidCooldownTimer -= dt;
         _slopeEntryLockTimer -= dt;
         _groundRollCooldownTimer -= dt;
+        var rolloutPending = _postLandingRollTimer > 0f;
         _postLandingRollTimer -= dt;
+        if (rolloutPending && _postLandingRollTimer <= 0f)
+        {
+            RolloutTimed?.Invoke(float.NaN);
+        }
         _timeSinceLanding += dt;
         _boostTimer -= dt;
     }
@@ -362,6 +370,7 @@ public partial class PlayerController : CharacterBody2D
 
         if (_rollRequested && _postLandingRollTimer > 0f)
         {
+            RolloutTimed?.Invoke(_timeSinceLanding);
             StartRollout(_pendingRolloutKind, _timeSinceLanding <= Tuning.PerfectRollWindow, input);
             return;
         }
@@ -826,6 +835,7 @@ public partial class PlayerController : CharacterBody2D
             if (_rollBufferTimer > 0f)
             {
                 var pressAge = Tuning.RollEarlyWindow - _rollBufferTimer;
+                RolloutTimed?.Invoke(-pressAge);
                 StartRollout(rolloutKind, pressAge <= Tuning.PerfectRollWindow, input);
                 return;
             }
