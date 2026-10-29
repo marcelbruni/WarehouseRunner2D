@@ -1,3 +1,4 @@
+using System.Linq;
 using Godot;
 using WarehouseRunner.Core;
 using WarehouseRunner.Elements;
@@ -227,7 +228,8 @@ public partial class RaceController : Node2D
     {
         SetPhase(RunPhase.Finished);
         _hud.SetTime(_elapsed);
-        _hud.ShowResult(_elapsed, _bestTime, hasNextLevel: LevelCatalog.NextAfter(LevelId) is not null, _medals);
+        var summary = string.Join("\n\n", GetChildren().OfType<IRunSummary>().Select(coach => coach.RunSummary()));
+        _hud.ShowResult(_elapsed, _bestTime, hasNextLevel: LevelCatalog.NextAfter(LevelId) is not null, _medals, summary);
         if (SaveRecords && (_bestTime is null || _elapsed < _bestTime))
         {
             RecordStore.SaveBestTime(LevelId, _elapsed);

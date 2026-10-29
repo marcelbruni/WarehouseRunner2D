@@ -5,7 +5,7 @@ namespace WarehouseRunner.Level;
 
 // Speech bubble above the player that grades every wall kick: how long the player
 // clung to the wall before kicking, and how much of the carried speed survived.
-public partial class WallKickCoach : Node2D
+public partial class WallKickCoach : Node2D, IRunSummary
 {
     private const float ShowTime = 4.5f;
     private const float ScaleWidth = 130f;
@@ -18,15 +18,21 @@ public partial class WallKickCoach : Node2D
     private static readonly Color Bad = new(0.95f, 0.3f, 0.3f);
 
     private PlayerController? _player;
+    private RaceController? _race;
     private float _timer;
     private float _clinging;
     private float _kept;
     private bool _chainBroken;
+    private int _kicks;
+    private int _perfectKicks;
+    private float _clingingTotal;
+    private float _keptTotal;
 
     public override void _Ready()
     {
         TopLevel = true;
         ZIndex = 20;
+        _race = GetParent() as RaceController;
         _player = GetParent().GetNodeOrNull<PlayerController>("Player");
         if (_player != null)
         {
@@ -51,7 +57,18 @@ public partial class WallKickCoach : Node2D
         _kept = kept;
         _chainBroken = chainBroken;
         _timer = ShowTime;
+        if (_race is { Phase: not (RunPhase.WaitingForClockIn or RunPhase.Finished) })
+        {
+            _kicks++;
+            _perfectKicks += clinging <= (_player?.Tuning.WallKickPerfectTime ?? 0.05f) ? 1 : 0;
+            _clingingTotal += clinging;
+            _keptTotal += kept;
+        }
     }
+
+    public string RunSummary() => _kicks == 0
+        ? "Wall kicks: none"
+        : $"Wall kicks: {_kicks}\nPerfect: {_perfectKicks} of {_kicks}\nAvg at wall: {_clingingTotal / _kicks * 1000f:0} ms\nAvg speed kept: {_keptTotal / _kicks * 100f:0}%";
 
     private Color TimingColor()
     {

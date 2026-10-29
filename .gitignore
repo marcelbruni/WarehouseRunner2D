@@ -7,3 +7,4 @@ obj/
 *.user
 export_presets.cfg
 build/
+__pycache__/

@@ -6,7 +6,7 @@ namespace WarehouseRunner.Level;
 // Speech bubble above the player that grades the two timings of the speed rotation,
 // one row each: how soon the dash follows the jump, and how close the rollout press is
 // to the landing. A row from the previous rotation is dimmed until it is replaced.
-public partial class RolloutCoach : Node2D
+public partial class RolloutCoach : Node2D, IRunSummary
 {
     private const float ShowTime = 1.5f;
     private const float ScaleWidth = 130f;
@@ -22,15 +22,24 @@ public partial class RolloutCoach : Node2D
     private readonly record struct Reading(string Text, Color Color, float ScaleMin, float ScaleMax, float GreenMin, float GreenMax, float? Mark, float? Reference, ulong Frame);
 
     private PlayerController? _player;
+    private RaceController? _race;
     private Reading? _dash;
     private Reading? _rollout;
     private float _timer;
     private ulong? _jumpFrame;
+    private int _dashes;
+    private float _dashDelayTotal;
+    private int _rollouts;
+    private int _perfectRollouts;
+    private int _missedRollouts;
+
+    private bool IsRunning => _race is { Phase: not (RunPhase.WaitingForClockIn or RunPhase.Finished) };
 
     public override void _Ready()
     {
         TopLevel = true;
         ZIndex = 20;
+        _race = GetParent() as RaceController;
         _player = GetParent().GetNodeOrNull<PlayerController>("Player");
         if (_player != null)
         {
@@ -69,12 +78,24 @@ public partial class RolloutCoach : Node2D
         var delay = (now - jumped) / (float)Engine.PhysicsTicksPerSecond;
         _dash = new Reading($"Dash +{delay * 1000f:0} ms", DashColor(delay), 0f, 0.2f, 0f, DashGood, delay, null, now);
         _timer = ShowTime;
+        if (IsRunning)
+        {
+            _dashes++;
+            _dashDelayTotal += delay;
+        }
     }
 
     private void OnRolloutTimed(float offset)
     {
         var window = _player?.Tuning.PerfectRollWindow ?? 0.05f;
         var now = Engine.GetPhysicsFrames();
+        if (IsRunning)
+        {
+            _rollouts++;
+            _missedRollouts += float.IsNaN(offset) ? 1 : 0;
+            _perfectRollouts += Mathf.Abs(offset) <= window ? 1 : 0;
+        }
+
         if (float.IsNaN(offset))
         {
             _rollout = new Reading("Rollout MISSED", Missed, -0.15f, 0.12f, -window, window, null, 0f, now);
@@ -88,6 +109,13 @@ public partial class RolloutCoach : Node2D
         }
 
         _timer = ShowTime;
+    }
+
+    public string RunSummary()
+    {
+        var dashLine = _dashes == 0 ? "Dashes after jump: none" : $"Dashes after jump: {_dashes}\nAvg dash delay: {_dashDelayTotal / _dashes * 1000f:0} ms";
+        var rolloutLine = _rollouts == 0 ? "Rollouts: none" : $"Rollouts perfect: {_perfectRollouts} of {_rollouts}\nRollouts missed: {_missedRollouts}";
+        return $"{dashLine}\n{rolloutLine}";
     }
 
     private static Color DashColor(float delay) => delay switch

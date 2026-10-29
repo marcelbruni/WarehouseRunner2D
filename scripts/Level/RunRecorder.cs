@@ -1,15 +1,17 @@
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using Godot;
 using WarehouseRunner.Player;
 
 namespace WarehouseRunner.Level;
 
-// Writes a frame-exact log of a run (inputs, state changes, tricks, rollout timing)
+// Writes a frame-exact log of a run (inputs, state changes, tricks, rollout and wall kick timing)
 // to user://runs so a run can be analysed afterwards.
 public partial class RunRecorder : Node
 {
     private const string Folder = "user://runs";
+    private const int KeptRuns = 50;
 
     private readonly List<string> _lines = new() { "tick;race_s;event;x;y;vx;vy;state;detail" };
     private RaceController? _race;
@@ -32,6 +34,8 @@ public partial class RunRecorder : Node
         _player.TrickPerformed += (trick, perfect) => Log("trick", $"{trick}{(perfect ? " perfect" : string.Empty)}");
         _player.Landed += impact => Log("landed", $"impact {impact:0}");
         _player.RolloutTimed += offset => Log("rollout_timing", float.IsNaN(offset) ? "missed" : $"{offset * 1000f:0} ms");
+        _player.WallKicked += (contactAge, kept, horizontal, chainBroken) =>
+            Log("wall_kick", $"{contactAge * 1000f:0} ms at wall, kept {kept * 100f:0}%, horizontal {horizontal:0}{(chainBroken ? ", chain broken" : string.Empty)}");
         _lastState = _player.State;
         _lastPhase = _race.Phase;
     }
@@ -104,6 +108,23 @@ public partial class RunRecorder : Node
         foreach (var line in _lines)
         {
             file.StoreLine(line);
+        }
+
+        DeleteOldestRuns();
+    }
+
+    private static void DeleteOldestRuns()
+    {
+        var runs = DirAccess.GetFilesAt(Folder).Where(name => name.EndsWith(".csv")).ToList();
+        var stale = runs.Count - KeptRuns;
+        if (stale <= 0)
+        {
+            return;
+        }
+
+        foreach (var name in runs.OrderBy(name => FileAccess.GetModifiedTime($"{Folder}/{name}")).Take(stale))
+        {
+            DirAccess.RemoveAbsolute($"{Folder}/{name}");
         }
     }
 

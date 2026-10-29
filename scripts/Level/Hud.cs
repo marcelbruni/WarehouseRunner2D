@@ -21,6 +21,7 @@ public partial class Hud : CanvasLayer
     private Label _hint = null!;
     private Label _help = null!;
     private Label _result = null!;
+    private Label _summary = null!;
     private ColorRect _resultDim = null!;
     private Control _root = null!;
     private SpeedMeter _speedMeter = null!;
@@ -46,6 +47,8 @@ public partial class Hud : CanvasLayer
         root.AddChild(_resultDim);
         _resultDim.SetAnchorsAndOffsetsPreset(Control.LayoutPreset.FullRect);
         _result = AddLabel(root, Control.LayoutPreset.Center, 40, Vector2.Zero, HorizontalAlignment.Center);
+        _summary = AddLabel(root, Control.LayoutPreset.CenterLeft, 26, new Vector2(40f, -80f));
+        _summary.Visible = false;
 
         _help.Text = ControlsText;
         _trick.Modulate = Colors.Transparent;
@@ -113,8 +116,10 @@ public partial class Hud : CanvasLayer
         _hintTween.TweenProperty(_hint, "modulate", Colors.Transparent, 0.5f);
     }
 
-    public void ShowResult(double time, double? previousBest, bool hasNextLevel, MedalTimes? medals)
+    public void ShowResult(double time, double? previousBest, bool hasNextLevel, MedalTimes? medals, string summary)
     {
+        _summary.Text = summary;
+        _summary.Visible = summary.Length > 0;
         var isRecord = previousBest is null || time < previousBest;
         var recordLine = isRecord ? "NEW RECORD!" : $"Best: {FormatTime(previousBest!.Value)}";
         var medalLines = medals is null ? string.Empty : MedalResultLines(time, medals);
