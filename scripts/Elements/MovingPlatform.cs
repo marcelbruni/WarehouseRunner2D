@@ -24,6 +24,13 @@ public partial class MovingPlatform : AnimatableBody2D
     private static readonly Color Tyre = new(0.12f, 0.12f, 0.13f);
     private static readonly Color CabGlass = new(0.55f, 0.75f, 0.9f, 0.5f);
 
+    private const float ForkliftBodyHeight = 64f;
+    private const float ForkliftBodyWidth = 140f;
+    private const float ForkliftCounterweight = 18f;
+    private const float ForkliftMastGap = 10f;
+    private const float ForkliftCabHeight = 70f;
+    private const float ForkliftRoofThickness = 7f;
+
     private Vector2 _size = new(120f, 30f);
     private RectangleShape2D? _shape;
     private Vector2 _origin;
@@ -65,7 +72,28 @@ public partial class MovingPlatform : AnimatableBody2D
         AddChild(new CollisionShape2D { Shape = _shape });
         _origin = Position;
         SyncToPhysics = true;
+        if (Look == PlatformLook.Forklift && !Engine.IsEditorHint())
+        {
+            AddForkliftBody();
+        }
     }
+
+    private float ForkliftMastX => -_size.X / 2f - ForkliftMastGap;
+
+    private void AddForkliftBody()
+    {
+        var right = ForkliftMastX - ForkliftMastGap;
+        var left = right - ForkliftBodyWidth;
+        var cabTop = -ForkliftBodyHeight - ForkliftCabHeight - (ForkliftRoofThickness / 2f);
+        var body = new StaticBody2D { TopLevel = true, CollisionLayer = CollisionLayer, CollisionMask = 0 };
+        AddBox(body, new Rect2(left - ForkliftCounterweight, -ForkliftBodyHeight, ForkliftBodyWidth + ForkliftCounterweight, ForkliftBodyHeight));
+        AddBox(body, new Rect2(left + 12f, cabTop, ForkliftBodyWidth - 18f, -ForkliftBodyHeight - cabTop));
+        AddChild(body);
+        body.GlobalPosition = GetParent<Node2D>().ToGlobal(_origin + new Vector2(0f, _size.Y / 2f));
+    }
+
+    private static void AddBox(StaticBody2D body, Rect2 box) =>
+        body.AddChild(new CollisionShape2D { Shape = new RectangleShape2D { Size = box.Size }, Position = box.GetCenter() });
 
     public override void _PhysicsProcess(double delta)
     {
@@ -153,19 +181,19 @@ public partial class MovingPlatform : AnimatableBody2D
     private void DrawForklift(Rect2 rect)
     {
         var ground = _origin - Position + new Vector2(0f, rect.Size.Y / 2f);
-        var mastX = rect.Position.X - 10f;
+        var mastX = ForkliftMastX;
         var mastTop = ground.Y - rect.Size.Y - Mathf.Abs(Travel.Y) - 40f;
-        var body = new Rect2(mastX - 150f, ground.Y - 64f, 140f, 50f);
+        var body = new Rect2(mastX - ForkliftMastGap - ForkliftBodyWidth, ground.Y - ForkliftBodyHeight, ForkliftBodyWidth, 50f);
 
         DrawRect(new Rect2(mastX - 6f, mastTop, 6f, ground.Y - mastTop), Metal);
         DrawRect(new Rect2(mastX + 2f, mastTop, 4f, ground.Y - mastTop), MetalLight);
         DrawRect(body, Warning);
         DrawRect(body, Metal, false, 3f);
-        DrawRect(new Rect2(body.Position.X - 18f, body.Position.Y - 6f, 26f, 56f), Metal);
-        var roof = body.Position.Y - 70f;
+        DrawRect(new Rect2(body.Position.X - ForkliftCounterweight, body.Position.Y - 6f, 26f, 56f), Metal);
+        var roof = body.Position.Y - ForkliftCabHeight;
         DrawLine(new Vector2(body.Position.X + 20f, body.Position.Y), new Vector2(body.Position.X + 20f, roof), Metal, 5f);
         DrawLine(new Vector2(body.End.X - 14f, body.Position.Y), new Vector2(body.End.X - 14f, roof), Metal, 5f);
-        DrawLine(new Vector2(body.Position.X + 12f, roof), new Vector2(body.End.X - 6f, roof), Metal, 7f);
+        DrawLine(new Vector2(body.Position.X + 12f, roof), new Vector2(body.End.X - 6f, roof), Metal, ForkliftRoofThickness);
         DrawRect(new Rect2(body.Position.X + 24f, roof + 6f, body.Size.X - 42f, body.Position.Y - roof - 8f), CabGlass);
         foreach (var x in new[] { body.Position.X + 28f, body.End.X - 22f })
         {
