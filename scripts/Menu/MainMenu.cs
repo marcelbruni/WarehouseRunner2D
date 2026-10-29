@@ -48,7 +48,8 @@ public partial class MainMenu : Node2D
         root.AddChild(_skills);
         _footer = CreateLabel(string.Empty, 18, new Color(0.7f, 0.72f, 0.76f));
         root.AddChild(_footer);
-        layer.AddChild(CreateMuteButton());
+        layer.AddChild(CreateMuteButton(MusicPlayer.MusicBus, "Sound", rightOffset: -16f));
+        layer.AddChild(CreateMuteButton(MusicPlayer.EffectsBus, "Effects", rightOffset: -182f));
 
         if (_packageOpen)
         {
@@ -182,22 +183,22 @@ public partial class MainMenu : Node2D
         return tile;
     }
 
-    private static Button CreateMuteButton()
+    private static Button CreateMuteButton(string bus, string name, float rightOffset)
     {
         var button = new Button { FocusMode = Control.FocusModeEnum.None, CustomMinimumSize = new Vector2(150f, 44f) };
         ApplyButtonStyle(button);
         button.AddThemeFontSizeOverride("font_size", 20);
-        void Refresh() => button.Text = MusicPlayer.IsMuted ? "Sound: off" : "Sound: on";
+        void Refresh() => button.Text = MusicPlayer.IsMuted(bus) ? $"{name}: off" : $"{name}: on";
         Refresh();
         button.Pressed += () =>
         {
-            MusicPlayer.SetMuted(!MusicPlayer.IsMuted);
+            MusicPlayer.SetMuted(bus, !MusicPlayer.IsMuted(bus));
             Refresh();
         };
         button.AnchorLeft = 1f;
         button.AnchorRight = 1f;
-        button.OffsetLeft = -166f;
-        button.OffsetRight = -16f;
+        button.OffsetLeft = rightOffset - 150f;
+        button.OffsetRight = rightOffset;
         button.OffsetTop = 16f;
         button.OffsetBottom = 60f;
         return button;

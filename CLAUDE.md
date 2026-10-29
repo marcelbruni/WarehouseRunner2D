@@ -18,6 +18,7 @@ Godot 4.7.2 .NET + C# (net8.0). Godot liegt portabel unter
   Level05 ist nicht im Generator, nur von Hand gepflegt.
 - Musik: venv mit `tools/music/requirements.txt`, dann `python tools/music/make_modern_music.py level15`
   (ohne Argument alle Songs). Danach `--import` und in der `.ogg.import` `loop=true` setzen.
+- Soundeffekte: `python tools/sfx/make_sfx.py [name ...]` schreibt `assets/sfx/*.wav` (nur numpy nötig).
 
 ## Konventionen
 
