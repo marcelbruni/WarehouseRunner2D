@@ -20,8 +20,10 @@ public partial class PlayerVisual : Node2D
     private PlayerController _player = null!;
     private CpuParticles2D _dust = null!;
     private CpuParticles2D _landingDust = null!;
+    private CpuParticles2D _wallDust = null!;
     private CpuParticles2D _boostSparks = null!;
     private const float CrouchBlendSpeed = 10f;
+    private const float WallDustMinImpact = 250f;
     private const float CrouchLean = 0.25f;
 
     private Vector2 _squash = Vector2.One;
@@ -36,12 +38,16 @@ public partial class PlayerVisual : Node2D
         _player = GetParent<PlayerController>();
         _player.Landed += OnLanded;
         _player.TrickPerformed += OnTrick;
+        _player.WallHit += OnWallHit;
 
         _dust = CreateDust(oneShot: false);
         _landingDust = CreateDust(oneShot: true);
+        _wallDust = CreateDust(oneShot: true);
+        _wallDust.Spread = 55f;
         _boostSparks = CreateSparks();
         AddChild(_dust);
         AddChild(_landingDust);
+        AddChild(_wallDust);
         AddChild(_boostSparks);
     }
 
@@ -251,6 +257,18 @@ public partial class PlayerVisual : Node2D
         {
             _landingDust.Restart();
         }
+    }
+
+    private void OnWallHit(float impactSpeed, float wallNormalX)
+    {
+        if (impactSpeed < WallDustMinImpact)
+        {
+            return;
+        }
+
+        _wallDust.Position = new Vector2(-wallNormalX * 13f, -6f);
+        _wallDust.Direction = new Vector2(wallNormalX, -0.4f);
+        _wallDust.Restart();
     }
 
     private void OnTrick(Trick trick, bool perfect)

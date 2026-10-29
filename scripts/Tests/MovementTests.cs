@@ -64,6 +64,8 @@ public partial class MovementTests : Node2D
             ("WallKick_SteeringAwayFromWall_PushesUpAndAway", WallKickPushesUpAndAway),
             ("WallKick_ChainedWithSpeed_KeepsSpeed", () => WallKickChainKeepsSpeed(doubleJumpBetween: false)),
             ("WallKick_DoubleJumpBetween_ResetsChain", () => WallKickChainKeepsSpeed(doubleJumpBetween: true)),
+            ("WallKick_LateAfterClinging_LosesCarriedSpeed", () => WallKickTiming(clingTicks: 20, expectFast: false)),
+            ("WallKick_HalfLate_KeepsPartOfTheSpeed", () => WallKickTiming(clingTicks: 7, expectFast: null)),
             ("WallJump_SteeringIntoWall_IsDoubleJump", JumpSteeringIntoWallIsDoubleJump),
             ("WallKick_JumpPressedJustBeforeWall_KicksOnContact", () => EarlyWallKick(ticksBeforeContact: 4, expectKick: true)),
             ("WallKick_JumpPressedFarFromWall_IsDoubleJump", () => EarlyWallKick(ticksBeforeContact: 30, expectKick: false)),
@@ -587,6 +589,31 @@ public partial class MovementTests : Node2D
         await Ticks(1);
         Expect("WallKick", _player.CurrentAirMove == AirMove.WallKick, $"air move {_player.CurrentAirMove}");
         Expect("WallKick", _player.Velocity.X < 0f && _player.Velocity.Y < 0f, $"velocity {_player.Velocity}");
+    }
+
+    private async Task WallKickTiming(int clingTicks, bool? expectFast)
+    {
+        var scenario = $"WallKickTiming({clingTicks})";
+        AddConcrete(new Vector2(120f, -600f), new Vector2(40f, 1200f));
+        await SettleAt(new Vector2(-60f, -400f), settleTicks: 0);
+        _input.MoveX = 1f;
+        _player.Launch(new Vector2(650f, -200f));
+        Expect(scenario, await Until(() => _player.IsTouchingWall, 60), "never reached the wall");
+        await Ticks(clingTicks);
+        _input.MoveX = -1f;
+        _input.PressJump();
+        await Ticks(1);
+        var speed = -_player.Velocity.X;
+        var baseSpeed = _player.Tuning.WallKickHorizontalSpeed;
+        Expect(scenario, _player.CurrentAirMove == AirMove.WallKick, $"air move {_player.CurrentAirMove}");
+        if (expectFast == false)
+        {
+            Expect(scenario, speed <= baseSpeed + 1f, $"late kick kept speed: {speed:0}");
+        }
+        else
+        {
+            Expect(scenario, speed > baseSpeed + 30f && speed < 600f, $"half-late kick should keep part of the speed: {speed:0}");
+        }
     }
 
     private async Task WallKickChainKeepsSpeed(bool doubleJumpBetween)

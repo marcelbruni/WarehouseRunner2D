@@ -94,6 +94,7 @@ public partial class PlayerController : CharacterBody2D
     private float _wallNormalX;
     private float _wallCoyoteTimer;
     private bool _earlyWallKick;
+    private float _wallContactAge;
     private float _wallImpactSpeed;
     private Vector2 _wallKickChain;
     private bool _wallKickChainBroken;
@@ -105,6 +106,8 @@ public partial class PlayerController : CharacterBody2D
     public event Action<Trick, bool>? TrickPerformed;
 
     public event Action<float>? Landed;
+
+    public event Action<float, float>? WallHit;
 
     [Export]
     public MovementTuning Tuning { get; set; } = new();
@@ -324,6 +327,7 @@ public partial class PlayerController : CharacterBody2D
     {
         _coyoteTimer -= dt;
         _wallCoyoteTimer -= dt;
+        _wallContactAge += dt;
         _steerLockTimer -= dt;
         _slideJumpGraceTimer -= dt;
         _skidCooldownTimer -= dt;
@@ -555,7 +559,7 @@ public partial class PlayerController : CharacterBody2D
         return true;
     }
 
-    private void StartJump(AirMove move, float speed, float horizontal, Trick trick)
+    private void StartJump(AirMove move, float speed, float horizontal, Trick trick, bool perfect = false)
     {
         _jumpBufferTimer = 0f;
         _coyoteTimer = 0f;
@@ -564,7 +568,7 @@ public partial class PlayerController : CharacterBody2D
         Velocity = new Vector2(horizontal, -speed);
         CurrentAirMove = move;
         ChangeState(PlayerState.Airborne);
-        TrickPerformed?.Invoke(trick, false);
+        TrickPerformed?.Invoke(trick, perfect);
     }
 
     private void StartSlideJump(PlayerInput input)
@@ -576,15 +580,19 @@ public partial class PlayerController : CharacterBody2D
 
     private void StartWallKick()
     {
-        // A kick never gives less than the speed carried into it: the impact speed and
-        // current rise for the first kick, the previous kick for chained ones. A double
-        // jump cancels the carry-over until the next landing.
+        // A kick keeps the speed carried into it (impact speed and current rise for the
+        // first kick, the previous kick for chained ones), but only with sharp timing:
+        // the longer the player clings to the wall, the less of the extra speed is left.
+        // A double jump cancels the carry-over until the next landing.
         var horizontal = Tuning.WallKickHorizontalSpeed;
         var vertical = Tuning.WallKickSpeed;
         if (!_wallKickChainBroken)
         {
-            horizontal = Mathf.Max(horizontal, Mathf.Max(_wallImpactSpeed, _wallKickChain.X));
-            vertical = Mathf.Min(Mathf.Max(vertical, Mathf.Max(-Velocity.Y, _wallKickChain.Y)), Tuning.WallKickMaxSpeed);
+            var keep = WallKickSpeedShare();
+            var carriedHorizontal = Mathf.Max(horizontal, Mathf.Max(_wallImpactSpeed, _wallKickChain.X));
+            var carriedVertical = Mathf.Min(Mathf.Max(vertical, Mathf.Max(-Velocity.Y, _wallKickChain.Y)), Tuning.WallKickMaxSpeed);
+            horizontal += (carriedHorizontal - horizontal) * keep;
+            vertical += (carriedVertical - vertical) * keep;
         }
 
         _wallKickChain = new Vector2(horizontal, vertical);
@@ -595,7 +603,13 @@ public partial class PlayerController : CharacterBody2D
         _canDash = true;
         _canDoubleJump = true;
         Facing = Mathf.Sign(_wallNormalX);
-        StartJump(AirMove.WallKick, vertical, _wallNormalX * horizontal, Trick.WallKick);
+        StartJump(AirMove.WallKick, vertical, _wallNormalX * horizontal, Trick.WallKick, _wallContactAge <= Tuning.WallKickPerfectTime);
+    }
+
+    private float WallKickSpeedShare()
+    {
+        var late = _wallContactAge - Tuning.WallKickPerfectTime;
+        return 1f - Mathf.Clamp(late / (Tuning.WallKickSpeedLossTime - Tuning.WallKickPerfectTime), 0f, 1f);
     }
 
     private void StartDash(PlayerInput input)
@@ -774,7 +788,9 @@ public partial class PlayerController : CharacterBody2D
             _wallCoyoteTimer = Tuning.WallCoyoteTime;
             if (!wasTouchingWall)
             {
+                _wallContactAge = 0f;
                 _wallImpactSpeed = _preMoveVelocity.X * _wallNormalX < 0f ? Mathf.Abs(_preMoveVelocity.X) : 0f;
+                WallHit?.Invoke(_wallImpactSpeed, _wallNormalX);
             }
 
             if (State == PlayerState.Dashing)
