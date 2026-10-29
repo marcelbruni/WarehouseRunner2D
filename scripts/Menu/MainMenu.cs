@@ -48,7 +48,7 @@ public partial class MainMenu : Node2D
         root.AddChild(_skills);
         _footer = CreateLabel(string.Empty, 18, new Color(0.7f, 0.72f, 0.76f));
         root.AddChild(_footer);
-        layer.AddChild(CreateMuteButton(MusicPlayer.MusicBus, "Sound", rightOffset: -16f));
+        layer.AddChild(CreateMuteButton(MusicPlayer.MusicBus, "Music", rightOffset: -16f));
         layer.AddChild(CreateMuteButton(MusicPlayer.EffectsBus, "Effects", rightOffset: -182f));
 
         if (_packageOpen)
