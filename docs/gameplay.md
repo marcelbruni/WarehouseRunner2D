@@ -38,12 +38,13 @@ Eigene Pakete für bewegte Plattformen, nur Rutschen oder nur Bänder gibt es ni
 | 1-6 | Oberstes Regal | sehr kurz: das Expresspaket hängt direkt nach der Stempeluhr so hoch, dass es nur mit Slide Jump + Doppelsprung + Dash nach oben erreichbar ist (Sprung + Doppelsprung + Dash reicht nicht); alternativ über die nahe linke Wand mit Slide Jump + Wall Kick + Doppelsprung + Dash. Danach Rampe und Ausstempeln |
 | 1-7 | AI Level | Lagerroboter (rempeln dich weg, Draufspringen erlaubt), Barcode-Scanner (rot = zurück zum Checkpoint, grüne Welle), Lieferdrohnen als fliegende Plattformen, ein Express-Paket, das vor dir flieht |
 | 1-8 | Gabelstapler-Halle | Einzelkiste, Abstand, Dreifachkiste mit Rutsche auf der Rückseite: Abwärtsrutsche geht direkt in eine flache und dann in eine leichte Aufwärtsrutsche über. Zwei Gabelstapler heben eine Einzel- und eine Doppelkiste, von oben auf drei Drohnen (seitwärts, still, seitwärts). Erste Wandöffnung nur rollend, kurzer Vorsprung davor und keiner danach: aus der Lücke rollen und direkt Doppelsprung + Dash auf drei Plattformen gleicher Höhe. Zweite Wandöffnung mit Vorsprüngen auf beiden Seiten, danach Doppelsprung + Dash schräg hoch auf stillstehende Plattformen, Paket auf Concrete in gleicher Höhe, grosse Lücke, Rampe |
-| 2-1 | Friends Ideas | zwei Präzisionskisten, bewegte Kiste, drei Speed-Jump-Bänder (runter, gerade, hoch) mit Kiste dazwischen, Abschussrampe zur Paketplattform, Luftpolster-Trampoline über der letzten Grube |
-| 2-2 | Taktstrasse | sechs Kisten im gleichen Abstand: im Takt durchhüpfen. Lücke in einen Speed Jump, der direkt in einen Kamin schleudert; oben von der Wand in den nächsten Speed Jump, auf eine Polsterfolie, die in den zweiten Kamin federt, oben aufs Förderband, über eine Lücke auf eine 45° geneigte Polsterfolie, die einen flach nach vorne zum Ziel schiesst |
-| 2-3 | Hauptlager | die erste grosse Karte: Rutschkisten, Förderbänder, Paketsuche |
-| 2-4 | Rutschpartie | bergab: Drop direkt auf eine 700er-Rutschkiste (33°), Vorwärtsband geht in Aufwärtsband über, Rückwärtsband zum Überspringen, 900er-Rutsche (36°), Abschussband auf die nächste Rutsche, am Ende Gabelung oben/unten (3,8 s gegen 3,6 s) |
-| 2-5 | Kletterhalle | drei Kamine, die oben direkt auf ein Förderband führen, drei Speed Jumps, Abschussrampe wie in Level 7, zwei lange Rutschen zum Ziel. Rund 1,65-fache Länge des Hauptlagers |
-| 2-6 | Hochregallager | Zickzack über drei Stockwerke: Erdgeschoss nach rechts (Kisten, Bänder, Rutschkiste), breiter Kamin (300 px, Wall Kick + Doppelsprung), 1. Stock zurück nach links, Rolltreppe in den 2. Stock mit Paket-Abstecher links, dann nach rechts und über zwei Riesenrutschen hinab zum Ziel. Wer in eine Grube fällt, landet ein Stockwerk tiefer |
+| 2-1 | Wall Kick Training | Förderband direkt in einen Kamin, etwa 5 Wall Kicks hoch. Mit gutem Timing (Kick kurz vor bzw. genau beim Wandkontakt) bleibt das Tempo vom Band erhalten; eine Sprechblase zeigt pro Kick die Zeit an der Wand und das behaltene Tempo. Paket oben am Kamin, Rampe direkt daneben |
+| 2-2 | Friends Ideas | zwei Präzisionskisten, bewegte Kiste, drei Speed-Jump-Bänder (runter, gerade, hoch) mit Kiste dazwischen, Abschussrampe zur Paketplattform, Luftpolster-Trampoline über der letzten Grube |
+| 2-3 | Taktstrasse | sechs Kisten im gleichen Abstand: im Takt durchhüpfen. Lücke in einen Speed Jump, der direkt in einen Kamin schleudert; oben von der Wand in den nächsten Speed Jump, auf eine Polsterfolie, die in den zweiten Kamin federt, oben aufs Förderband, über eine Lücke auf eine 45° geneigte Polsterfolie, die einen flach nach vorne zum Ziel schiesst |
+| 2-4 | Hauptlager | die erste grosse Karte: Rutschkisten, Förderbänder, Paketsuche |
+| 2-5 | Rutschpartie | bergab: Drop direkt auf eine 700er-Rutschkiste (33°), Vorwärtsband geht in Aufwärtsband über, Rückwärtsband zum Überspringen, 900er-Rutsche (36°), Abschussband auf die nächste Rutsche, am Ende Gabelung oben/unten (3,8 s gegen 3,6 s) |
+| 2-6 | Kletterhalle | drei Kamine, die oben direkt auf ein Förderband führen, drei Speed Jumps, Abschussrampe wie in Level 7, zwei lange Rutschen zum Ziel. Rund 1,65-fache Länge des Hauptlagers |
+| 2-7 | Hochregallager | Zickzack über drei Stockwerke: Erdgeschoss nach rechts (Kisten, Bänder, Rutschkiste), breiter Kamin (300 px, Wall Kick + Doppelsprung), 1. Stock zurück nach links, Rolltreppe in den 2. Stock mit Paket-Abstecher links, dann nach rechts und über zwei Riesenrutschen hinab zum Ziel. Wer in eine Grube fällt, landet ein Stockwerk tiefer |
 
 Jedes Level hat denselben Ablauf (einstempeln, Paket, Rampe, ausstempeln).
 Hinweisschilder erklären die jeweilige Technik. `LevelSkillProofs` belegt
@@ -57,7 +58,7 @@ gerundet. Gezählt wird die angezeigte Zeit (Hundertstel).
 
 | Nr. | Name | Gold | Silber | Bronze |
 |---|---|---|---|---|
-| 1-1 | Tempo-Training | 3.80 | 4.5 | 5.0 |
+| 1-1 | Tempo-Training | 4.20 | 5.0 | 5.5 |
 | 1-2 | Erster Arbeitstag | 7.00 | 8.0 | 9.5 |
 | 1-3 | Rollen lernen | 6.65 | 7.5 | 9.0 |
 | 1-4 | Dash-Schulung | 7.40 | 8.5 | 10.0 |
@@ -65,12 +66,13 @@ gerundet. Gezählt wird die angezeigte Zeit (Hundertstel).
 | 1-6 | Oberstes Regal | 3.20 | 3.5 | 4.5 |
 | 1-7 | AI Level | 13.15 | 15.0 | 18.0 |
 | 1-8 | Gabelstapler-Halle | 18.00 | 20.5 | 24.5 |
-| 2-1 | Friends Ideas | 13.00 | 15.0 | 17.5 |
-| 2-2 | Taktstrasse | 17.00 | 19.5 | 23.0 |
-| 2-3 | Hauptlager | 14.10 | 16.0 | 19.0 |
-| 2-4 | Rutschpartie | 8.90 | 10.0 | 12.0 |
-| 2-5 | Kletterhalle | 19.65 | 22.5 | 26.5 |
-| 2-6 | Hochregallager | 28.85 | 33.0 | 39.0 |
+| 2-1 | Wall Kick Training | 4.50 | 5.0 | 6.0 |
+| 2-2 | Friends Ideas | 13.00 | 15.0 | 17.5 |
+| 2-3 | Taktstrasse | 17.00 | 19.5 | 23.0 |
+| 2-4 | Hauptlager | 14.10 | 16.0 | 19.0 |
+| 2-5 | Rutschpartie | 8.90 | 10.0 | 12.0 |
+| 2-6 | Kletterhalle | 19.65 | 22.5 | 26.5 |
+| 2-7 | Hochregallager | 28.85 | 33.0 | 39.0 |
 
 Im Level zeigt die Anzeige oben rechts die nächste Medaille als Ziel, der
 Schlussbildschirm die geholte Medaille. In der Levelauswahl steht vor jedem

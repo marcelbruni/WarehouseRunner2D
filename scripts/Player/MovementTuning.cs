@@ -89,6 +89,6 @@ public partial class MovementTuning : Resource
     [Export] public float WallKickMaxSpeed { get; set; } = 1020f;    [Export] public float WallKickInputLockTime { get; set; } = 0.14f;
     [Export] public float WallCoyoteTime { get; set; } = 0.08f;
     [Export] public float WallKickEarlyWindow { get; set; } = 0.1f;
-    [Export] public float WallKickPerfectTime { get; set; } = 0.025f;
-    [Export] public float WallKickSpeedLossTime { get; set; } = 0.12f;
+    [Export] public float WallKickPerfectTime { get; set; } = 0.05f;
+    [Export] public float WallKickSpeedLossTime { get; set; } = 0.25f;
 }

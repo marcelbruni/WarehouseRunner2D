@@ -3,23 +3,29 @@ using WarehouseRunner.Player;
 
 namespace WarehouseRunner.Level;
 
-// Speech bubble above the player that grades every rollout: text plus a small timing
-// scale with the landing in the middle and the perfect window marked green.
+// Speech bubble above the player that grades the two timings of the speed rotation,
+// one row each: how soon the dash follows the jump, and how close the rollout press is
+// to the landing. A row from the previous rotation is dimmed until it is replaced.
 public partial class RolloutCoach : Node2D
 {
-    private const float ShowTime = 0.9f;
-    private const float ScaleEarly = -0.15f;
-    private const float ScaleLate = 0.12f;
+    private const float ShowTime = 1.5f;
     private const float ScaleWidth = 130f;
-    private static readonly Vector2 BubbleSize = new(164f, 62f);
-    private static readonly Vector2 AbovePlayer = new(0f, -110f);
+    private const float DashGood = 0.035f;
+    private const float DashOkay = 0.07f;
+    private const float RowHeight = 46f;
+    private static readonly Vector2 BubbleSize = new(176f, 104f);
+    private static readonly Vector2 AbovePlayer = new(0f, -130f);
     private static readonly Color Perfect = new(0.35f, 0.9f, 0.4f);
     private static readonly Color Okay = new(1f, 0.65f, 0.15f);
     private static readonly Color Missed = new(0.95f, 0.3f, 0.3f);
 
+    private readonly record struct Reading(string Text, Color Color, float ScaleMin, float ScaleMax, float GreenMin, float GreenMax, float? Mark, float? Reference, ulong Frame);
+
     private PlayerController? _player;
-    private float _offset;
+    private Reading? _dash;
+    private Reading? _rollout;
     private float _timer;
+    private ulong? _jumpFrame;
 
     public override void _Ready()
     {
@@ -29,6 +35,8 @@ public partial class RolloutCoach : Node2D
         if (_player != null)
         {
             _player.RolloutTimed += OnRolloutTimed;
+            _player.TrickPerformed += OnTrick;
+            _player.Landed += _ => _jumpFrame = null;
         }
     }
 
@@ -43,49 +51,98 @@ public partial class RolloutCoach : Node2D
         QueueRedraw();
     }
 
-    private void OnRolloutTimed(float offset)
+    private void OnTrick(Trick trick, bool perfect)
     {
-        _offset = offset;
+        if (trick is Trick.Jump or Trick.RollJump or Trick.SlideJump)
+        {
+            _jumpFrame = Engine.GetPhysicsFrames();
+            return;
+        }
+
+        if (trick is not (Trick.Dash or Trick.PowerDash) || _jumpFrame is not { } jumped)
+        {
+            return;
+        }
+
+        _jumpFrame = null;
+        var now = Engine.GetPhysicsFrames();
+        var delay = (now - jumped) / (float)Engine.PhysicsTicksPerSecond;
+        _dash = new Reading($"Dash +{delay * 1000f:0} ms", DashColor(delay), 0f, 0.2f, 0f, DashGood, delay, null, now);
         _timer = ShowTime;
     }
 
+    private void OnRolloutTimed(float offset)
+    {
+        var window = _player?.Tuning.PerfectRollWindow ?? 0.05f;
+        var now = Engine.GetPhysicsFrames();
+        if (float.IsNaN(offset))
+        {
+            _rollout = new Reading("Rollout MISSED", Missed, -0.15f, 0.12f, -window, window, null, 0f, now);
+        }
+        else
+        {
+            var perfect = Mathf.Abs(offset) <= window;
+            var direction = offset < 0f ? "early" : "late";
+            var text = perfect ? "Rollout PERFECT!" : $"Rollout {direction} {Mathf.Abs(offset) * 1000f:0} ms";
+            _rollout = new Reading(text, perfect ? Perfect : Okay, -0.15f, 0.12f, -window, window, offset, 0f, now);
+        }
+
+        _timer = ShowTime;
+    }
+
+    private static Color DashColor(float delay) => delay switch
+    {
+        <= DashGood => Perfect,
+        <= DashOkay => Okay,
+        _ => Missed,
+    };
+
     public override void _Draw()
     {
-        if (_timer <= 0f || _player == null)
+        if (_timer <= 0f || (_dash is null && _rollout is null))
         {
             return;
         }
 
         var alpha = Mathf.Clamp(_timer / 0.25f, 0f, 1f);
-        var missed = float.IsNaN(_offset);
-        var perfect = !missed && Mathf.Abs(_offset) <= _player.Tuning.PerfectRollWindow;
-        var color = missed ? Missed : perfect ? Perfect : Okay;
-        var text = missed ? "MISSED" : perfect ? "PERFECT!" : $"{(_offset < 0f ? "early" : "late")} {Mathf.Abs(_offset) * 1000f:0} ms";
-
         var bubble = new Rect2(-BubbleSize / 2f, BubbleSize);
         var style = new StyleBoxFlat
         {
             BgColor = new Color(0.08f, 0.09f, 0.11f, 0.85f * alpha),
-            BorderColor = color with { A = alpha },
-            BorderWidthBottom = 3, BorderWidthTop = 3, BorderWidthLeft = 3, BorderWidthRight = 3,
+            BorderColor = new Color(1f, 1f, 1f, 0.6f * alpha),
+            BorderWidthBottom = 2, BorderWidthTop = 2, BorderWidthLeft = 2, BorderWidthRight = 2,
             CornerRadiusBottomLeft = 10, CornerRadiusBottomRight = 10, CornerRadiusTopLeft = 10, CornerRadiusTopRight = 10,
         };
         style.Draw(GetCanvasItem(), bubble);
-        DrawColoredPolygon([new Vector2(-9f, bubble.End.Y - 1f), new Vector2(9f, bubble.End.Y - 1f), new Vector2(0f, bubble.End.Y + 12f)], color with { A = alpha });
+        DrawColoredPolygon([new Vector2(-9f, bubble.End.Y - 1f), new Vector2(9f, bubble.End.Y - 1f), new Vector2(0f, bubble.End.Y + 12f)], new Color(1f, 1f, 1f, 0.6f * alpha));
 
-        var font = ThemeDB.FallbackFont;
-        DrawString(font, new Vector2(bubble.Position.X, bubble.Position.Y + 26f), text, HorizontalAlignment.Center, BubbleSize.X, 20, color with { A = alpha });
+        var rolloutIsStale = _rollout is { } rollout && _dash is { } dash && rollout.Frame < dash.Frame;
+        DrawRow(_dash, bubble.Position.Y + 6f, alpha);
+        DrawRow(_rollout, bubble.Position.Y + 6f + RowHeight, rolloutIsStale ? alpha * 0.4f : alpha);
+    }
 
-        var y = bubble.Position.Y + 44f;
-        float ToX(float seconds) => -ScaleWidth / 2f + ((seconds - ScaleEarly) / (ScaleLate - ScaleEarly) * ScaleWidth);
-        var window = _player.Tuning.PerfectRollWindow;
-        DrawLine(new Vector2(ToX(ScaleEarly), y), new Vector2(ToX(ScaleLate), y), new Color(1f, 1f, 1f, 0.35f * alpha), 4f);
-        DrawLine(new Vector2(ToX(-window), y), new Vector2(ToX(window), y), Perfect with { A = alpha }, 6f);
-        DrawLine(new Vector2(ToX(0f), y - 6f), new Vector2(ToX(0f), y + 6f), new Color(1f, 1f, 1f, alpha), 2f);
-        if (!missed)
+    private void DrawRow(Reading? reading, float top, float alpha)
+    {
+        if (reading is not { } r)
         {
-            var x = ToX(Mathf.Clamp(_offset, ScaleEarly, ScaleLate));
-            DrawLine(new Vector2(x, y - 9f), new Vector2(x, y + 9f), color with { A = alpha }, 4f);
+            return;
+        }
+
+        var color = r.Color with { A = alpha };
+        DrawString(ThemeDB.FallbackFont, new Vector2(-BubbleSize.X / 2f, top + 18f), r.Text, HorizontalAlignment.Center, BubbleSize.X, 17, color);
+
+        var y = top + 32f;
+        float ToX(float seconds) => -ScaleWidth / 2f + ((Mathf.Clamp(seconds, r.ScaleMin, r.ScaleMax) - r.ScaleMin) / (r.ScaleMax - r.ScaleMin) * ScaleWidth);
+        DrawLine(new Vector2(ToX(r.ScaleMin), y), new Vector2(ToX(r.ScaleMax), y), new Color(1f, 1f, 1f, 0.35f * alpha), 4f);
+        DrawLine(new Vector2(ToX(r.GreenMin), y), new Vector2(ToX(r.GreenMax), y), Perfect with { A = alpha }, 6f);
+        if (r.Reference is { } reference)
+        {
+            DrawLine(new Vector2(ToX(reference), y - 6f), new Vector2(ToX(reference), y + 6f), new Color(1f, 1f, 1f, alpha), 2f);
+        }
+
+        if (r.Mark is { } mark)
+        {
+            DrawLine(new Vector2(ToX(mark), y - 8f), new Vector2(ToX(mark), y + 8f), color, 4f);
         }
     }
 }

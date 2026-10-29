@@ -112,6 +112,10 @@ public partial class PlayerController : CharacterBody2D
     // Seconds between the rollout press and the landing (negative = pressed early), NaN when the rollout was missed.
     public event Action<float>? RolloutTimed;
 
+    // Seconds at the wall before the kick, share of the carried speed that was kept (0..1),
+    // resulting horizontal speed, and whether a double jump had already reset the chain.
+    public event Action<float, float, float, bool>? WallKicked;
+
     [Export]
     public MovementTuning Tuning { get; set; } = new();
 
@@ -595,15 +599,17 @@ public partial class PlayerController : CharacterBody2D
         // A double jump cancels the carry-over until the next landing.
         var horizontal = Tuning.WallKickHorizontalSpeed;
         var vertical = Tuning.WallKickSpeed;
+        var keep = 0f;
         if (!_wallKickChainBroken)
         {
-            var keep = WallKickSpeedShare();
+            keep = WallKickSpeedShare();
             var carriedHorizontal = Mathf.Max(horizontal, Mathf.Max(_wallImpactSpeed, _wallKickChain.X));
             var carriedVertical = Mathf.Min(Mathf.Max(vertical, Mathf.Max(-Velocity.Y, _wallKickChain.Y)), Tuning.WallKickMaxSpeed);
             horizontal += (carriedHorizontal - horizontal) * keep;
             vertical += (carriedVertical - vertical) * keep;
         }
 
+        WallKicked?.Invoke(_wallContactAge, keep, horizontal, _wallKickChainBroken);
         _wallKickChain = new Vector2(horizontal, vertical);
         _wallImpactSpeed = 0f;
 

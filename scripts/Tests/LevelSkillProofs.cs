@@ -66,6 +66,7 @@ public partial class LevelSkillProofs : Node
         await ProveRhythmLevel();
         await ProveTopShelfLevel();
         await ProveForkliftLevel();
+        await ProveWallKickTraining();
 
         foreach (var failure in _failures)
         {
@@ -392,6 +393,18 @@ public partial class LevelSkillProofs : Node
             insufficient: Exit(dj: true, dash: false, aimY: 0f).Concat(Exit(dj: true, dash: true, aimY: 0f)).Concat(Exit(dj: false, dash: true, aimY: -1f)));
         await ProvePossible(new Section("L14 Rhythmus-Plattformen → Paket → Lücke → Rampe", scene, p => p.IsOnGround && p.GlobalPosition.X > wall2 + 2120f && p.GlobalPosition.Y < -980f, 900, DiesBelowY: 300f),
             Hops(wall2 + 640f, -1016f, 120).Concat(Jumps(Opener.RunningJump, wall2 + 1320f, wall2 + 1500f, wall2 + 1600f, withDoubleJump: true, withDash: true).Select(plan => plan with { StartY = -1016f })));
+    }
+
+    private async Task ProveWallKickTraining()
+    {
+        const string scene = "res://scenes/levels/Level15.tscn";
+        bool OnTop(PlayerController p) => p.GlobalPosition.X > 1350f && p.GlobalPosition.Y < -635f;
+        await ProveClimb(new Section("L15 Vom Band in den Kamin (Wall Kicks mit Tempo)", scene, OnTop, 1500),
+            new Vector2(60f, -30f), floorY: 0f, useDash: false, exitAboveY: -675f, expectSuccess: true, takeoffX: 980f);
+        await ProveClimb(new Section("L15 Kamin vom Boden (ohne Tempo, Doppelsprung)", scene, OnTop, 2400),
+            new Vector2(1100f, StandY), floorY: 0f, useDash: false, exitAboveY: -675f, expectSuccess: true);
+        await ProvePossible(new Section("L15 Paket, Rampe, Ausstempeln", scene, p => p.IsOnGround && p.GlobalPosition.X > 1960f && p.GlobalPosition.Y < -635f, 400),
+            [new Plan(Opener.WalkOff, 1380f, -651f, 0f, 0, null, null)]);
     }
 
     private static IEnumerable<Plan> Jumps(Opener opener, float startX, float firstTrigger, float lastTrigger, bool withDoubleJump, bool withDash)

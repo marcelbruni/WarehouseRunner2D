@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3]
+[gd_scene load_steps=21 format=3]
 
 [ext_resource type="Script" path="res://scripts/Level/RaceController.cs" id="race"]
 [ext_resource type="Script" path="res://scripts/Level/WarehouseBackground.cs" id="background"]
@@ -17,6 +17,8 @@
 [ext_resource type="Script" path="res://scripts/Elements/BubbleWrap.cs" id="bubble"]
 [ext_resource type="Script" path="res://scripts/Elements/LaunchRamp.cs" id="launch"]
 [ext_resource type="Script" path="res://scripts/Level/RolloutCoach.cs" id="coach"]
+[ext_resource type="Script" path="res://scripts/Level/RunRecorder.cs" id="recorder"]
+[ext_resource type="Script" path="res://scripts/Level/WallKickCoach.cs" id="kickcoach"]
 [ext_resource type="PackedScene" path="res://scenes/player/Player.tscn" id="player"]
 
 [node name="Level12" type="Node2D"]
@@ -48,11 +50,16 @@ script = ExtResource("sign")
 Text = "Roll, roll jump, power dash,\nrollout when landing\nand jump again right away"
 
 [node name="Sign3" type="Node2D" parent="."]
-position = Vector2(1150, 0)
+position = Vector2(1250, 0)
 script = ExtResource("sign")
 Text = "Keep the rhythm:\njump, dash, rollout, jump ..."
 
 [node name="Sign4" type="Node2D" parent="."]
+position = Vector2(820, 0)
+script = ExtResource("sign")
+Text = "Optimal rotation:\njump and dash almost together\n(tiny hop), rollout on landing,\njump right out of the rollout"
+
+[node name="Sign5" type="Node2D" parent="."]
 position = Vector2(1800, 0)
 script = ExtResource("sign")
 Text = "Even faster?\nrollout right before landing\n= perfect rollout"
@@ -87,6 +94,9 @@ script = ExtResource("package")
 
 [node name="RolloutCoach1" type="Node2D" parent="."]
 script = ExtResource("coach")
+
+[node name="RunRecorder1" type="Node" parent="."]
+script = ExtResource("recorder")
 
 [node name="Player" parent="." instance=ExtResource("player")]
 position = Vector2(-500, -26)

@@ -41,7 +41,7 @@ public static class LevelCatalog
     [
         new("Basic Training", "Jumps, rolls, dashes and wall kicks",
         [
-            new("level12", "Speed Training", "Roll · Roll Jump · Power Dash · Rollout · no obstacles, just speed", "res://scenes/levels/Level12.tscn", new(3.80, 4.5, 5.0)),
+            new("level12", "Speed Training", "Roll · Roll Jump · Power Dash · Rollout · no obstacles, just speed", "res://scenes/levels/Level12.tscn", new(4.20, 5.0, 5.5)),
             new("level01", "First Day at Work", "Jump · Double Jump · Slide Jump · Wall Kick", "res://scenes/levels/Level01.tscn", new(7.00, 8.0, 9.5)),
             new("level02", "Learning to Roll", "Roll · Rollout · rolling under shelves", "res://scenes/levels/Level02.tscn", new(6.65, 7.5, 9.0)),
             new("level03", "Dash Training", "Double Jump + Dash · Slide Jump + Double Jump · Jump + Dash", "res://scenes/levels/Level03.tscn", new(7.40, 8.5, 10.0)),
@@ -52,6 +52,7 @@ public static class LevelCatalog
         ]),
         new("Conveyor Hall", "Slides and conveyor belts · belts first, then both",
         [
+            new("level15", "Wall Kick Training", "Conveyor into a chimney · 5 wall kicks · keep the speed with sharp timing", "res://scenes/levels/Level15.tscn", new(4.50, 5.0, 6.0)),
             new("level07", "Friends Ideas", "Precision crates · speed jump belts · launch ramp · bubble wrap", "res://scenes/levels/Level07.tscn", new(13.00, 15.0, 17.5)),
             new("level11", "Rhythm Line", "Crates in rhythm · speed jumps into chimneys · bubble wrap · tilted bubble wrap", "res://scenes/levels/Level11.tscn", new(17.00, 19.5, 23.0)),
             new("level05", "Main Warehouse", "Everything together: slides, conveyor belts, package hunt", "res://scenes/levels/Level05.tscn", new(14.10, 16.0, 19.0)),
