@@ -60,6 +60,11 @@ public partial class MovementTests : Node2D
             ("TiltedConveyor_StandingOnIt_IsNotSlippery", TiltedConveyorIsNotSlippery),
             ("TiltedCrate_SteeperSlope_SlidesFasterButStaysNearOldMax", SteeperSlopeSlidesFaster),
             ("Crouch_WhileRunning_StopsRunningAndBlocksRoll", CrouchStopsRunning),
+            ("Trigger_OnGround_CrouchesWithoutRolling", TriggerOnGroundCrouches),
+            ("Trigger_OnSlide_CrouchSlidesWithoutRolling", TriggerOnSlideCrouchSlidesWithoutRolling),
+            ("Trigger_HeldThroughLanding_DoesNotCrouch", TriggerHeldThroughLandingDoesNotCrouch),
+            ("Trigger_InAir_Dashes", TriggerInAirDashes),
+            ("Trigger_JustBeforeLanding_DashesInsteadOfRollout", TriggerBeforeLandingDashes),
             ("Crouch_OnTiltedCrate_SlidesFaster", CrouchSlidesFaster),
             ("WallKick_SteeringAwayFromWall_PushesUpAndAway", WallKickPushesUpAndAway),
             ("WallKick_ChainedWithSpeed_KeepsSpeed", () => WallKickChainKeepsSpeed(doubleJumpBetween: false)),
@@ -498,6 +503,73 @@ public partial class MovementTests : Node2D
         return top;
     }
 
+    private async Task TriggerOnGroundCrouches()
+    {
+        await RunTo(1, 60);
+        _input.PressTrigger();
+        var rolled = false;
+        await Ticks(20, () => rolled |= _player.State == PlayerState.RollingOut);
+        Expect("TriggerGround", _player.IsCrouching, $"not crouching, state {_player.State}");
+        Expect("TriggerGround", !rolled, "trigger on the ground rolled");
+    }
+
+    private async Task TriggerOnSlideCrouchSlidesWithoutRolling()
+    {
+        AddCrate(new Vector2(0f, -150f), new Vector2(900f, 40f), Mathf.DegToRad(25f));
+        await SettleAt(new Vector2(-330f, -370f), settleTicks: 0);
+        _input.MoveX = 1f;
+        Expect("TriggerSlide", await Until(() => _player.State == PlayerState.SlopeSliding, 60), $"never slid, state {_player.State}");
+        var rolled = false;
+        for (var i = 0; i < 6; i++)
+        {
+            _input.ReleaseTrigger();
+            await Ticks(2, () => rolled |= _player.State == PlayerState.RollingOut);
+            _input.PressTrigger();
+            await Ticks(4, () => rolled |= _player.State == PlayerState.RollingOut);
+        }
+
+        Expect("TriggerSlide", !rolled, "trigger rolled on the slide");
+        Expect("TriggerSlide", _player.IsCrouching, $"trigger on the slide did not crouch-slide, state {_player.State}");
+    }
+
+    private async Task TriggerHeldThroughLandingDoesNotCrouch()
+    {
+        _input.MoveX = 1f;
+        _input.PressJump();
+        await Ticks(12);
+        _input.PressTrigger();
+        await Until(() => _player.State == PlayerState.Grounded, 120);
+        await Ticks(10);
+        Expect("TriggerHeld", !_player.IsCrouching, "crouched after landing with the trigger still held from the dash");
+        _input.ReleaseTrigger();
+        await Ticks(2);
+        _input.PressTrigger();
+        await Ticks(3);
+        Expect("TriggerHeld", _player.IsCrouching, "a fresh trigger press on the ground did not crouch");
+    }
+
+    private async Task TriggerInAirDashes()
+    {
+        _input.MoveX = 1f;
+        _input.PressJump();
+        await Ticks(12);
+        _input.PressTrigger();
+        await Ticks(1);
+        Expect("TriggerAir", _player.State == PlayerState.Dashing, $"trigger in the air did not dash: {_player.State}");
+    }
+
+    private async Task TriggerBeforeLandingDashes()
+    {
+        _input.MoveX = 1f;
+        _input.PressJump();
+        var falling = await Until(() => _player.Velocity.Y > 0f && FloorTop - (_player.GlobalPosition.Y + PlayerHalfHeight) < 25f, 120);
+        Expect("TriggerLanding", falling, "never came down near the floor");
+        _input.PressTrigger();
+        var rolledOut = false;
+        await Ticks(30, () => rolledOut |= _player.State == PlayerState.RollingOut);
+        Expect("TriggerLanding", !rolledOut, "trigger just before landing rolled out instead of dashing");
+    }
+
     private async Task CrouchStopsRunning()
     {
         await RunTo(1, 60);
@@ -896,6 +968,7 @@ public partial class MovementTests : Node2D
     {
         private bool _jumpPressed;
         private bool _actionPressed;
+        private bool _triggerPressed;
 
         public float MoveX { get; set; }
 
@@ -913,11 +986,21 @@ public partial class MovementTests : Node2D
 
         public void PressDashOrRoll() => _actionPressed = true;
 
+        // The gamepad trigger is both a crouch hold and an air-dash press.
+        public void PressTrigger()
+        {
+            _triggerPressed = true;
+            CrouchHeld = true;
+        }
+
+        public void ReleaseTrigger() => CrouchHeld = false;
+
         public PlayerInput Sample()
         {
-            var sample = new PlayerInput(MoveX, _jumpPressed, JumpHeld, _actionPressed, CrouchHeld, AimY);
+            var sample = new PlayerInput(MoveX, _jumpPressed, JumpHeld, _actionPressed, CrouchHeld, AimY, _triggerPressed);
             _jumpPressed = false;
             _actionPressed = false;
+            _triggerPressed = false;
             return sample;
         }
     }

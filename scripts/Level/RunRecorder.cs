@@ -145,6 +145,11 @@ public partial class RunRecorder : Node
                 recorder.Log("press", "action");
             }
 
+            if (input.DashPressed)
+            {
+                recorder.Log("press", "dash");
+            }
+
             if (!Mathf.IsEqualApprox(input.MoveX, _last.MoveX) || input.CrouchHeld != _last.CrouchHeld || !Mathf.IsEqualApprox(input.AimY, _last.AimY))
             {
                 recorder.Log("hold", $"move {input.MoveX:0.##} aim {input.AimY:0.##} crouch {input.CrouchHeld}");

@@ -115,7 +115,8 @@ Alle Auslöser reagieren auf die Kollisionsebenen 1 (Welt/Spieler) und 2 („Gei
 | Slide Jump | Rennen, abrupt Gegenrichtung (Rutsch-Pose), Jump; die Rutsch-Pose bleibt auch beim Zurück-und-wieder-vor | So hoch wie Sprung + Doppelsprung (~236 px), springt in die aktuell gedrückte Richtung |
 | Slide Jump → Double Jump / Dash / Dash → Jump | wie oben kombinieren | Alle Ketten möglich |
 | Schräge Kiste | einfach draufstehen | Rutschen bergab, Boost (×1.35) während und 0.9 s danach. Je steiler, desto schneller: Höchsttempo von 720 px/s (20°) bis 950 px/s (45°) |
-| Ducken | S / ↓ / linker Trigger halten | Kleinere Hitbox, kein Laufen und keine Rolle, Schwung läuft langsam aus. Springen ist möglich |
+| Ducken | S / ↓ halten, Gamepad: linker Trigger oder linker Stick nach unten (beides deutlich, ab 60 %) | Kleinere Hitbox, kein Laufen und keine Rolle, Schwung läuft langsam aus. Springen ist möglich |
+| Linker Trigger | Gamepad: Trigger drücken | Am Boden und auf schrägen Kisten Ducken, in der Luft Dash (auch kurz vor der Landung). Nie Rolle oder Rollout. So liegen Sprung (A) und Dash auf verschiedenen Fingern. Wer den Trigger nach einem Dash bis zur Landung hält, duckt sich nicht; erst ein neuer Druck duckt |
 | Ducken auf schräger Kiste | S / ↓ halten beim Rutschen | Rutscht schneller: stärkere Beschleunigung (×1.4) und 15 % höheres Höchsttempo |
 | Förderband | draufstehen/laufen | Bandgeschwindigkeit wird addiert (schneller oder langsamer); beim Absprung bleibt der Schwung |
 

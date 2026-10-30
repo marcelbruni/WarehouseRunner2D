@@ -94,6 +94,7 @@ public partial class PlayerController : CharacterBody2D
     private float _wallNormalX;
     private float _wallCoyoteTimer;
     private bool _earlyWallKick;
+    private bool _crouchBlockedUntilRelease;
     private float _wallContactAge;
     private float _wallImpactSpeed;
     private Vector2 _wallKickChain;
@@ -262,13 +263,15 @@ public partial class PlayerController : CharacterBody2D
 
     private void UpdateCrouch(PlayerInput input)
     {
+        _crouchBlockedUntilRelease &= input.CrouchHeld;
+        var crouchHeld = input.CrouchHeld && !_crouchBlockedUntilRelease;
         var canCrouch = State is PlayerState.Grounded or PlayerState.SlopeSliding;
-        if (input.CrouchHeld && canCrouch && !IsCrouching)
+        if (crouchHeld && canCrouch && !IsCrouching)
         {
             IsCrouching = true;
             SetCurled(true);
         }
-        else if (IsCrouching && (!input.CrouchHeld || !canCrouch))
+        else if (IsCrouching && (!crouchHeld || !canCrouch))
         {
             IsCrouching = !TryStandUp() && canCrouch;
         }
@@ -313,6 +316,13 @@ public partial class PlayerController : CharacterBody2D
         _jumpBufferTimer = input.JumpPressed ? Tuning.JumpBufferTime : _jumpBufferTimer - dt;
         _earlyWallKick &= _jumpBufferTimer > 0f;
         ResolveActionPress(input.ActionPressed);
+
+        // The gamepad trigger crouches on the ground and dashes in the air, but never
+        // rolls (not even just before a landing), so dash and jump sit on different
+        // fingers. Holding it through the landing must not crouch and eat the speed.
+        var triggerDash = input.DashPressed && !IsOnGround;
+        _dashRequested |= triggerDash;
+        _crouchBlockedUntilRelease |= triggerDash;
         _rollBufferTimer = _rollRequested ? Tuning.RollEarlyWindow : _rollBufferTimer - dt;
     }
 
