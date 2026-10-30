@@ -163,7 +163,7 @@ script = ExtResource("moving")
 Size = Vector2(96, 192)
 Travel = Vector2(0, -380)
 Period = 3.6
-Phase = 0.1111
+Phase = 0.08333
 Look = 3
 
 [node name="Drone1" type="AnimatableBody2D" parent="."]

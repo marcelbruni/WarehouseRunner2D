@@ -618,7 +618,7 @@ def level14():
     fork2 = fork1 + 380
     lv.checkpoint(fork1 - 200)
     lv.forklift(fork1, 1, 320, 3.2, 0.84375)
-    lv.forklift(fork2, 2, 380, 3.6, 0.1111)
+    lv.forklift(fork2, 2, 380, 3.6, 0.08333)  # 0.3 s into its 3.6 s cycle
     p1 = fork2 + 330
     p2 = p1 + 520
     p3 = p2 + 300
