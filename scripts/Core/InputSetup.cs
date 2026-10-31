@@ -17,18 +17,13 @@ public partial class InputSetup : Node
     public const string BackToMenu = "back_to_menu";
     public const string Continue = "continue";
 
-    // Crouching kills running speed, so a run with the stick pushed slightly down must
-    // not crouch. A diagonal down-forward on a slide still does.
-    private const float CrouchStickDeadzone = 0.6f;
-
     public override void _EnterTree()
     {
         Register(MoveLeft, Keys(Key.A, Key.Left), Buttons(JoyButton.DpadLeft), new Axis(JoyAxis.LeftX, -1f));
         Register(MoveRight, Keys(Key.D, Key.Right), Buttons(JoyButton.DpadRight), new Axis(JoyAxis.LeftX, 1f));
         Register(Jump, Keys(Key.Space), Buttons(JoyButton.A));
         Register(DashOrRoll, Keys(Key.Shift, Key.J, Key.Ctrl, Key.K), Buttons(JoyButton.X, JoyButton.B));
-        Register(Crouch, Keys(Key.Down, Key.S), Buttons(), new Axis(JoyAxis.LeftY, 1f), CrouchStickDeadzone);
-        EnsureJoypadAxis(Crouch, JoyAxis.TriggerLeft, 1f);
+        Register(Crouch, Keys(Key.Down, Key.S), Buttons(), new Axis(JoyAxis.TriggerLeft, 1f));
         Register(Dash, Keys(), Buttons(), new Axis(JoyAxis.TriggerLeft, 1f));
         Register(AimUp, Keys(Key.Up, Key.W), Buttons(), new Axis(JoyAxis.LeftY, -1f));
         Register(AimDown, Keys(Key.Down, Key.S), Buttons(), new Axis(JoyAxis.LeftY, 1f));
@@ -44,15 +39,6 @@ public partial class InputSetup : Node
         EnsureJoypadButton("ui_right", JoyButton.DpadRight);
         EnsureKey("ui_up", Key.W);
         EnsureKey("ui_down", Key.S);
-    }
-
-    private static void EnsureJoypadAxis(string action, JoyAxis axis, float direction)
-    {
-        var inputEvent = new InputEventJoypadMotion { Axis = axis, AxisValue = direction };
-        if (!InputMap.ActionHasEvent(action, inputEvent))
-        {
-            InputMap.ActionAddEvent(action, inputEvent);
-        }
     }
 
     private static void EnsureKey(string action, Key key)
@@ -79,14 +65,14 @@ public partial class InputSetup : Node
 
     private static JoyButton[] Buttons(params JoyButton[] buttons) => buttons;
 
-    private static void Register(string action, Key[] keys, JoyButton[] buttons, Axis? axis = null, float deadzone = 0.4f)
+    private static void Register(string action, Key[] keys, JoyButton[] buttons, Axis? axis = null)
     {
         if (InputMap.HasAction(action))
         {
             return;
         }
 
-        InputMap.AddAction(action, deadzone);
+        InputMap.AddAction(action, 0.4f);
         foreach (var key in keys)
         {
             InputMap.ActionAddEvent(action, new InputEventKey { PhysicalKeycode = key });

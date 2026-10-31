@@ -12,7 +12,7 @@ public partial class Hud : CanvasLayer
         "Shift/J/Ctrl/K: dash in the air (aim with W/S or up/down), rollout when landing, roll while running\n" +
         "Run, turn around + jump: slide jump\n" +
         "Hold S or down: crouch (slide faster on tilted crates)\n" +
-        "Gamepad: left trigger or stick down crouches, left trigger in the air dashes (never rolls)\n" +
+        "Gamepad: left trigger crouches on the ground, dashes in the air (never rolls)\n" +
         "R: restart   Esc: level select   F1: toggle help";
 
     private Label _timer = null!;
