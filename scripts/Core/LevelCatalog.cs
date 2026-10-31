@@ -52,7 +52,7 @@ public static class LevelCatalog
         ]),
         new("Conveyor Hall", "Slides and conveyor belts · belts first, then both",
         [
-            new("level15", "Wall Kick Training", "Conveyor into a chimney · 5 wall kicks · keep the speed with sharp timing", "res://scenes/levels/Level15.tscn", new(4.50, 5.0, 6.0)),
+            new("level15", "Wall Kick Training", "Conveyor into a chimney · 5 wall kicks · keep the speed with sharp timing", "res://scenes/levels/Level15.tscn", new(4.00, 4.5, 5.5)),
             new("level07", "Friends Ideas", "Precision crates · speed jump belts · launch ramp · bubble wrap", "res://scenes/levels/Level07.tscn", new(13.00, 15.0, 17.5)),
             new("level11", "Rhythm Line", "Crates in rhythm · speed jumps into chimneys · bubble wrap · tilted bubble wrap", "res://scenes/levels/Level11.tscn", new(17.00, 19.5, 23.0)),
             new("level05", "Main Warehouse", "Everything together: slides, conveyor belts, package hunt", "res://scenes/levels/Level05.tscn", new(14.10, 16.0, 19.0)),

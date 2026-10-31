@@ -66,7 +66,7 @@ gerundet. Gezählt wird die angezeigte Zeit (Hundertstel).
 | 1-6 | Oberstes Regal | 3.20 | 3.5 | 4.5 |
 | 1-7 | AI Level | 13.15 | 15.0 | 18.0 |
 | 1-8 | Gabelstapler-Halle | 18.00 | 20.5 | 24.5 |
-| 2-1 | Wall Kick Training | 4.50 | 5.0 | 6.0 |
+| 2-1 | Wall Kick Training | 4.00 | 4.5 | 5.5 |
 | 2-2 | Friends Ideas | 13.00 | 15.0 | 17.5 |
 | 2-3 | Taktstrasse | 17.00 | 19.5 | 23.0 |
 | 2-4 | Hauptlager | 14.10 | 16.0 | 19.0 |
