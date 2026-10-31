@@ -63,6 +63,7 @@ public partial class MovementTests : Node2D
             ("Trigger_OnGround_CrouchesWithoutRolling", TriggerOnGroundCrouches),
             ("Trigger_OnSlide_CrouchSlidesWithoutRolling", TriggerOnSlideCrouchSlidesWithoutRolling),
             ("Trigger_HeldThroughLanding_DoesNotCrouch", TriggerHeldThroughLandingDoesNotCrouch),
+            ("Trigger_HeldFromDashOntoSlide_CrouchSlides", TriggerHeldFromDashOntoSlideCrouchSlides),
             ("Trigger_InAir_Dashes", TriggerInAirDashes),
             ("Trigger_JustBeforeLanding_DashesInsteadOfRollout", TriggerBeforeLandingDashes),
             ("Crouch_OnTiltedCrate_SlidesFaster", CrouchSlidesFaster),
@@ -530,6 +531,24 @@ public partial class MovementTests : Node2D
 
         Expect("TriggerSlide", !rolled, "trigger rolled on the slide");
         Expect("TriggerSlide", _player.IsCrouching, $"trigger on the slide did not crouch-slide, state {_player.State}");
+    }
+
+    private async Task TriggerHeldFromDashOntoSlideCrouchSlides()
+    {
+        AddCrate(new Vector2(0f, -150f), new Vector2(900f, 40f), Mathf.DegToRad(25f));
+        await SettleAt(new Vector2(-330f, -420f), settleTicks: 0);
+        _input.MoveX = 1f;
+        _input.PressTrigger();
+        await Ticks(1);
+        Expect("TriggerOntoSlide", _player.State == PlayerState.Dashing, $"trigger in the air did not dash: {_player.State}");
+        Expect("TriggerOntoSlide", await Until(() => _player.State == PlayerState.SlopeSliding, 120), $"never reached the slide, state {_player.State}");
+        await Ticks(2);
+        Expect("TriggerOntoSlide", _player.IsCrouching, "held trigger did not crouch-slide on the slide");
+
+        // Still holding the same press: once the slide ends on flat ground, stand up and keep the speed.
+        Expect("TriggerOntoSlide", await Until(() => _player.State == PlayerState.Grounded, 240), $"never left the slide, state {_player.State}");
+        await Ticks(3);
+        Expect("TriggerOntoSlide", !_player.IsCrouching, "still crouching on flat ground with the trigger held from the dash");
     }
 
     private async Task TriggerHeldThroughLandingDoesNotCrouch()

@@ -263,8 +263,10 @@ public partial class PlayerController : CharacterBody2D
 
     private void UpdateCrouch(PlayerInput input)
     {
+        // A trigger still held from an air dash only blocks crouching on flat ground,
+        // where it would eat the speed. On a slide it crouch-slides right away.
         _crouchBlockedUntilRelease &= input.CrouchHeld;
-        var crouchHeld = input.CrouchHeld && !_crouchBlockedUntilRelease;
+        var crouchHeld = input.CrouchHeld && (!_crouchBlockedUntilRelease || State == PlayerState.SlopeSliding);
         var canCrouch = State is PlayerState.Grounded or PlayerState.SlopeSliding;
         if (crouchHeld && canCrouch && !IsCrouching)
         {
